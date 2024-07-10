@@ -1,8 +1,10 @@
-﻿using FlexFetcher.Models.ExpressionBuilderOptions;
+﻿using System.Linq.Expressions;
+using FlexFetcher.Models.Queries;
 
 namespace FlexFetcher;
 
-public class BaseFlexFilter
+public abstract class BaseFlexFilter
 {
-    public virtual BaseFilterExpressionBuilderOptions BaseFilterExpressionBuilderOptions => null!;
+    public abstract Type EntityType { get; }
+    public abstract Expression BuildExpression(Expression property, DataFilter filter);
 }

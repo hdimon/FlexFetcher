@@ -1,4 +1,5 @@
-﻿using FlexFetcher.ExpressionBuilders;
+﻿using System.Collections.Immutable;
+using FlexFetcher.ExpressionBuilders;
 using FlexFetcher.Models.Queries;
 using System.Linq.Expressions;
 using FlexFetcher.Models.ExpressionBuilderOptions;
@@ -66,17 +67,17 @@ public static class FilterExtensions
     private static Expression<Func<TEntity, bool>> BuildExpression<TEntity>(DataFilters? filters) where TEntity : class
     {
         var builder = new FilterExpressionBuilder<TEntity>();
-        var expression = builder.BuildExpression(filters!, null);
+        var builderOptions = new FilterExpressionBuilderOptions<TEntity>(null, null);
+        var expression = builder.BuildExpression(filters!, builderOptions, ImmutableArray<BaseFlexFilter>.Empty);
         return expression;
     }
 
     private static Expression<Func<TEntity, bool>> BuildExpression<TEntity>(DataFilters? filters, Func<string, string> mapField)
         where TEntity : class
     {
-        var builderOptions = new FilterExpressionBuilderOptions<TEntity>(mapField, null);
-
         var builder = new FilterExpressionBuilder<TEntity>();
-        var expression = builder.BuildExpression(filters!, builderOptions);
+        var builderOptions = new FilterExpressionBuilderOptions<TEntity>(mapField, null);
+        var expression = builder.BuildExpression(filters!, builderOptions, ImmutableArray<BaseFlexFilter>.Empty);
         return expression;
     }
 }

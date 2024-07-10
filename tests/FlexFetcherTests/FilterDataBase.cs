@@ -30,6 +30,69 @@ public class FilterDataBase
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
     }
 
+    protected void SimpleContainsFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilters
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Name",
+                    Operator = DataFilterOperator.Contains,
+                    Value = "an"
+                }
+            }
+        };
+
+        var result = fetcher(filter);
+
+        Assert.That(result.Count, Is.EqualTo(5));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 2, 4, 6, 8, 10 }));
+    }
+
+    protected void SimpleStartsWithFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilters
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Name",
+                    Operator = DataFilterOperator.StartsWith,
+                    Value = "Ja"
+                }
+            }
+        };
+
+        var result = fetcher(filter);
+
+        Assert.That(result.Count, Is.EqualTo(5));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 2, 4, 6, 8, 10 }));
+    }
+
+    protected void SimpleEndsWithFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilters
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Name",
+                    Operator = DataFilterOperator.EndsWith,
+                    Value = "ne"
+                }
+            }
+        };
+
+        var result = fetcher(filter);
+
+        Assert.That(result.Count, Is.EqualTo(5));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 2, 4, 6, 8, 10 }));
+    }
+
     protected void SimpleInArrayFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
     {
         var idsJson = System.Text.Json.JsonSerializer.Serialize(new List<int> { 1, 3, 5, 7 });

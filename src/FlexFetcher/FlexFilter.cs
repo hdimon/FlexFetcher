@@ -8,26 +8,39 @@ namespace FlexFetcher;
 
 public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
 {
+    protected FilterExpressionBuilder<TEntity> ExpressionBuilder {get;}
     public IImmutableList<BaseFlexFilter> NestedFlexFilters { get; }
 
     public FilterExpressionBuilderOptions<TEntity> FilterExpressionBuilderOptions
     {
         get
         {
-            var options = new FilterExpressionBuilderOptions<TEntity>(MapField, CustomFilters.ToList(),
-                NestedFlexFilters.Select(x => x.BaseFilterExpressionBuilderOptions).ToArray());
+            var options = new FilterExpressionBuilderOptions<TEntity>(MapField, CustomFilters.ToList());
 
             return options;
         }
     }
 
-    public override BaseFilterExpressionBuilderOptions BaseFilterExpressionBuilderOptions => FilterExpressionBuilderOptions;
+    public override Type EntityType => typeof(TEntity);
 
     public IImmutableList<IFlexCustomFilter<TEntity>> CustomFilters { get; private set; } =
         new List<IFlexCustomFilter<TEntity>>().ToImmutableList();
 
-    public FlexFilter(params BaseFlexFilter[] flexFilters)
+    public FlexFilter() : this(new FilterExpressionBuilder<TEntity>(), Array.Empty<BaseFlexFilter>())
     {
+    }
+
+    public FlexFilter(FilterExpressionBuilder<TEntity> expressionBuilder) : this(expressionBuilder, Array.Empty<BaseFlexFilter>())
+    {
+    }
+
+    public FlexFilter(params BaseFlexFilter[] flexFilters) : this(new FilterExpressionBuilder<TEntity>(), flexFilters)
+    {
+    }
+
+    public FlexFilter(FilterExpressionBuilder<TEntity> expressionBuilder, params BaseFlexFilter[] flexFilters)
+    {
+        ExpressionBuilder = expressionBuilder;
         var nestedFlexFilters = new List<BaseFlexFilter>();
         
         //TODO: Add validation that nested filters are filters for nested properties
@@ -63,6 +76,12 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
         return query;
     }
 
+    public override Expression BuildExpression(Expression property, DataFilter filter)
+    {
+        var expression = ExpressionBuilder.BuildSingleExpression(property, filter, FilterExpressionBuilderOptions, NestedFlexFilters);
+        return expression;
+    }
+
     protected virtual string MapField(string field)
     {
         return field;
@@ -76,8 +95,7 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
 
     private Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters)
     {
-        var builder = new FilterExpressionBuilder<TEntity>();
-        var expression = builder.BuildExpression(filters, FilterExpressionBuilderOptions);
+        var expression = ExpressionBuilder.BuildExpression(filters, FilterExpressionBuilderOptions, NestedFlexFilters);
         return expression;
     }
 

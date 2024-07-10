@@ -1,6 +1,6 @@
 ﻿namespace FlexFetcher.Models.Queries;
 
-public class DataFilter : DataFilters
+public record DataFilter : DataFilters
 {
     public string? Operator { get; set; }
     public string? Field { get; set; }

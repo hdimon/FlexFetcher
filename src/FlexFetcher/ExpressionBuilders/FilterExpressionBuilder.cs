@@ -1,37 +1,32 @@
-﻿using System.Collections;
-using FlexFetcher.Models.ExpressionBuilderOptions;
+﻿using FlexFetcher.Models.ExpressionBuilderOptions;
 using FlexFetcher.Models.Queries;
 using System.Linq.Expressions;
-using System.Text.Json;
-using System.Reflection;
+using System.Collections.Immutable;
+using FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
 namespace FlexFetcher.ExpressionBuilders;
 
 public class FilterExpressionBuilder<TEntity> where TEntity : class
 {
-    /*public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters)
-    {
-        var parameter = Expression.Parameter(typeof(TEntity));
-        var body = BuildExpressionBody(parameter, filters, null);
-        return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
-    }*/
+    protected ImmutableList<IFilterExpressionHandler> FilterExpressionHandlers { get; }
 
-    public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters, FilterExpressionBuilderOptions<TEntity>? builderOptions)
+    public FilterExpressionBuilder()
+    {
+        var handlers = new List<IFilterExpressionHandler>();
+        AddExpressionHandlers(handlers);
+        FilterExpressionHandlers = handlers.ToImmutableList();
+    }
+
+    public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters,
+        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
     {
         var parameter = Expression.Parameter(typeof(TEntity));
-        var body = BuildExpressionBody(parameter, filters, builderOptions);
+        var body = BuildExpressionBody(parameter, filters, builderOptions, nestedFlexFilters);
         return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
     }
 
-    /*public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters, Func<string, string>? mapField)
-    {
-        var parameter = Expression.Parameter(typeof(TEntity));
-        var body = BuildExpressionBody(parameter, filters, mapField);
-        return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
-    }*/
-
-    private Expression BuildExpressionBody(ParameterExpression parameter, DataFilters filters,
-        FilterExpressionBuilderOptions<TEntity>? builderOptions)
+    private Expression BuildExpressionBody(Expression parameter, DataFilters filters,
+        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
     {
         if (filters.Filters == null || filters.Filters.Count == 0)
         {
@@ -42,7 +37,7 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
 
         foreach (var filter in filters.Filters)
         {
-            var expression = BuildSingleExpression(parameter, filter, builderOptions);
+            var expression = BuildSingleExpression(parameter, filter, builderOptions, nestedFlexFilters);
             expressions.Add(expression);
         }
 
@@ -58,14 +53,15 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         return body;
     }
 
-    private Expression BuildSingleExpression(ParameterExpression parameter, DataFilter filter, FilterExpressionBuilderOptions<TEntity>? builderOptions)
+    public Expression BuildSingleExpression(Expression parameter, DataFilter filter,
+        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
     {
         if (filter.Filters is { Count: > 0 })
         {
-            return BuildExpressionBody(parameter, filter, builderOptions);
+            return BuildExpressionBody(parameter, filter, builderOptions, nestedFlexFilters);
         }
 
-        FilterExpressionResult expressionResult = BuildPropertyExpression(parameter, filter, builderOptions);
+        FilterExpressionResult expressionResult = BuildPropertyExpression(parameter, filter, builderOptions, nestedFlexFilters);
 
         if (expressionResult.IsFull)
         {
@@ -74,191 +70,140 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
 
         Expression property = expressionResult.FilterExpression;
 
-        ConstantExpression value;
+        var handler = FilterExpressionHandlers.FirstOrDefault(h => h.Operator.ToUpper() == filter.Operator?.ToUpper());
 
-        if (filter.Operator?.ToUpper() == "IN")
+        if (handler != null)
         {
-            if (filter.Value == null || string.IsNullOrWhiteSpace(filter.Value.ToString()))
-                return Expression.Constant(false);
-
-            var valueString = filter.Value.ToString()!;
-
-            object? array;
-            try
-            {
-                array = JsonSerializer.Deserialize(valueString, typeof(IEnumerable<>).MakeGenericType(property.Type));
-            }
-            catch (Exception e)
-            {
-                array = ConvertToArray(valueString, property.Type);
-            }
-
-            if (array == null)
-            {
-                return Expression.Constant(false);
-            }
-
-            value = Expression.Constant(array, typeof(IEnumerable<>).MakeGenericType(property.Type));
-        }
-        else
-        {
-            value = Expression.Constant(filter.Value, property.Type);
+            return handler.BuildExpression(property, filter);
         }
 
-        switch (filter.Operator?.ToUpper())
-        {
-            case "EQ":
-                return Expression.Equal(property, value);
-            case "NEQ":
-                return Expression.NotEqual(property, value);
-            case "GT":
-                return Expression.GreaterThan(property, value);
-            case "GTE":
-                return Expression.GreaterThanOrEqual(property, value);
-            case "LT":
-                return Expression.LessThan(property, value);
-            case "LTE":
-                return Expression.LessThanOrEqual(property, value);
-            case "CONTAINS":
-                return Expression.Call(property, "Contains", null, value);
-            case "STARTSWITH":
-                return Expression.Call(property, "StartsWith", null, value);
-            case "ENDSWITH":
-                return Expression.Call(property, "EndsWith", null, value);
-            case "IN":
-                return Expression.Call(typeof(Enumerable), "Contains", new[] { property.Type }, value, property);
-
-            default:
-                throw new NotSupportedException($"Operator {filter.Operator} is not supported.");
-        }
+        throw new NotSupportedException($"Operator {filter.Operator} is not supported.");
     }
 
-    private static FilterExpressionResult BuildPropertyExpression(ParameterExpression parameter, DataFilter filter,
-        FilterExpressionBuilderOptions<TEntity>? builderOptions)
+    protected void AddExpressionHandlers(List<IFilterExpressionHandler> handlers)
+    {
+        handlers.Add(new EqualFilterExpressionHandler());
+        handlers.Add(new NotEqualFilterExpressionHandler());
+        handlers.Add(new GreaterThanFilterExpressionHandler());
+        handlers.Add(new GreaterThanOrEqualFilterExpressionHandler());
+        handlers.Add(new LessThanFilterExpressionHandler());
+        handlers.Add(new LessThanOrEqualFilterExpressionHandler());
+        handlers.Add(new ContainsFilterExpressionHandler());
+        handlers.Add(new StartsWithFilterExpressionHandler());
+        handlers.Add(new EndsWithFilterExpressionHandler());
+        handlers.Add(new InFilterExpressionHandler());
+
+        AddCustomExpressionHandlers(handlers);
+    }
+
+    protected virtual void AddCustomExpressionHandlers(List<IFilterExpressionHandler> handlers)
+    {
+    }
+
+    private static FilterExpressionResult BuildPropertyExpression(Expression parameter, DataFilter filter,
+        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
     {
         Expression property = parameter;
-        string field = filter.Field;
+        string field = filter.Field!;
 
         var fieldIsMapped = false;
         string mappedField = field;
 
         //First try to map the field from main filter options
-        if (builderOptions?.MapField != null)
+        if (builderOptions.MapField != null)
         {
             mappedField = builderOptions.MapField(field);
             fieldIsMapped = mappedField != field;
         }
 
-        BaseFilterExpressionBuilderOptions? currentOptions = builderOptions;
-
         var split = mappedField.Split('.');
-        for (var index = 0; index < split.Length; index++)
+        var currentPropertyName = split[0];
+
+        var mappedPropertyName = currentPropertyName;
+
+        if (!fieldIsMapped)
+            mappedPropertyName = builderOptions.MapField?.Invoke(currentPropertyName) ?? currentPropertyName;
+
+        if (split.Length == 1)
         {
-            var propertyName = split[index];
-            var mappedPropertyName = propertyName;
-
-            if (!fieldIsMapped)
-                mappedPropertyName = currentOptions?.MapField?.Invoke(propertyName) ?? propertyName;
-
-            var isCustomFilter = false;
-            if (index == split.Length - 1)
+            if (TryBuildExpressionFromCustomEntityFilter(builderOptions, property, mappedPropertyName, filter.Operator!,
+                    filter.Value, out var expressionResult))
             {
-                if (TryBuildExpressionFromCustomEntityFilter(currentOptions, property, mappedPropertyName, filter.Operator,
-                        filter.Value, out var expressionResult))
-                {
-                    isCustomFilter = true;
-                    return expressionResult;
-                }
+                return expressionResult;
             }
 
-            if (!isCustomFilter)
-                property = Expression.Property(property, mappedPropertyName);
-
-            //if (!fieldIsMapped)
-            {
-                currentOptions =
-                    currentOptions?.NestedFilterExpressionBuilderOptions.FirstOrDefault(f =>
-                        f.GetType().GenericTypeArguments.Any(t => t == property.Type));
-            }
+            property = Expression.Property(property, mappedPropertyName);
+            return new FilterExpressionResult(property, false);
         }
 
-        return new FilterExpressionResult(property, false);
-        //return property;
+        property = Expression.Property(property, mappedPropertyName);
+
+        var nestedFilter = nestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type) ??
+                           (BaseFlexFilter)Activator.CreateInstance(typeof(FlexFilter<>).MakeGenericType(property.Type),
+                               new object[] { })!;
+
+        var reducedFilter = filter with { Field = string.Join(".", split.Skip(1)) };
+        var exp = nestedFilter.BuildExpression(property, reducedFilter);
+
+        return new FilterExpressionResult(exp, true);
     }
 
-    private static bool TryBuildExpressionFromCustomEntityFilter(BaseFilterExpressionBuilderOptions? currentOptions,
-        Expression property, string propertyName, string filterOperator, object filterValue, out FilterExpressionResult expressionResult)
+    private static bool TryBuildExpressionFromCustomEntityFilter(FilterExpressionBuilderOptions<TEntity> options,
+        Expression property, string propertyName, string filterOperator, object? filterValue,
+        out FilterExpressionResult expressionResult)
     {
-        var propertyInfo = currentOptions?.GetType().GetProperty("CustomFilters");
-        if (propertyInfo != null)
+        foreach (var currentOptionsCustomFilter in options.CustomFilters)
         {
-            var customFilters = (propertyInfo.GetValue(currentOptions) as IEnumerable)!;
-            foreach (var filter in customFilters)
+            if (currentOptionsCustomFilter.Field != propertyName) continue;
+
+            if (currentOptionsCustomFilter is BaseFlexCustomFilter<TEntity> baseFlexCustomFilter)
             {
-                var fieldProperty = filter.GetType().GetProperty("Field");
-                if (fieldProperty == null) 
-                    continue;
-
-                var fieldValue = (string)fieldProperty.GetValue(filter)!;
-                if (fieldValue != propertyName) 
-                    continue;
-
-                // Assuming 'filter' is the instance of IFlexCustomFilter<TEntity>
-                var methodInfo = filter.GetType().GetMethod("BuildExpression");
-
-                if (methodInfo != null)
-                {
-                    object[]? methodParams = new object[] { property };
-                    bool isFull = false;
-
-                    if (methodInfo.GetParameters().Length == 1)
-                    {
-                        methodParams = new object[] { property };
-                    }
-                    else if (methodInfo.GetParameters().Length == 3)
-                    {
-                        methodParams = new object[] { property, filterOperator, filterValue };
-                        isFull = true;
-                    }
-
-                    Expression exp = methodInfo.Invoke(filter, methodParams) as Expression;
-                    expressionResult = new FilterExpressionResult(exp, isFull);
-                    return true;
-                }
-
-                break;
+                var exp = baseFlexCustomFilter.BuildExpression(property, filterOperator, filterValue);
+                expressionResult = new FilterExpressionResult(exp, true);
+                return true;
             }
+
+            Type filterType = currentOptionsCustomFilter.GetType();
+
+            if (IsInstanceOfGenericType(currentOptionsCustomFilter, typeof(BaseFlexCustomFilter<,>)))
+            {
+                var method = filterType.GetMethod("BuildExpression");
+
+                var exp = (Expression)method!.Invoke(currentOptionsCustomFilter, new object[] { property })!;
+                expressionResult = new FilterExpressionResult(exp, false);
+                return true;
+            }
+
+            throw new NotSupportedException($"Custom filter of type {filterType} is not supported. " +
+                                            "Custom filters must inherit from BaseFlexCustomFilter.");
         }
 
-        //exp = property;
         expressionResult = new FilterExpressionResult(property, false);
         return false;
     }
 
-    static Array ConvertToArray(string valueString, Type elementType)
+    private static bool IsInstanceOfGenericType(object obj, Type genericTypeDefinition)
     {
-        // Split the string into parts
-        string[] parts = valueString.Split(',');
+        var objectType = obj.GetType();
+        var baseType = objectType;
 
-        // Convert each part to the specified type
-        var convertedArray = parts.Select(part =>
+        while (baseType != null)
         {
-            // Use reflection to call the static Parse method on the specified type
-            MethodInfo parseMethod = elementType.GetMethod("Parse", new[] { typeof(string) });
-            if (parseMethod != null)
+            if (baseType.IsGenericType &&
+                baseType.GetGenericTypeDefinition() == genericTypeDefinition)
             {
-                return parseMethod.Invoke(null, new object[] { part });
-            }
-            else
-            {
-                throw new InvalidOperationException($"Type {elementType} does not have a static Parse method.");
-            }
-        }).ToArray();
+                var typeArguments = baseType.GetGenericArguments();
+                var constructedGenericType = genericTypeDefinition.MakeGenericType(typeArguments);
 
-        // Create an array of the specified type and copy the converted values
-        Array resultArray = Array.CreateInstance(elementType, parts.Length);
-        Array.Copy(convertedArray, resultArray, parts.Length);
+                if (constructedGenericType.IsAssignableFrom(objectType))
+                {
+                    return true;
+                }
+            }
 
-        return resultArray;
+            baseType = baseType.BaseType;
+        }
+
+        return false;
     }
 }

@@ -38,6 +38,33 @@ public class FilterDataEnumerableTests : FilterDataBase
     }
 
     [Test]
+    public void SimpleContainsFilter()
+    {
+        SimpleContainsFilterTest(filters => _people.FilterData(filters).ToList());
+
+        var flexFilter = new FlexFilter<PeopleEntity>();
+        SimpleContainsFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleStartsWithFilter()
+    {
+        SimpleStartsWithFilterTest(filters => _people.FilterData(filters).ToList());
+
+        var flexFilter = new FlexFilter<PeopleEntity>();
+        SimpleStartsWithFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleEndsWithFilter()
+    {
+        SimpleEndsWithFilterTest(filters => _people.FilterData(filters).ToList());
+
+        var flexFilter = new FlexFilter<PeopleEntity>();
+        SimpleEndsWithFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
     public void SimpleInArrayFilter()
     {
         SimpleInArrayFilterTest(filters => _people.FilterData(filters).ToList());
