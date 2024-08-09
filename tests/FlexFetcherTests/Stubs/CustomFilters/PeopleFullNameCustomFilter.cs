@@ -4,11 +4,11 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.Stubs.CustomFilters;
 
-public class PeopleFullNameCustomFilter : BaseFlexCustomFilter<PeopleEntity, string>
+public class PeopleFullNameCustomFilter : BaseFlexCustomField<PeopleEntity, string>
 {
     public override string Field => "FullName";
 
-    protected override Expression<Func<PeopleEntity, string>> BuildFilterExpression()
+    protected override Expression<Func<PeopleEntity, string>> BuildFieldExpression()
     {
         Expression<Func<PeopleEntity, string>> expressionLambda = p => p.Name + " " + p.Surname;
         return expressionLambda;

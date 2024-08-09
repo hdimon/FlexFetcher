@@ -23,8 +23,8 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
 
     public override Type EntityType => typeof(TEntity);
 
-    public IImmutableList<IFlexCustomFilter<TEntity>> CustomFilters { get; private set; } =
-        new List<IFlexCustomFilter<TEntity>>().ToImmutableList();
+    public IImmutableList<IFlexCustomField<TEntity>> CustomFilters { get; private set; } =
+        new List<IFlexCustomField<TEntity>>().ToImmutableList();
 
     public FlexFilter() : this(new FilterExpressionBuilder<TEntity>(), Array.Empty<BaseFlexFilter>())
     {
@@ -87,7 +87,7 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
         return field;
     }
 
-    protected void AddCustomFilter(IFlexCustomFilter<TEntity> customFilter)
+    protected void AddCustomField(IFlexCustomField<TEntity> customFilter)
     {
         var flexCustomFilters = CustomFilters.Add(customFilter);
         CustomFilters = flexCustomFilters;

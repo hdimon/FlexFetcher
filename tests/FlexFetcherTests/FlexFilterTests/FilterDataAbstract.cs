@@ -5,9 +5,9 @@ using FlexFetcherTests.Stubs.Database;
 using FlexFetcherTests.Stubs.FlexFilters;
 using Newtonsoft.Json;
 
-namespace FlexFetcherTests;
+namespace FlexFetcherTests.FlexFilterTests;
 
-public class FilterDataBase
+public abstract class FilterDataAbstract
 {
     protected void SimpleFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
     {

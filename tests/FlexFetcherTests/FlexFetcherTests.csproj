@@ -26,4 +26,9 @@
     <ProjectReference Include="..\..\src\FlexFetcher\FlexFetcher.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FlexPagerTests\" />
+    <Folder Include="Stubs\CustomFields\" />
+  </ItemGroup>
+
 </Project>

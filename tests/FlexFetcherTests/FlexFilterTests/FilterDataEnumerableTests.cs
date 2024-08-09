@@ -5,9 +5,9 @@ using FlexFetcherTests.Stubs;
 using FlexFetcherTests.Stubs.CustomFilters;
 using FlexFetcherTests.Stubs.Database;
 
-namespace FlexFetcherTests;
+namespace FlexFetcherTests.FlexFilterTests;
 
-public class FilterDataEnumerableTests : FilterDataBase
+public class FilterDataEnumerableTests : FilterDataAbstract
 {
     private List<PeopleEntity> _people = null!;
 
@@ -94,7 +94,7 @@ public class FilterDataEnumerableTests : FilterDataBase
     {
         public SimplePeopleFilterWithCustomExpressionFilter(PeopleFullNameCustomExpressionFilter customFilter)
         {
-            AddCustomFilter(customFilter);
+            AddCustomField(customFilter);
         }
     }
 

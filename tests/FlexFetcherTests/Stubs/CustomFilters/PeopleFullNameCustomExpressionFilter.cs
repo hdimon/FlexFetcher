@@ -5,7 +5,7 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.Stubs.CustomFilters;
 
-public class PeopleFullNameCustomExpressionFilter : BaseFlexCustomFilter<PeopleEntity>
+public class PeopleFullNameCustomExpressionFilter : BaseFlexCustomFieldFilter<PeopleEntity>
 {
     public override string Field => "FullName";
 

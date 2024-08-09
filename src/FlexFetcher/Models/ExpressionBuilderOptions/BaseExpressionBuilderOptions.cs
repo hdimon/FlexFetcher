@@ -1,6 +1,6 @@
 ﻿namespace FlexFetcher.Models.ExpressionBuilderOptions;
 
-public class BaseFilterExpressionBuilderOptions
+public class BaseExpressionBuilderOptions
 {
     public Func<string, string>? MapField { get; protected set; }
 }

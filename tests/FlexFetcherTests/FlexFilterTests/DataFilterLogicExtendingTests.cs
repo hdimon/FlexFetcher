@@ -1,6 +1,6 @@
 using FlexFetcher.Models.Queries;
 
-namespace FlexFetcherTests;
+namespace FlexFetcherTests.FlexFilterTests;
 
 public class DataFilterLogicExtendingTests
 {

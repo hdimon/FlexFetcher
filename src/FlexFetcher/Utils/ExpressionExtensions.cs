@@ -2,7 +2,7 @@
 
 namespace FlexFetcher.Utils;
 
-public static class ExpressionExtensions
+internal static class ExpressionExtensions
 {
     public static Expression ReplaceParameter(this Expression expression, Expression oldParameter, Expression newParameter)
     {

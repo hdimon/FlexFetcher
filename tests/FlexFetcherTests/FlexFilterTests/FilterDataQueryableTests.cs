@@ -5,9 +5,9 @@ using FlexFetcherTests.Stubs.CustomFilters;
 using FlexFetcherTests.Stubs.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace FlexFetcherTests;
+namespace FlexFetcherTests.FlexFilterTests;
 
-public class FilterDataQueryableTests : FilterDataBase
+public class FilterDataQueryableTests : FilterDataAbstract
 {
     private TestDbContext _ctx = null!;
 
@@ -107,7 +107,7 @@ public class FilterDataQueryableTests : FilterDataBase
     {
         public SimplePeopleFilterWithCustomFilter(PeopleFullNameCustomFilter customFilter)
         {
-            AddCustomFilter(customFilter);
+            AddCustomField(customFilter);
         }
     }
 
@@ -115,7 +115,7 @@ public class FilterDataQueryableTests : FilterDataBase
     {
         public SimplePeopleFilterWithCustomExpressionFilter(PeopleFullNameCustomExpressionFilter customFilter)
         {
-            AddCustomFilter(customFilter);
+            AddCustomField(customFilter);
         }
     }
 

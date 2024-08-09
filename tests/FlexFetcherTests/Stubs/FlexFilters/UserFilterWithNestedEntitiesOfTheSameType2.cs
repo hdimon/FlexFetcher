@@ -8,7 +8,7 @@ public class UserFilterWithNestedEntitiesOfTheSameType2 : FlexFilter<UserEntity>
 {
     public UserFilterWithNestedEntitiesOfTheSameType2(UserFullNameCustomFilter customFilter)
     {
-        AddCustomFilter(customFilter);
+        AddCustomField(customFilter);
     }
 
     protected override string MapField(string field)

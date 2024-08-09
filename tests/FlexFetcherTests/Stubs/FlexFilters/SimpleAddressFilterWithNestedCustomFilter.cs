@@ -8,6 +8,6 @@ public class SimpleAddressFilterWithNestedCustomFilter : FlexFilter<AddressEntit
 {
     public SimpleAddressFilterWithNestedCustomFilter(AddressLocationCustomFilter customFilter)
     {
-        AddCustomFilter(customFilter);
+        AddCustomField(customFilter);
     }
 }

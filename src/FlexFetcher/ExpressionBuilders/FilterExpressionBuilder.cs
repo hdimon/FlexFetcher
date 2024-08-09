@@ -3,6 +3,7 @@ using FlexFetcher.Models.Queries;
 using System.Linq.Expressions;
 using System.Collections.Immutable;
 using FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
+using FlexFetcher.Utils;
 
 namespace FlexFetcher.ExpressionBuilders;
 
@@ -109,7 +110,10 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         var fieldIsMapped = false;
         string mappedField = field;
 
-        //First try to map the field from main filter options
+        // First try to map the field from main filter options.
+        // At this point we are not sure if the field is complex (with nested fields) or not
+        // but just try, i.e. if mapping contains "Field" or "Field.NestedField"
+        // then it will be mapped.
         if (builderOptions.MapField != null)
         {
             mappedField = builderOptions.MapField(field);
@@ -121,6 +125,7 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
 
         var mappedPropertyName = currentPropertyName;
 
+        // At this point only simple fields are tried to be mapped.
         if (!fieldIsMapped)
             mappedPropertyName = builderOptions.MapField?.Invoke(currentPropertyName) ?? currentPropertyName;
 
@@ -152,11 +157,11 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         Expression property, string propertyName, string filterOperator, object? filterValue,
         out FilterExpressionResult expressionResult)
     {
-        foreach (var currentOptionsCustomFilter in options.CustomFilters)
+        foreach (var currentOptionsCustomFilter in options.CustomFields)
         {
             if (currentOptionsCustomFilter.Field != propertyName) continue;
 
-            if (currentOptionsCustomFilter is BaseFlexCustomFilter<TEntity> baseFlexCustomFilter)
+            if (currentOptionsCustomFilter is BaseFlexCustomFieldFilter<TEntity> baseFlexCustomFilter)
             {
                 var exp = baseFlexCustomFilter.BuildExpression(property, filterOperator, filterValue);
                 expressionResult = new FilterExpressionResult(exp, true);
@@ -165,7 +170,7 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
 
             Type filterType = currentOptionsCustomFilter.GetType();
 
-            if (IsInstanceOfGenericType(currentOptionsCustomFilter, typeof(BaseFlexCustomFilter<,>)))
+            if (TypeHelper.IsInstanceOfGenericType(currentOptionsCustomFilter, typeof(BaseFlexCustomField<,>)))
             {
                 var method = filterType.GetMethod("BuildExpression");
 
@@ -175,35 +180,10 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
             }
 
             throw new NotSupportedException($"Custom filter of type {filterType} is not supported. " +
-                                            "Custom filters must inherit from BaseFlexCustomFilter.");
+                                            "Custom filters must inherit from BaseFlexCustomField or BaseFlexCustomFieldFilter.");
         }
 
         expressionResult = new FilterExpressionResult(property, false);
-        return false;
-    }
-
-    private static bool IsInstanceOfGenericType(object obj, Type genericTypeDefinition)
-    {
-        var objectType = obj.GetType();
-        var baseType = objectType;
-
-        while (baseType != null)
-        {
-            if (baseType.IsGenericType &&
-                baseType.GetGenericTypeDefinition() == genericTypeDefinition)
-            {
-                var typeArguments = baseType.GetGenericArguments();
-                var constructedGenericType = genericTypeDefinition.MakeGenericType(typeArguments);
-
-                if (constructedGenericType.IsAssignableFrom(objectType))
-                {
-                    return true;
-                }
-            }
-
-            baseType = baseType.BaseType;
-        }
-
         return false;
     }
 }

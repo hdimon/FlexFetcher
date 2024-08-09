@@ -6,7 +6,7 @@ using FlexFetcher.Models.Queries;
 using FlexFetcherTests.Stubs;
 using FlexFetcherTests.Stubs.Database;
 
-namespace FlexFetcherTests;
+namespace FlexFetcherTests.FlexFilterTests;
 
 public class CustomFilterExpressionBuilderTests
 {
@@ -19,7 +19,7 @@ public class CustomFilterExpressionBuilderTests
     }
 
     [Test]
-    public void FilterWithValueTest()
+    public void FilterWithValue()
     {
         var customExpressionBuilder = new CustomExpressionBuilderWithValueTest();
         var flexFilter = new FlexFilter<PeopleEntity>(customExpressionBuilder);
@@ -45,7 +45,7 @@ public class CustomFilterExpressionBuilderTests
     }
 
     [Test]
-    public void FilterWithoutValueTest()
+    public void FilterWithoutValue()
     {
         var customExpressionBuilder = new CustomExpressionBuilderWithoutValueTest();
         var flexFilter = new FlexFilter<PeopleEntity>(customExpressionBuilder);

@@ -4,7 +4,7 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.Stubs.CustomFilters;
 
-public class PeopleWithManyToManyGroupsCustomFilter : BaseFlexCustomFilter<PeopleEntity>
+public class PeopleWithManyToManyGroupsCustomFilter : BaseFlexCustomFieldFilter<PeopleEntity>
 {
     public override string Field => "PeopleGroups";
 

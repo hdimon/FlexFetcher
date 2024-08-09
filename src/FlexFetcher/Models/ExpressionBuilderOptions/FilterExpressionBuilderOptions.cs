@@ -2,16 +2,16 @@
 
 namespace FlexFetcher.Models.ExpressionBuilderOptions;
 
-public class FilterExpressionBuilderOptions<TEntity> : BaseFilterExpressionBuilderOptions where TEntity : class
+public class FilterExpressionBuilderOptions<TEntity> : BaseExpressionBuilderOptions where TEntity : class
 {
-    public IImmutableList<IFlexCustomFilter<TEntity>> CustomFilters { get; private set; }
+    public IImmutableList<IFlexCustomField<TEntity>> CustomFields { get; private set; }
 
-    public FilterExpressionBuilderOptions(Func<string, string>? mapField, IList<IFlexCustomFilter<TEntity>>? customFilters)
+    public FilterExpressionBuilderOptions(Func<string, string>? mapField, IList<IFlexCustomField<TEntity>>? customFields)
     {
         MapField = mapField;
 
-        CustomFilters = customFilters != null
-            ? customFilters.ToImmutableList()
-            : ImmutableList<IFlexCustomFilter<TEntity>>.Empty;
+        CustomFields = customFields != null
+            ? customFields.ToImmutableList()
+            : ImmutableList<IFlexCustomField<TEntity>>.Empty;
     }
 }
