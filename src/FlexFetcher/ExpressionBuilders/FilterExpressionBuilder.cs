@@ -121,27 +121,27 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         }
 
         var split = mappedField.Split('.');
-        var currentPropertyName = split[0];
+        var currentFieldName = split[0];
 
-        var mappedPropertyName = currentPropertyName;
+        var mappedFieldName = currentFieldName;
 
         // At this point only simple fields are tried to be mapped.
         if (!fieldIsMapped)
-            mappedPropertyName = builderOptions.MapField?.Invoke(currentPropertyName) ?? currentPropertyName;
+            mappedFieldName = builderOptions.MapField?.Invoke(currentFieldName) ?? currentFieldName;
 
         if (split.Length == 1)
         {
-            if (TryBuildExpressionFromCustomEntityFilter(builderOptions, property, mappedPropertyName, filter.Operator!,
+            if (TryBuildExpressionFromCustomEntityFilter(builderOptions, property, mappedFieldName, filter.Operator!,
                     filter.Value, out var expressionResult))
             {
                 return expressionResult;
             }
 
-            property = Expression.Property(property, mappedPropertyName);
+            property = Expression.Property(property, mappedFieldName);
             return new FilterExpressionResult(property, false);
         }
 
-        property = Expression.Property(property, mappedPropertyName);
+        property = Expression.Property(property, mappedFieldName);
 
         var nestedFilter = nestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type) ??
                            (BaseFlexFilter)Activator.CreateInstance(typeof(FlexFilter<>).MakeGenericType(property.Type),
@@ -154,12 +154,12 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
     }
 
     private static bool TryBuildExpressionFromCustomEntityFilter(FilterExpressionBuilderOptions<TEntity> options,
-        Expression property, string propertyName, string filterOperator, object? filterValue,
+        Expression property, string fieldName, string filterOperator, object? filterValue,
         out FilterExpressionResult expressionResult)
     {
         foreach (var currentOptionsCustomFilter in options.CustomFields)
         {
-            if (currentOptionsCustomFilter.Field != propertyName) continue;
+            if (currentOptionsCustomFilter.Field != fieldName) continue;
 
             if (currentOptionsCustomFilter is BaseFlexCustomFieldFilter<TEntity> baseFlexCustomFilter)
             {

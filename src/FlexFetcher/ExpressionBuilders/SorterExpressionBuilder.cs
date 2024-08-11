@@ -40,22 +40,22 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
         string field = sorter.Field!;
 
         var split = field.Split('.');
-        var mappedPropertyName = split[0];
+        var mappedFieldName = split[0];
 
-        if (options.TryGetPropertyNameByAlias(mappedPropertyName, out var foundPropertyName))
-            mappedPropertyName = foundPropertyName;
+        if (options.TryGetFieldNameByAlias(mappedFieldName, out var foundFieldName))
+            mappedFieldName = foundFieldName;
 
         if (split.Length == 1)
         {
-            if (TryBuildExpressionFromCustomEntityField(options, property, mappedPropertyName, out var expressionResult))
+            if (TryBuildExpressionFromCustomEntityField(options, property, mappedFieldName, out var expressionResult))
             {
                 return expressionResult;
             }
 
-            return Expression.Property(parameter, mappedPropertyName);
+            return Expression.Property(parameter, mappedFieldName);
         }
 
-        property = Expression.Property(property, mappedPropertyName);
+        property = Expression.Property(property, mappedFieldName);
 
         var nestedSorter = nestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type) ??
                            (BaseFlexSorter)Activator.CreateInstance(typeof(FlexSorter<>).MakeGenericType(property.Type),
@@ -69,11 +69,11 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
     }
 
     private static bool TryBuildExpressionFromCustomEntityField(FlexSorterOptions<TEntity> options, Expression property,
-        string propertyName, out Expression expressionResult)
+        string fieldName, out Expression expressionResult)
     {
         foreach (var currentOptionsCustomField in options.CustomFields)
         {
-            if (currentOptionsCustomField.Field != propertyName) continue;
+            if (currentOptionsCustomField.Field != fieldName) continue;
 
             Type customFieldBuilderType = currentOptionsCustomField.GetType();
 

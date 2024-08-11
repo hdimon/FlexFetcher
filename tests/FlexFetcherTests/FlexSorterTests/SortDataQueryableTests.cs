@@ -76,7 +76,7 @@ public class SortDataQueryableTests : SortDataAbstract
         SimpleSorterWithFieldAliasTest((sorters, options) => _ctx.People.SortData(sorters, options).ToList());
 
         var options = new FlexSorterOptions<PeopleEntity>();
-        options.Property(x => x.Surname).Map("SecondName");
+        options.Field(x => x.Surname).Map("SecondName");
         var flexSorter = new FlexSorter<PeopleEntity>(options);
         SimpleSorterWithFieldAliasTest((sorters, _) => flexSorter.SortData(_ctx.People, sorters).ToList());
     }
@@ -90,21 +90,21 @@ public class SortDataQueryableTests : SortDataAbstract
 
         // Simple way without creating a new sorter class
         var addressOptions = new FlexSorterOptions<AddressEntity>();
-        addressOptions.Property(x => x.City).Map(entity => entity.City).Map("Town");
+        addressOptions.Field(x => x.City).Map(entity => entity.City).Map("Town");
         var addressSorter = new FlexSorter<AddressEntity>(addressOptions);
         var peopleOptions = new FlexSorterOptions<PeopleEntity>();
         peopleOptions.AddNestedFlexSorter(addressSorter);
-        peopleOptions.Property(x => x.Address).Map(entity => entity.Address).Map("Residence");
+        peopleOptions.Field(x => x.Address).Map(entity => entity.Address).Map("Residence");
         var peopleSorter = new FlexSorter<PeopleEntity>(peopleOptions);
         SimpleNestedEntitySorterWithFieldAliasTest((sorters) => peopleSorter.SortData(_ctx.People, sorters).ToList());
         
         // With model
         var addressOptionsModel = new FlexSorterOptions<AddressEntity, AddressModel>();
-        addressOptionsModel.Property(x => x.City).Map(model => model.Town).Map("Town");
+        addressOptionsModel.Field(x => x.City).Map(model => model.Town).Map("Town");
         var addressSorterModel = new FlexSorter<AddressEntity>(addressOptionsModel);
         var peopleOptionsModel = new FlexSorterOptions<PeopleEntity, PeopleModel>();
         peopleOptionsModel.AddNestedFlexSorter(addressSorterModel);
-        peopleOptionsModel.Property(x => x.Address).Map(model => model.Residence).Map("Residence");
+        peopleOptionsModel.Field(x => x.Address).Map(model => model.Residence).Map("Residence");
         var peopleSorterModel = new FlexSorter<PeopleEntity>(peopleOptionsModel);
         SimpleNestedEntitySorterWithFieldAliasTest((sorters) => peopleSorterModel.SortData(_ctx.People, sorters).ToList());
     }
@@ -124,7 +124,7 @@ public class SortDataQueryableTests : SortDataAbstract
         public SimpleNestedPeopleSorterWithFieldAlias(SimpleNestedAddressSorterWithFieldAlias addressSorter)
         {
             Options.AddNestedFlexSorter(addressSorter);
-            Options.Property(x => x.Address).Map("Residence");
+            Options.Field(x => x.Address).Map("Residence");
         }
     }
 
@@ -132,7 +132,7 @@ public class SortDataQueryableTests : SortDataAbstract
     {
         public SimpleNestedAddressSorterWithFieldAlias()
         {
-            Options.Property(x => x.City).Map("Town");
+            Options.Field(x => x.City).Map("Town");
         }
     }
 

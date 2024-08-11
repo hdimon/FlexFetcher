@@ -8,11 +8,11 @@ namespace FlexFetcher.Models.FlexFetcherOptions;
 
 public class FlexSorterOptions<TEntity, TModel> : FlexSorterOptions<TEntity> where TEntity : class where TModel : class
 {
-    public new PropertyBuilder<TEntity, TProperty, TModel> Property<TProperty>(
-        Expression<Func<TEntity, TProperty>> propertyExpression)
+    public new FieldBuilder<TEntity, TField, TModel> Field<TField>(
+        Expression<Func<TEntity, TField>> fieldExpression)
     {
-        var builder = new PropertyBuilder<TEntity, TProperty, TModel>(propertyExpression);
-        PropertyBuilders.Add(builder);
+        var builder = new FieldBuilder<TEntity, TField, TModel>(fieldExpression);
+        FieldBuilders.Add(builder);
         return builder;
     }
 }
@@ -20,11 +20,11 @@ public class FlexSorterOptions<TEntity, TModel> : FlexSorterOptions<TEntity> whe
 public class FlexSorterOptions<TEntity> : FlexSorterOptionsAbstract where TEntity : class
 {
     private bool _arePropertiesBuilt;
-    private Dictionary<string, string> _propertyNameByAlias { get; } = new();
+    private Dictionary<string, string> _fieldNameByAlias { get; } = new();
 
     public SorterExpressionBuilder<TEntity> ExpressionBuilder { get; }
     public IImmutableList<BaseFlexSorter> NestedFlexSorters { get; private set; }
-    public List<PropertyBuilderAbstract> PropertyBuilders { get; } = new();
+    public List<FieldBuilderAbstract> FieldBuilders { get; } = new();
 
     public IImmutableList<IFlexCustomField<TEntity>> CustomFields { get; private set; } =
         ImmutableList<IFlexCustomField<TEntity>>.Empty;
@@ -45,20 +45,19 @@ public class FlexSorterOptions<TEntity> : FlexSorterOptionsAbstract where TEntit
         NestedFlexSorters = nestedFlexSorters;
     }
 
-    public CustomPropertyBuilder<TEntity, IFlexCustomField<TEntity>> AddCustomField(IFlexCustomField<TEntity> customField)
+    public CustomFieldBuilder<TEntity, IFlexCustomField<TEntity>> AddCustomField(IFlexCustomField<TEntity> customField)
     {
-        var builder = new CustomPropertyBuilder<TEntity, IFlexCustomField<TEntity>>(customField);
-        PropertyBuilders.Add(builder);
+        var builder = new CustomFieldBuilder<TEntity, IFlexCustomField<TEntity>>(customField);
+        FieldBuilders.Add(builder);
         var customFields = CustomFields.Add(customField);
         CustomFields = customFields;
         return builder;
     }
 
-    public virtual PropertyBuilder<TEntity, TProperty, TEntity> Property<TProperty>(
-        Expression<Func<TEntity, TProperty>> propertyExpression)
+    public virtual FieldBuilder<TEntity, TField, TEntity> Field<TField>(Expression<Func<TEntity, TField>> propertyExpression)
     {
-        var builder = new PropertyBuilder<TEntity, TProperty, TEntity>(propertyExpression);
-        PropertyBuilders.Add(builder);
+        var builder = new FieldBuilder<TEntity, TField, TEntity>(propertyExpression);
+        FieldBuilders.Add(builder);
         return builder;
     }
 
@@ -69,25 +68,25 @@ public class FlexSorterOptions<TEntity> : FlexSorterOptionsAbstract where TEntit
         if (_arePropertiesBuilt)
             return;
 
-        foreach (var propertyBuilder in PropertyBuilders)
+        foreach (var fieldBuilder in FieldBuilders)
         {
-            propertyBuilder.Build();
+            fieldBuilder.Build();
 
-            foreach (var alias in propertyBuilder.Aliases)
+            foreach (var alias in fieldBuilder.Aliases)
             {
-                _propertyNameByAlias[alias] = propertyBuilder.PropertyName;
+                _fieldNameByAlias[alias] = fieldBuilder.FieldName;
             }
         }
 
         _arePropertiesBuilt = true;
     }
 
-    public override bool TryGetPropertyNameByAlias(string alias, [MaybeNullWhen(false)] out string propertyName)
+    public override bool TryGetFieldNameByAlias(string alias, [MaybeNullWhen(false)] out string fieldName)
     {
-        if (_propertyNameByAlias.TryGetValue(alias, out propertyName))
+        if (_fieldNameByAlias.TryGetValue(alias, out fieldName))
             return true;
 
-        propertyName = null;
+        fieldName = null;
         return false;
     }
 }

@@ -123,7 +123,7 @@ public abstract class SortDataAbstract
         };
 
         var options = new FlexSorterOptions<PeopleEntity>();
-        options.Property(x => x.Surname).Map("SecondName");
+        options.Field(x => x.Surname).Map("SecondName");
 
         var result = sorter(sorters, options);
         Assert.That(result.Select(p => p.Surname).ToList(),

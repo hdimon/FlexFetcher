@@ -2,22 +2,22 @@
 
 namespace FlexFetcher.Utils;
 
-public class CustomPropertyBuilder<TEntity, TFlexCustomField> : PropertyBuilderAbstract
+public class CustomFieldBuilder<TEntity, TFlexCustomField> : FieldBuilderAbstract
     where TEntity : class where TFlexCustomField : IFlexCustomField<TEntity>
 {
-    private readonly string _propertyName;
+    private readonly string _fieldName;
     private readonly HashSet<string> _staticAliases = new();
     private readonly HashSet<string> _aliases = new();
 
-    public override string PropertyName => _propertyName;
+    public override string FieldName => _fieldName;
     public override string[] Aliases => _aliases.ToArray();
 
-    public CustomPropertyBuilder(IFlexCustomField<TEntity> field)
+    public CustomFieldBuilder(IFlexCustomField<TEntity> field)
     {
-        _propertyName = field.Field;
+        _fieldName = field.Field;
     }
 
-    public CustomPropertyBuilder<TEntity, TFlexCustomField> Map(string alias)
+    public CustomFieldBuilder<TEntity, TFlexCustomField> Map(string alias)
     {
         _staticAliases.Add(alias);
         return this;
@@ -29,15 +29,15 @@ public class CustomPropertyBuilder<TEntity, TFlexCustomField> : PropertyBuilderA
         _aliases.UnionWith(_staticAliases);
     }
 
-    public override bool TryGetPropertyNameByAlias(string alias, [MaybeNullWhen(false)] out string propertyName)
+    public override bool TryGetFieldNameByAlias(string alias, [MaybeNullWhen(false)] out string fieldName)
     {
         if (_aliases.Contains(alias))
         {
-            propertyName = _propertyName;
+            fieldName = _fieldName;
             return true;
         }
 
-        propertyName = null;
+        fieldName = null;
         return false;
     }
 }

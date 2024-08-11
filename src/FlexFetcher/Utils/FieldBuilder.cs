@@ -3,33 +3,33 @@ using System.Linq.Expressions;
 
 namespace FlexFetcher.Utils;
 
-public class PropertyBuilder<TEntity, TProperty, TMapModel> : PropertyBuilderAbstract
+public class FieldBuilder<TEntity, TField, TMapModel> : FieldBuilderAbstract
     where TEntity : class where TMapModel : class
 {
-    private readonly string _propertyName;
-    private readonly Expression<Func<TEntity, TProperty>> _propertyExpression;
+    private readonly string _fieldName;
+    private readonly Expression<Func<TEntity, TField>> _fieldExpression;
     private readonly HashSet<string> _staticAliases = new();
     private readonly List<Expression<Func<TMapModel, object?>>> _expressions = new();
     private readonly HashSet<string> _aliases = new();
 
-    public override string PropertyName => _propertyName;
+    public override string FieldName => _fieldName;
     public override string[] Aliases => _aliases.ToArray();
 
-    public PropertyBuilder(Expression<Func<TEntity, TProperty>> propertyExpression)
+    public FieldBuilder(Expression<Func<TEntity, TField>> fieldExpression)
     {
-        _propertyExpression = propertyExpression;
-        _propertyName = ((MemberExpression)propertyExpression.Body).Member.Name;
+        _fieldExpression = fieldExpression;
+        _fieldName = ((MemberExpression)fieldExpression.Body).Member.Name;
     }
 
-    public PropertyBuilder<TEntity, TProperty, TMapModel> Map(string alias)
+    public FieldBuilder<TEntity, TField, TMapModel> Map(string alias)
     {
         _staticAliases.Add(alias);
         return this;
     }
 
-    public PropertyBuilder<TEntity, TProperty, TMapModel> Map(Expression<Func<TMapModel, object?>> propertyExpression)
+    public FieldBuilder<TEntity, TField, TMapModel> Map(Expression<Func<TMapModel, object?>> fieldExpression)
     {
-        _expressions.Add(propertyExpression);
+        _expressions.Add(fieldExpression);
         return this;
     }
 
@@ -45,15 +45,15 @@ public class PropertyBuilder<TEntity, TProperty, TMapModel> : PropertyBuilderAbs
         }
     }
 
-    public override bool TryGetPropertyNameByAlias(string alias, [MaybeNullWhen(false)] out string propertyName)
+    public override bool TryGetFieldNameByAlias(string alias, [MaybeNullWhen(false)] out string fieldName)
     {
         if (_aliases.Contains(alias))
         {
-            propertyName = _propertyName;
+            fieldName = _fieldName;
             return true;
         }
 
-        propertyName = null;
+        fieldName = null;
         return false;
     }
 }

@@ -71,7 +71,7 @@ public class SortDataEnumerableTests : SortDataAbstract
         SimpleSorterWithFieldAliasTest((sorters, options) => _people.SortData(sorters, options).ToList());
 
         var options = new FlexSorterOptions<PeopleEntity>(); 
-        options.Property(x => x.Surname).Map("SecondName");
+        options.Field(x => x.Surname).Map("SecondName");
         var flexSorter = new FlexSorter<PeopleEntity>(options);
         SimpleSorterWithFieldAliasTest((sorters, _) => flexSorter.SortData(_people, sorters).ToList());
     }
@@ -83,11 +83,11 @@ public class SortDataEnumerableTests : SortDataAbstract
         nullCities.ForEach(p => p.Address = new AddressEntity { City = "A" });
 
         var addressOptions = new FlexSorterOptions<AddressEntity>();
-        addressOptions.Property(x => x.City).Map("Town");
+        addressOptions.Field(x => x.City).Map("Town");
         var addressSorter = new FlexSorter<AddressEntity>(addressOptions);
         var peopleOptions = new FlexSorterOptions<PeopleEntity>();
         peopleOptions.AddNestedFlexSorter(addressSorter);
-        peopleOptions.Property(x => x.Address).Map("Residence");
+        peopleOptions.Field(x => x.Address).Map("Residence");
         var flexSorter = new FlexSorter<PeopleEntity>(peopleOptions);
         SimpleNestedEntitySorterWithFieldAliasTest((sorters) => flexSorter.SortData(_people, sorters).ToList());
     }
