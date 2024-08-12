@@ -1,4 +1,5 @@
-﻿using FlexFetcher.Models.FlexFetcherOptions;
+﻿using FlexFetcher.Exceptions;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
 using System.Collections.Immutable;
@@ -42,6 +43,9 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
         var split = field.Split('.');
         var mappedFieldName = split[0];
 
+        if (options.IsHiddenField(mappedFieldName))
+            throw new FieldNotFoundException(mappedFieldName);
+
         if (options.TryGetFieldNameByAlias(mappedFieldName, out var foundFieldName))
             mappedFieldName = foundFieldName;
 
@@ -52,10 +56,10 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
                 return expressionResult;
             }
 
-            return Expression.Property(parameter, mappedFieldName);
+            return CreatePropertyExpression(parameter, mappedFieldName);
         }
 
-        property = Expression.Property(property, mappedFieldName);
+        property = CreatePropertyExpression(property, mappedFieldName);
 
         var nestedSorter = nestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type) ??
                            (BaseFlexSorter)Activator.CreateInstance(typeof(FlexSorter<>).MakeGenericType(property.Type),
@@ -92,5 +96,17 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
 
         expressionResult = property;
         return false;
+    }
+
+    private static MemberExpression CreatePropertyExpression(Expression parameter, string fieldName)
+    {
+        try
+        {
+            return Expression.Property(parameter, fieldName);
+        }
+        catch (ArgumentException)
+        {
+            throw new FieldNotFoundException(fieldName);
+        }
     }
 }

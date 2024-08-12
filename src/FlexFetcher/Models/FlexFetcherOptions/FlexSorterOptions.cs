@@ -19,8 +19,9 @@ public class FlexSorterOptions<TEntity, TModel> : FlexSorterOptions<TEntity> whe
 
 public class FlexSorterOptions<TEntity> : FlexSorterOptionsAbstract where TEntity : class
 {
-    private bool _arePropertiesBuilt;
+    private bool _isBuilt;
     private Dictionary<string, string> _fieldNameByAlias { get; } = new();
+    private HashSet<string> _hiddenFields { get; } = new();
 
     public SorterExpressionBuilder<TEntity> ExpressionBuilder { get; }
     public IImmutableList<BaseFlexSorter> NestedFlexSorters { get; private set; }
@@ -61,24 +62,17 @@ public class FlexSorterOptions<TEntity> : FlexSorterOptionsAbstract where TEntit
         return builder;
     }
 
-    public override bool ArePropertiesBuilt => _arePropertiesBuilt;
+    public override bool IsBuilt => _isBuilt;
 
-    public override void BuildProperties()
+    public override void Build()
     {
-        if (_arePropertiesBuilt)
+        if (_isBuilt)
             return;
 
-        foreach (var fieldBuilder in FieldBuilders)
-        {
-            fieldBuilder.Build();
+        BuildAliases();
+        BuildHiddenFields();
 
-            foreach (var alias in fieldBuilder.Aliases)
-            {
-                _fieldNameByAlias[alias] = fieldBuilder.FieldName;
-            }
-        }
-
-        _arePropertiesBuilt = true;
+        _isBuilt = true;
     }
 
     public override bool TryGetFieldNameByAlias(string alias, [MaybeNullWhen(false)] out string fieldName)
@@ -88,5 +82,45 @@ public class FlexSorterOptions<TEntity> : FlexSorterOptionsAbstract where TEntit
 
         fieldName = null;
         return false;
+    }
+
+    public bool IsHiddenField(string fieldName)
+    {
+        return _hiddenFields.Contains(fieldName);
+    }
+
+    private void BuildAliases()
+    {
+        foreach (var fieldBuilder in FieldBuilders)
+        {
+            fieldBuilder.Build();
+
+            foreach (var alias in fieldBuilder.Aliases)
+            {
+                _fieldNameByAlias[alias] = fieldBuilder.FieldName;
+            }
+        }
+    }
+
+    private void BuildHiddenFields()
+    {
+        if (OriginalFieldsHidden)
+        {
+            // Get all fields of TEntity
+            var properties = typeof(TEntity).GetProperties();
+            foreach (var property in properties)
+            {
+                var fieldName = property.Name;
+                _hiddenFields.Add(fieldName);
+            }
+        }
+        else
+        {
+            foreach (var fieldBuilder in FieldBuilders)
+            {
+                if (fieldBuilder.IsHidden)
+                    _hiddenFields.Add(fieldBuilder.FieldName);
+            }
+        }
     }
 }

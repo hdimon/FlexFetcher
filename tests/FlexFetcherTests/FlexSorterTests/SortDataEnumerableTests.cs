@@ -89,7 +89,7 @@ public class SortDataEnumerableTests : SortDataAbstract
         peopleOptions.AddNestedFlexSorter(addressSorter);
         peopleOptions.Field(x => x.Address).Map("Residence");
         var flexSorter = new FlexSorter<PeopleEntity>(peopleOptions);
-        SimpleNestedEntitySorterWithFieldAliasTest((sorters) => flexSorter.SortData(_people, sorters).ToList());
+        SimpleNestedEntitySorterWithFieldAliasTest(sorters => flexSorter.SortData(_people, sorters).ToList());
     }
 
     [Test]
@@ -118,5 +118,31 @@ public class SortDataEnumerableTests : SortDataAbstract
         {
             Options.AddCustomField(new PeopleFullNameCustomField()).Map("Title");
         }
+    }
+
+    [Test]
+    public void SimpleSorterWithHiddenField()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.Field(x => x.CreatedByUserId).Hide();
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleSorterWithHiddenFieldTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithAllHiddenOriginalFields()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.HideOriginalFields();
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleSorterWithHiddenFieldTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithNotFoundField()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleSorterWithNotFoundFieldTest(sorters => flexSorter.SortData(_people, sorters).ToList());
     }
 }

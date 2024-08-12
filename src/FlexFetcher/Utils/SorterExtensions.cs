@@ -61,7 +61,7 @@ public static class SorterExtensions
     {
         var builder = new SorterExpressionBuilder<TEntity>();
         var flexSorterOptions = new FlexSorterOptions<TEntity>();
-        flexSorterOptions.BuildProperties();
+        flexSorterOptions.Build();
         var expression = builder.BuildExpression(query, sorters!, flexSorterOptions);
         return expression;
     }
@@ -71,8 +71,8 @@ public static class SorterExtensions
     {
         var builder = new SorterExpressionBuilder<TEntity>();
 
-        if (!options.ArePropertiesBuilt)
-            options.BuildProperties();
+        if (!options.IsBuilt)
+            options.Build();
 
         var expression = builder.BuildExpression(query, sorters!, options);
         return expression;

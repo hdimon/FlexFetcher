@@ -28,7 +28,7 @@ public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
         if (SorterIsEmpty(sorters))
             return query;
 
-        BuildProperties();
+        BuildOptions();
 
         query = ExpressionBuilder.BuildExpression(query, sorters!, Options);
 
@@ -40,7 +40,7 @@ public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
         if (SorterIsEmpty(sorters))
             return query;
 
-        BuildProperties();
+        BuildOptions();
 
         query = ExpressionBuilder.BuildExpression(query.AsQueryable(), sorters!, Options);
 
@@ -49,7 +49,7 @@ public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
 
     public override Expression BuildExpression(Expression property, DataSorter sorter)
     {
-        BuildProperties();
+        BuildOptions();
 
         return ExpressionBuilder.BuildPropertyExpression(property, sorter, Options);
     }
@@ -62,9 +62,9 @@ public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
         return sorters.Sorters.Count == 0;
     }
 
-    private void BuildProperties()
+    private void BuildOptions()
     {
-        if (!Options.ArePropertiesBuilt)
-            Options.BuildProperties();
+        if (!Options.IsBuilt)
+            Options.Build();
     }
 }

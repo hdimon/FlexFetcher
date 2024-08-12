@@ -1,4 +1,5 @@
-﻿using FlexFetcher.Models.FlexFetcherOptions;
+﻿using FlexFetcher.Exceptions;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcherTests.Stubs.Database;
 
@@ -183,5 +184,45 @@ public abstract class SortDataAbstract
 
         var result = sorter(sorters);
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 10, 9, 2, 1, 6, 5, 4, 3, 8, 7 }));
+    }
+
+    protected void SimpleSorterWithHiddenFieldTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "CreatedByUserId",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        Assert.Throws<FieldNotFoundException>(() =>
+        {
+            var _ = sorter(sorters);
+        });
+    }
+
+    protected void SimpleSorterWithNotFoundFieldTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "Field",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        Assert.Throws<FieldNotFoundException>(() =>
+        {
+            var _ = sorter(sorters);
+        });
     }
 }
