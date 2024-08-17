@@ -2,28 +2,32 @@
 
 namespace FlexFetcher;
 
+public class FlexPager<TEntity, TModel> : FlexPager<TEntity> where TEntity : class where TModel : class
+{
+}
+
 public class FlexPager<TEntity> where TEntity : class
 {
     public IQueryable<TEntity> PageData(IQueryable<TEntity> query, DataPager? pager)
     {
-        if (pager == null)
+        if (PagerIsEmpty(pager))
             return query;
 
-        ValidatePager(pager);
+        ValidatePager(pager!);
 
-        var (skip, take) = CalculateSkipAndTake(pager);
+        var (skip, take) = CalculateSkipAndTake(pager!);
 
         return query.Skip(skip).Take(take);
     }
 
     public IEnumerable<TEntity> PageData(IEnumerable<TEntity> query, DataPager? pager)
     {
-        if (pager == null)
+        if (PagerIsEmpty(pager))
             return query;
 
-        ValidatePager(pager);
+        ValidatePager(pager!);
 
-        var (skip, take) = CalculateSkipAndTake(pager);
+        var (skip, take) = CalculateSkipAndTake(pager!);
 
         return query.Skip(skip).Take(take);
     }
@@ -40,6 +44,11 @@ public class FlexPager<TEntity> where TEntity : class
             return false;
 
         return true;
+    }
+
+    public bool PagerIsEmpty(DataPager? pager)
+    {
+        return pager == null;
     }
 
     private void ValidatePager(DataPager pager)

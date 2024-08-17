@@ -1,24 +1,21 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace FlexFetcher.Utils;
 
-public class FieldBuilder<TEntity, TField, TMapModel> : FieldBuilderAbstract
+public class FieldBuilder<TEntity, TField, TMapModel> : BaseFieldBuilder
     where TEntity : class where TMapModel : class
 {
-    private readonly string _fieldName;
+    // ReSharper disable once NotAccessedField.Local
     private readonly Expression<Func<TEntity, TField>> _fieldExpression;
     private readonly HashSet<string> _staticAliases = new();
     private readonly List<Expression<Func<TMapModel, object?>>> _expressions = new();
     private readonly HashSet<string> _aliases = new();
 
-    public override string FieldName => _fieldName;
     public override string[] Aliases => _aliases.ToArray();
 
-    public FieldBuilder(Expression<Func<TEntity, TField>> fieldExpression)
+    public FieldBuilder(Expression<Func<TEntity, TField>> fieldExpression) : base(((MemberExpression)fieldExpression.Body).Member.Name)
     {
         _fieldExpression = fieldExpression;
-        _fieldName = ((MemberExpression)fieldExpression.Body).Member.Name;
     }
 
     public FieldBuilder<TEntity, TField, TMapModel> Map(string alias)
@@ -43,17 +40,5 @@ public class FieldBuilder<TEntity, TField, TMapModel> : FieldBuilderAbstract
             var alias = ((MemberExpression)expression.Body).Member.Name;
             _aliases.Add(alias);
         }
-    }
-
-    public override bool TryGetFieldNameByAlias(string alias, [MaybeNullWhen(false)] out string fieldName)
-    {
-        if (_aliases.Contains(alias))
-        {
-            fieldName = _fieldName;
-            return true;
-        }
-
-        fieldName = null;
-        return false;
     }
 }

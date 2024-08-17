@@ -5,17 +5,10 @@ namespace FlexFetcherTests.Stubs.FlexFilters;
 
 public class PeopleFilterWithNestedEntitiesOfTheSameType2 : FlexFilter<PeopleEntity>
 {
-    public PeopleFilterWithNestedEntitiesOfTheSameType2(UserFilterWithNestedEntitiesOfTheSameType2 userFlexFilter) : base(userFlexFilter)
+    public PeopleFilterWithNestedEntitiesOfTheSameType2(UserFilterWithNestedEntitiesOfTheSameType2 userFlexFilter)
     {
-    }
-
-    protected override string MapField(string field)
-    {
-        return field switch
-        {
-            "Creator" => "CreatedByUser",
-            "Updater" => "UpdatedByUser",
-            _ => field
-        };
+        Options.AddNestedFlexFilter(userFlexFilter);
+        Options.Field(entity => entity.CreatedByUser).Map("Creator");
+        Options.Field(entity => entity.UpdatedByUser).Map("Updater");
     }
 }

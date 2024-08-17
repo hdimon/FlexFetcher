@@ -1,4 +1,5 @@
 ﻿using FlexFetcher;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
 using FlexFetcherTests.Stubs.CustomFilters;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlexFetcherTests.FlexFilterTests;
 
-public class FilterDataQueryableTests : FilterDataAbstract
+public class FilterDataQueryableTests : BaseFilterData
 {
     private TestDbContext _ctx = null!;
 
@@ -107,7 +108,7 @@ public class FilterDataQueryableTests : FilterDataAbstract
     {
         public SimplePeopleFilterWithCustomFilter(PeopleFullNameCustomFilter customFilter)
         {
-            AddCustomField(customFilter);
+            Options.AddCustomField(customFilter);
         }
     }
 
@@ -115,7 +116,7 @@ public class FilterDataQueryableTests : FilterDataAbstract
     {
         public SimplePeopleFilterWithCustomExpressionFilter(PeopleFullNameCustomExpressionFilter customFilter)
         {
-            AddCustomField(customFilter);
+            Options.AddCustomField(customFilter);
         }
     }
 
@@ -128,7 +129,7 @@ public class FilterDataQueryableTests : FilterDataAbstract
     [Test]
     public void SimpleFilterWithFieldAlias()
     {
-        SimpleFilterWithFieldAliasTest((filters, mapField) => _ctx.People.FilterData(filters, mapField).ToList());
+        SimpleFilterWithFieldAliasTest((filters, options) => _ctx.People.FilterData(filters, options).ToList());
 
         var flexFilter = new PeopleFilter();
         SimpleFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_ctx.People, filters).ToList());
@@ -136,13 +137,9 @@ public class FilterDataQueryableTests : FilterDataAbstract
 
     private class PeopleFilter : FlexFilter<PeopleEntity>
     {
-        protected override string MapField(string field)
+        public PeopleFilter()
         {
-            return field switch
-            {
-                "FirstName" => "Name",
-                _ => field
-            };
+            Options.Field(x => x.Name).Map("FirstName");
         }
     }
 
@@ -196,8 +193,29 @@ public class FilterDataQueryableTests : FilterDataAbstract
     [Test]
     public void SimpleNestedEntityFilterWithFieldAlias()
     {
-        SimpleNestedEntityFilterWithFieldAliasTest((filters, mapField) =>
-            _ctx.People.Include(p => p.Address).FilterData(filters, mapField).ToList());
+        SimpleNestedEntityFilterWithFieldAliasTest((flexFilter, filters) =>
+            flexFilter.FilterData(_ctx.People.Include(p => p.Address), filters).ToList());
+
+        // With model
+        var addressOptionsModel = new FlexFilterOptions<AddressEntity, AddressModel>();
+        addressOptionsModel.Field(x => x.City).Map(model => model.Town).Map("Town");
+        var addressFilterModel = new FlexFilter<AddressEntity>(addressOptionsModel);
+        var peopleOptionsModel = new FlexFilterOptions<PeopleEntity, PeopleModel>();
+        peopleOptionsModel.AddNestedFlexFilter(addressFilterModel);
+        peopleOptionsModel.Field(x => x.Address).Map(model => model.Residence).Map("Residence");
+        var peopleFilterModel = new FlexFilter<PeopleEntity>(peopleOptionsModel);
+        SimpleNestedEntityFilterWithFieldAliasTest((_, filters) =>
+            peopleFilterModel.FilterData(_ctx.People.Include(p => p.Address), filters).ToList());
+    }
+
+    private class PeopleModel
+    {
+        public AddressModel Residence { get; set; } = null!;
+    }
+
+    private class AddressModel
+    {
+        public string Town { get; set; } = null!;
     }
 
     [Test]

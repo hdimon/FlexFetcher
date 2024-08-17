@@ -3,15 +3,11 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.Stubs.FlexFilters;
 
-public class SimpleNestedEntityPeopleFilterWithFieldAlias
-    (SimpleNestedEntityAddressFilterWithFieldAlias addressFilter) : FlexFilter<PeopleEntity>(addressFilter)
+public class SimpleNestedEntityPeopleFilterWithFieldAlias : FlexFilter<PeopleEntity>
 {
-    protected override string MapField(string field)
+    public SimpleNestedEntityPeopleFilterWithFieldAlias(SimpleNestedEntityAddressFilterWithFieldAlias addressFilter)
     {
-        return field switch
-        {
-            "Residence" => "Address",
-            _ => field
-        };
+        Options.AddNestedFlexFilter(addressFilter);
+        Options.Field(entity => entity.Address).Map("Residence");
     }
 }

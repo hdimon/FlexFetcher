@@ -8,6 +8,6 @@ public class UserFilterWithNestedEntitiesOfTheSameType1 : FlexFilter<UserEntity>
 {
     public UserFilterWithNestedEntitiesOfTheSameType1(UserFullNameCustomFilter customFilter)
     {
-        AddCustomField(customFilter);
+        Options.AddCustomField(customFilter).Map("CreatorFullName").Map("UpdaterFullName");
     }
 }

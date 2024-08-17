@@ -7,7 +7,7 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.FlexSorterTests;
 
-public class SortDataEnumerableTests : SortDataAbstract
+public class SortDataEnumerableTests : BaseSortData
 {
     private List<PeopleEntity> _people = null!;
 

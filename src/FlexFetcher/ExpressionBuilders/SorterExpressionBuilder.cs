@@ -2,12 +2,11 @@
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
-using System.Collections.Immutable;
 using System.Linq.Expressions;
 
 namespace FlexFetcher.ExpressionBuilders;
 
-public class SorterExpressionBuilder<TEntity> where TEntity : class
+public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> where TEntity : class
 {
     public IQueryable<TEntity> BuildExpression(IQueryable<TEntity> query, DataSorters sorters, FlexSorterOptions<TEntity> options)
     {
@@ -36,7 +35,6 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
 
     public Expression BuildPropertyExpression(Expression parameter, DataSorter sorter, FlexSorterOptions<TEntity> options)
     {
-        IImmutableList<BaseFlexSorter> nestedFlexSorters = options.NestedFlexSorters;
         Expression property = parameter;
         string field = sorter.Field!;
 
@@ -61,7 +59,7 @@ public class SorterExpressionBuilder<TEntity> where TEntity : class
 
         property = CreatePropertyExpression(property, mappedFieldName);
 
-        var nestedSorter = nestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type) ??
+        var nestedSorter = options.NestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type) ??
                            (BaseFlexSorter)Activator.CreateInstance(typeof(FlexSorter<>).MakeGenericType(property.Type),
                                new object[] { })!;
 

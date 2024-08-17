@@ -2,6 +2,7 @@
 using FlexFetcher;
 using FlexFetcher.ExpressionBuilders;
 using FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcherTests.Stubs;
 using FlexFetcherTests.Stubs.Database;
@@ -22,7 +23,8 @@ public class CustomFilterExpressionBuilderTests
     public void FilterWithValue()
     {
         var customExpressionBuilder = new CustomExpressionBuilderWithValueTest();
-        var flexFilter = new FlexFilter<PeopleEntity>(customExpressionBuilder);
+        var options = new FlexFilterOptions<PeopleEntity>(customExpressionBuilder);
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
 
         var filter = new DataFilters
         {
@@ -48,7 +50,8 @@ public class CustomFilterExpressionBuilderTests
     public void FilterWithoutValue()
     {
         var customExpressionBuilder = new CustomExpressionBuilderWithoutValueTest();
-        var flexFilter = new FlexFilter<PeopleEntity>(customExpressionBuilder);
+        var options = new FlexFilterOptions<PeopleEntity>(customExpressionBuilder);
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
 
         var filter = new DataFilters
         {

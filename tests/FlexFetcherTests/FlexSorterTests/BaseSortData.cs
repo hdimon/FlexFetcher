@@ -5,7 +5,7 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.FlexSorterTests;
 
-public abstract class SortDataAbstract
+public abstract class BaseSortData
 {
     protected void SimpleSortTest(Func<DataSorters, List<PeopleEntity>> sorter)
     {

@@ -1,4 +1,5 @@
 ﻿using FlexFetcher;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
 using FlexFetcherTests.Stubs;
@@ -7,7 +8,7 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
 
-public class FilterDataEnumerableTests : FilterDataAbstract
+public class FilterDataEnumerableTests : BaseFilterData
 {
     private List<PeopleEntity> _people = null!;
 
@@ -94,7 +95,7 @@ public class FilterDataEnumerableTests : FilterDataAbstract
     {
         public SimplePeopleFilterWithCustomExpressionFilter(PeopleFullNameCustomExpressionFilter customFilter)
         {
-            AddCustomField(customFilter);
+            Options.AddCustomField(customFilter);
         }
     }
 
@@ -107,7 +108,7 @@ public class FilterDataEnumerableTests : FilterDataAbstract
     [Test]
     public void SimpleFilterWithFieldAlias()
     {
-        SimpleFilterWithFieldAliasTest((filters, mapField) => _people.FilterData(filters, mapField).ToList());
+        SimpleFilterWithFieldAliasTest((filters, options) => _people.FilterData(filters, options).ToList());
 
         var flexFilter = new SimplePeopleFilterWithFieldAlias();
         SimpleFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_people, filters).ToList());
@@ -115,13 +116,9 @@ public class FilterDataEnumerableTests : FilterDataAbstract
 
     private class SimplePeopleFilterWithFieldAlias : FlexFilter<PeopleEntity>
     {
-        protected override string MapField(string field)
+        public SimplePeopleFilterWithFieldAlias()
         {
-            return field switch
-            {
-                "FirstName" => "Name",
-                _ => field
-            };
+            Options.Field(x => x.Name).Map("FirstName");
         }
     }
 
@@ -181,7 +178,7 @@ public class FilterDataEnumerableTests : FilterDataAbstract
     [Test]
     public void SimpleNestedEntityFilterWithFieldAlias()
     {
-        SimpleNestedEntityFilterWithFieldAliasTest((filters, mapField) => _people.FilterData(filters, mapField).ToList());
+        SimpleNestedEntityFilterWithFieldAliasTest((flexFilter, filters) => flexFilter.FilterData(_people, filters).ToList());
     }
 
     [Test]
@@ -201,5 +198,31 @@ public class FilterDataEnumerableTests : FilterDataAbstract
     public void FilterWithNestedManyToManyEntities()
     {
         FilterWithNestedManyToManyEntitiesTest((flexFilter, filters) => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleFilterWithHiddenField()
+    {
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.CreatedByUserId).Hide();
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        SimpleFilterWithHiddenFieldTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleFilterWithAllHiddenOriginalFields()
+    {
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.HideOriginalFields();
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        SimpleFilterWithHiddenFieldTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleFilterWithNotFoundField()
+    {
+        var options = new FlexFilterOptions<PeopleEntity>();
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        SimpleFilterWithNotFoundFieldTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
     }
 }

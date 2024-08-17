@@ -8,6 +8,6 @@ public class PeopleWithManyToManyGroups : FlexFilter<PeopleEntity>
 {
     public PeopleWithManyToManyGroups(PeopleWithManyToManyGroupsCustomFilter customFilter)
     {
-        AddCustomField(customFilter);
+        Options.AddCustomField(customFilter);
     }
 }

@@ -5,12 +5,8 @@ namespace FlexFetcherTests.Stubs.FlexFilters;
 
 public class SimpleNestedEntityAddressFilterWithFieldAlias : FlexFilter<AddressEntity>
 {
-    protected override string MapField(string field)
+    public SimpleNestedEntityAddressFilterWithFieldAlias()
     {
-        return field switch
-        {
-            "Town" => "City",
-            _ => field
-        };
+        Options.Field(entity => entity.City).Map("Town");
     }
 }

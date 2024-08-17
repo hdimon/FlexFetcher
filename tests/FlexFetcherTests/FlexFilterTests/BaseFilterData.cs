@@ -1,4 +1,6 @@
 ﻿using FlexFetcher;
+using FlexFetcher.Exceptions;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcherTests.Stubs.CustomFilters;
 using FlexFetcherTests.Stubs.Database;
@@ -7,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace FlexFetcherTests.FlexFilterTests;
 
-public abstract class FilterDataAbstract
+public abstract class BaseFilterData
 {
     protected void SimpleFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
     {
@@ -204,7 +206,9 @@ public abstract class FilterDataAbstract
 
         var customFilter = new AddressLocationCustomFilter();
         var addressFilter = new SimpleAddressFilterWithNestedCustomFilter(customFilter);
-        var flexFilter = new FlexFilter<PeopleEntity>(addressFilter);
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.AddNestedFlexFilter(addressFilter);
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
 
         var result = fetcher(flexFilter, filter);
 
@@ -212,7 +216,7 @@ public abstract class FilterDataAbstract
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 3 }));
     }
 
-    protected void SimpleFilterWithFieldAliasTest(Func<DataFilters, Func<string, string>, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterWithFieldAliasTest(Func<DataFilters, FlexFilterOptions<PeopleEntity>, List<PeopleEntity>> fetcher)
     {
         var filter = new DataFilters
         {
@@ -227,22 +231,16 @@ public abstract class FilterDataAbstract
             }
         };
 
-        var mapField = new Func<string, string>(field =>
-        {
-            return field switch
-            {
-                "FirstName" => "Name",
-                _ => field
-            };
-        });
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.Name).Map("FirstName");
 
-        var result = fetcher(filter, mapField);
+        var result = fetcher(filter, options);
 
         Assert.That(result.Count, Is.EqualTo(5));
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
     }
 
-    protected void SimpleNestedEntityFilterWithFieldAliasTest(Func<DataFilters, Func<string, string>, List<PeopleEntity>> fetcher)
+    protected void SimpleNestedEntityFilterWithFieldAliasTest(Func<FlexFilter<PeopleEntity>, DataFilters, List<PeopleEntity>> fetcher)
     {
         var filter = new DataFilters
         {
@@ -264,17 +262,15 @@ public abstract class FilterDataAbstract
             }
         };
 
-        var mapField = new Func<string, string>(field =>
-        {
-            return field switch
-            {
-                "Residence" => "Address",
-                "Residence.Town" => "Address.City",
-                _ => field
-            };
-        });
+        var addressOption = new FlexFilterOptions<AddressEntity>();
+        addressOption.Field(x => x.City).Map("Town");
+        var addressFilter = new FlexFilter<AddressEntity>(addressOption);
+        var peopleOption = new FlexFilterOptions<PeopleEntity>();
+        peopleOption.AddNestedFlexFilter(addressFilter);
+        peopleOption.Field(x => x.Address).Map("Residence");
+        var peopleFilter = new FlexFilter<PeopleEntity>(peopleOption);
 
-        var result = fetcher(filter, mapField);
+        var result = fetcher(peopleFilter, filter);
 
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1 }));
@@ -522,5 +518,47 @@ public abstract class FilterDataAbstract
 
         Assert.That(result.Count, Is.EqualTo(4));
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 6 }));
+    }
+
+    protected void SimpleFilterWithHiddenFieldTest(Func<DataFilters, List<PeopleEntity>> filter)
+    {
+        var filters = new DataFilters
+        {
+            Filters = new List<DataFilter>
+            {
+                new DataFilter
+                {
+                    Field = "CreatedByUserId",
+                    Operator = DataFilterOperator.Equal,
+                    Value = 1
+                }
+            }
+        };
+
+        Assert.Throws<FieldNotFoundException>(() =>
+        {
+            var _ = filter(filters);
+        });
+    }
+
+    protected void SimpleFilterWithNotFoundFieldTest(Func<DataFilters, List<PeopleEntity>> filter)
+    {
+        var filters = new DataFilters
+        {
+            Filters = new List<DataFilter>
+            {
+                new DataFilter
+                {
+                    Field = "Field",
+                    Operator = DataFilterOperator.Equal,
+                    Value = 1
+                }
+            }
+        };
+
+        Assert.Throws<FieldNotFoundException>(() =>
+        {
+            var _ = filter(filters);
+        });
     }
 }

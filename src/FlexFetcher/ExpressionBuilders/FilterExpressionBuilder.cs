@@ -1,13 +1,14 @@
-﻿using FlexFetcher.Models.ExpressionBuilderOptions;
-using FlexFetcher.Models.Queries;
+﻿using FlexFetcher.Models.Queries;
 using System.Linq.Expressions;
 using System.Collections.Immutable;
 using FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 using FlexFetcher.Utils;
+using FlexFetcher.Models.FlexFetcherOptions;
+using FlexFetcher.Exceptions;
 
 namespace FlexFetcher.ExpressionBuilders;
 
-public class FilterExpressionBuilder<TEntity> where TEntity : class
+public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> where TEntity : class
 {
     protected ImmutableList<IFilterExpressionHandler> FilterExpressionHandlers { get; }
 
@@ -18,16 +19,14 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         FilterExpressionHandlers = handlers.ToImmutableList();
     }
 
-    public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters,
-        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
+    public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters, FlexFilterOptions<TEntity> options)
     {
         var parameter = Expression.Parameter(typeof(TEntity));
-        var body = BuildExpressionBody(parameter, filters, builderOptions, nestedFlexFilters);
+        var body = BuildExpressionBody(parameter, filters, options);
         return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
     }
 
-    private Expression BuildExpressionBody(Expression parameter, DataFilters filters,
-        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
+    private Expression BuildExpressionBody(Expression parameter, DataFilters filters, FlexFilterOptions<TEntity> options)
     {
         if (filters.Filters == null || filters.Filters.Count == 0)
         {
@@ -38,7 +37,7 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
 
         foreach (var filter in filters.Filters)
         {
-            var expression = BuildSingleExpression(parameter, filter, builderOptions, nestedFlexFilters);
+            var expression = BuildSingleExpression(parameter, filter, options);
             expressions.Add(expression);
         }
 
@@ -54,15 +53,14 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         return body;
     }
 
-    public Expression BuildSingleExpression(Expression parameter, DataFilter filter,
-        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
+    public Expression BuildSingleExpression(Expression parameter, DataFilter filter, FlexFilterOptions<TEntity> options)
     {
         if (filter.Filters is { Count: > 0 })
         {
-            return BuildExpressionBody(parameter, filter, builderOptions, nestedFlexFilters);
+            return BuildExpressionBody(parameter, filter, options);
         }
 
-        FilterExpressionResult expressionResult = BuildPropertyExpression(parameter, filter, builderOptions, nestedFlexFilters);
+        FilterExpressionResult expressionResult = BuildPropertyExpression(parameter, filter, options);
 
         if (expressionResult.IsFull)
         {
@@ -102,48 +100,35 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
     }
 
     private static FilterExpressionResult BuildPropertyExpression(Expression parameter, DataFilter filter,
-        FilterExpressionBuilderOptions<TEntity> builderOptions, IImmutableList<BaseFlexFilter> nestedFlexFilters)
+        FlexFilterOptions<TEntity> options)
     {
         Expression property = parameter;
         string field = filter.Field!;
 
-        var fieldIsMapped = false;
-        string mappedField = field;
+        var split = field.Split('.');
+        var mappedFieldName = split[0];
 
-        // First try to map the field from main filter options.
-        // At this point we are not sure if the field is complex (with nested fields) or not
-        // but just try, i.e. if mapping contains "Field" or "Field.NestedField"
-        // then it will be mapped.
-        if (builderOptions.MapField != null)
-        {
-            mappedField = builderOptions.MapField(field);
-            fieldIsMapped = mappedField != field;
-        }
+        if (options.IsHiddenField(mappedFieldName))
+            throw new FieldNotFoundException(mappedFieldName);
 
-        var split = mappedField.Split('.');
-        var currentFieldName = split[0];
-
-        var mappedFieldName = currentFieldName;
-
-        // At this point only simple fields are tried to be mapped.
-        if (!fieldIsMapped)
-            mappedFieldName = builderOptions.MapField?.Invoke(currentFieldName) ?? currentFieldName;
+        if (options.TryGetFieldNameByAlias(mappedFieldName, out var foundFieldName))
+            mappedFieldName = foundFieldName;
 
         if (split.Length == 1)
         {
-            if (TryBuildExpressionFromCustomEntityFilter(builderOptions, property, mappedFieldName, filter.Operator!,
+            if (TryBuildExpressionFromCustomEntityFilter(options, property, mappedFieldName, filter.Operator!,
                     filter.Value, out var expressionResult))
             {
                 return expressionResult;
             }
 
-            property = Expression.Property(property, mappedFieldName);
+            property = CreatePropertyExpression(property, mappedFieldName);
             return new FilterExpressionResult(property, false);
         }
 
-        property = Expression.Property(property, mappedFieldName);
+        property = CreatePropertyExpression(property, mappedFieldName);
 
-        var nestedFilter = nestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type) ??
+        var nestedFilter = options.NestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type) ??
                            (BaseFlexFilter)Activator.CreateInstance(typeof(FlexFilter<>).MakeGenericType(property.Type),
                                new object[] { })!;
 
@@ -153,9 +138,8 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
         return new FilterExpressionResult(exp, true);
     }
 
-    private static bool TryBuildExpressionFromCustomEntityFilter(FilterExpressionBuilderOptions<TEntity> options,
-        Expression property, string fieldName, string filterOperator, object? filterValue,
-        out FilterExpressionResult expressionResult)
+    private static bool TryBuildExpressionFromCustomEntityFilter(FlexFilterOptions<TEntity> options, Expression property,
+        string fieldName, string filterOperator, object? filterValue, out FilterExpressionResult expressionResult)
     {
         foreach (var currentOptionsCustomFilter in options.CustomFields)
         {
@@ -185,5 +169,17 @@ public class FilterExpressionBuilder<TEntity> where TEntity : class
 
         expressionResult = new FilterExpressionResult(property, false);
         return false;
+    }
+
+    private static MemberExpression CreatePropertyExpression(Expression parameter, string fieldName)
+    {
+        try
+        {
+            return Expression.Property(parameter, fieldName);
+        }
+        catch (ArgumentException)
+        {
+            throw new FieldNotFoundException(fieldName);
+        }
     }
 }

@@ -6,7 +6,7 @@ using FlexFetcherTests.Stubs.Database;
 
 namespace FlexFetcherTests.FlexSorterTests;
 
-public class SortDataQueryableTests : SortDataAbstract
+public class SortDataQueryableTests : BaseSortData
 {
     private TestDbContext _ctx = null!;
 

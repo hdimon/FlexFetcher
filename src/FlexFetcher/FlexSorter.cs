@@ -5,6 +5,17 @@ using FlexFetcher.Models.Queries;
 
 namespace FlexFetcher;
 
+public class FlexSorter<TEntity, TModel> : FlexSorter<TEntity> where TEntity : class where TModel : class
+{
+    public FlexSorter() : this(new FlexSorterOptions<TEntity, TModel>())
+    {
+    }
+
+    public FlexSorter(FlexSorterOptions<TEntity, TModel> options) : base(options)
+    {
+    }
+}
+
 public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
 {
     protected SorterExpressionBuilder<TEntity> ExpressionBuilder { get; }
@@ -54,7 +65,7 @@ public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
         return ExpressionBuilder.BuildPropertyExpression(property, sorter, Options);
     }
 
-    private static bool SorterIsEmpty(DataSorters? sorters)
+    public bool SorterIsEmpty(DataSorters? sorters)
     {
         if (sorters?.Sorters == null)
             return true;
