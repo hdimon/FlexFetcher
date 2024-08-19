@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace FlexFetcher.Models.FlexFetcherOptions;
 
-public abstract class BaseFlexOptions<TEntity, TExpressionBuilder>
+public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOptions
     where TEntity : class where TExpressionBuilder : IExpressionBuilder<TEntity>, new()
 {
     protected Dictionary<string, string> FieldNameByAlias { get; } = new();

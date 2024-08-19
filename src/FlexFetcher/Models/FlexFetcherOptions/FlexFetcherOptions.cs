@@ -39,7 +39,7 @@ public class FlexFetcherOptions<TEntity, TModel> : FlexFetcherOptions<TEntity> w
     }
 }
 
-public class FlexFetcherOptions<TEntity> where TEntity : class
+public class FlexFetcherOptions<TEntity> : IFlexOptions where TEntity : class
 {
     public FlexFilterOptions<TEntity> FilterOptions { get; protected set; }
     public FlexSorterOptions<TEntity> SorterOptions { get; protected set; }
@@ -87,6 +87,12 @@ public class FlexFetcherOptions<TEntity> where TEntity : class
         SorterOptions.AddFieldBuilderInternal(builder);
 
         return builder;
+    }
+
+    public void AddNestedFlexFetcher(BaseFlexFetcher flexFetcher)
+    {
+        FilterOptions.AddNestedFlexFilter(flexFetcher.Filter);
+        SorterOptions.AddNestedFlexSorter(flexFetcher.Sorter);
     }
 
     public void Build()

@@ -2,11 +2,9 @@
 
 namespace FlexFetcher;
 
-public class FlexPager<TEntity, TModel> : FlexPager<TEntity> where TEntity : class where TModel : class
-{
-}
+public class FlexPager<TEntity, TModel> : FlexPager<TEntity> where TEntity : class where TModel : class;
 
-public class FlexPager<TEntity> where TEntity : class
+public class FlexPager<TEntity> : BaseFlexPager where TEntity : class
 {
     public IQueryable<TEntity> PageData(IQueryable<TEntity> query, DataPager? pager)
     {

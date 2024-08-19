@@ -43,12 +43,12 @@ public class FlexFetcher<TEntity, TModel> : FlexFetcher<TEntity> where TEntity :
     }
 }
 
-public class FlexFetcher<TEntity> where TEntity : class
+public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
 {
     public FlexFetcherOptions<TEntity> Options { get; }
-    public FlexFilter<TEntity> Filter { get; init; }
-    public FlexSorter<TEntity> Sorter { get; init; }
-    public FlexPager<TEntity> Pager { get; init; }
+    public override FlexFilter<TEntity> Filter { get; }
+    public override FlexSorter<TEntity> Sorter { get; }
+    public override FlexPager<TEntity> Pager { get; }
 
     public FlexFetcher() : this(new FlexFetcherOptions<TEntity>())
     {
