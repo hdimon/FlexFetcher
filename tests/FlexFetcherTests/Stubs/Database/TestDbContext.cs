@@ -15,6 +15,7 @@ public class TestDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<PeopleEntity>().HasKey(p => p.Id);
+        modelBuilder.Entity<PeopleEntity>().Property(p => p.Occupation).HasConversion<string>();
         modelBuilder.Entity<AddressEntity>().HasKey(a => a.Id);
         modelBuilder.Entity<UserEntity>().HasKey(a => a.Id);
         modelBuilder.Entity<GroupEntity>().HasKey(g => g.Id);
@@ -38,6 +39,12 @@ public class TestDbContext : DbContext
                     .HasForeignKey(p => p.UpdatedByUserId)
                     .IsRequired(false);
 
+        modelBuilder.Entity<PeopleEntity>()
+                    .HasOne(p => p.GenderEntity)
+                    .WithMany()
+                    .HasForeignKey(p => p.Gender)
+                    .IsRequired();
+
         var people = InMemoryDataHelper.GetPeople();
         var addresses = people.Select(p => p.Address).Where(a => a != null).ToList();
         people.ForEach(p => p.Address = null);
@@ -52,10 +59,13 @@ public class TestDbContext : DbContext
         peopleGroups.ForEach(pg => pg.Group = null);
         people.ForEach(p => p.PeopleGroups = new List<PeopleGroupEntity>());
 
+        var genders = InMemoryDataHelper.GetGenders();
+
         modelBuilder.Entity<GroupEntity>().HasData(groups);
         modelBuilder.Entity<PeopleEntity>().HasData(people);
         modelBuilder.Entity<PeopleGroupEntity>().HasData(peopleGroups);
         modelBuilder.Entity<AddressEntity>().HasData(addresses!);
         modelBuilder.Entity<UserEntity>().HasData(users);
+        modelBuilder.Entity<GenderEntity>().HasData(genders);
     }
 }

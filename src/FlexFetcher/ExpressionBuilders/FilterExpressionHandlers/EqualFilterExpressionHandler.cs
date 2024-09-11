@@ -9,7 +9,9 @@ public class EqualFilterExpressionHandler : FilterExpressionHandlerAbstract
 
     public override Expression BuildExpression(Expression property, DataFilter filter)
     {
-        var value = BuildValueExpression(filter);
-        return Expression.Equal(property, value);
+        var value = BuildValueExpression(property, filter);
+        var propertyExpression = GetPropertyExpression(property, value);
+
+        return Expression.Equal(propertyExpression, value);
     }
 }

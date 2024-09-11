@@ -9,7 +9,9 @@ public class LessThanFilterExpressionHandler : FilterExpressionHandlerAbstract
 
     public override Expression BuildExpression(Expression property, DataFilter filter)
     {
-        var value = BuildValueExpression(filter);
-        return Expression.LessThan(property, value);
+        var value = BuildValueExpression(property, filter);
+        var propertyExpression = GetPropertyExpression(property, value);
+
+        return Expression.LessThan(propertyExpression, value);
     }
 }

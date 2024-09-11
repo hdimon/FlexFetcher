@@ -9,7 +9,9 @@ public class GreaterThanFilterExpressionHandler : FilterExpressionHandlerAbstrac
 
     public override Expression BuildExpression(Expression property, DataFilter filter)
     {
-        var value = BuildValueExpression(filter);
-        return Expression.GreaterThan(property, value);
+        var value = BuildValueExpression(property, filter);
+        var propertyExpression = GetPropertyExpression(property, value);
+
+        return Expression.GreaterThan(propertyExpression, value);
     }
 }

@@ -4,6 +4,17 @@ namespace FlexFetcherTests.Stubs;
 
 public class InMemoryDataHelper
 {
+    public static List<GenderEntity> GetGenders()
+    {
+        var list = new List<GenderEntity>
+        {
+            new GenderEntity { Id = Gender.Unknown, Name = "Unknown" },
+            new GenderEntity { Id = Gender.Male, Name = "Male" },
+            new GenderEntity { Id = Gender.Female, Name = "Female" }
+        };
+        return list;
+    }
+
     public static List<PeopleEntity> GetPeople()
     {
         var user1 = new UserEntity
@@ -47,9 +58,20 @@ public class InMemoryDataHelper
             new PeopleEntity
             {
                 Id = 1,
+                ExternalId = new Guid("f3f3f3f3-f3f3-f3f3-f3f3-f3f3f3f3f3f3"),
                 Name = "John",
                 Surname = "Doe",
                 Age = 20,
+                Height = 150.5,
+                Weight = 50.5,
+                Gender = Gender.Male,
+                Salary = 50000,
+                Occupation = Occupation.Student,
+                WorkHours = new TimeSpan(8, 30, 0),
+                WorkStart = new TimeOnly(8, 30, 0),
+                BirthDate = new DateOnly(2000, 1, 1),
+                LastLoginUtc = new DateTime(2024, 6, 10, 13, 20, 56),
+                LastLogin = new DateTimeOffset(new DateTime(2024, 6, 10, 10, 20, 56), TimeSpan.FromHours(3)),
                 Address = new AddressEntity
                 {
                     Id = 1,
@@ -76,9 +98,17 @@ public class InMemoryDataHelper
             new PeopleEntity
             {
                 Id = 2,
+                ExternalId = new Guid("f4f4f4f4-f4f4-f4f4-f4f4-f4f4f4f4f4f4"),
                 Name = "Jane",
                 Surname = "Doe",
                 Age = 25,
+                Height = 156,
+                Weight = null,
+                Gender = Gender.Female,
+                Salary = null,
+                IsActive = true,
+                BirthDate = new DateOnly(1995, 1, 1),
+                LastLogin = new DateTimeOffset(new DateTime(2024, 6, 10, 10, 20, 56), TimeSpan.FromHours(5)),
                 Address = new AddressEntity
                 {
                     Id = 2,
@@ -110,6 +140,11 @@ public class InMemoryDataHelper
                 Name = "John",
                 Surname = "Smith",
                 Age = 30,
+                Height = 160.5,
+                Weight = null,
+                Gender = Gender.Male,
+                Salary = 50000.75m,
+                BirthDate = new DateOnly(1990, 1, 1),
                 Address = new AddressEntity
                 {
                     Id = 3,
@@ -141,6 +176,11 @@ public class InMemoryDataHelper
                 Name = "Jane",
                 Surname = "Smith",
                 Age = 35,
+                Height = 165,
+                Weight = 55.5,
+                Gender = Gender.Female,
+                Salary = 60000,
+                BirthDate = null,
                 Address = new AddressEntity
                 {
                     Id = 4,
@@ -170,6 +210,12 @@ public class InMemoryDataHelper
                 Name = "John",
                 Surname = "Jones",
                 Age = 40,
+                Height = 170.5,
+                Weight = 60.5,
+                Salary = 55000.5m,
+                Gender = Gender.Male,
+                IsActive = true,
+                BirthDate = new DateOnly(1980, 1, 1),
                 Address = new AddressEntity
                 {
                     Id = 5,
@@ -207,6 +253,12 @@ public class InMemoryDataHelper
                 Name = "Jane",
                 Surname = "Jones",
                 Age = 45,
+                Height = 175,
+                Weight = 65,
+                Gender = Gender.Female,
+                Salary = null,
+                Occupation = Occupation.Teacher,
+                BirthDate = new DateOnly(1975, 1, 1),
                 Address = new AddressEntity
                 {
                     Id = 6,
@@ -244,6 +296,12 @@ public class InMemoryDataHelper
                 Name = "John",
                 Surname = "Williams",
                 Age = 50,
+                Height = 180.5,
+                Weight = 70.5,
+                Gender = Gender.Unknown,
+                Salary = 60000.5m,
+                Occupation = Occupation.Engineer,
+                BirthDate = null,
                 Address = new AddressEntity
                 {
                     Id = 7,
@@ -266,6 +324,10 @@ public class InMemoryDataHelper
                 Name = "Jane",
                 Surname = "Williams",
                 Age = 55,
+                Height = 185,
+                Weight = null,
+                Gender = Gender.Female,
+                Salary = 65000,
                 Address = new AddressEntity
                 {
                     Id = 8,
@@ -288,11 +350,15 @@ public class InMemoryDataHelper
                 Name = "John",
                 Surname = "Brown",
                 Age = 60,
+                Height = 190.5,
+                Weight = 75.5,
+                Gender = Gender.Male,
+                Salary = null,
                 Address = new AddressEntity
                 {
                     Id = 9,
                     PersonId = 9,
-                    Street = "567 Main St",
+                    Street = "567 Secondary St",
                     City = "Dallas",
                     State = "TX",
                     Zip = "56789"
@@ -310,6 +376,9 @@ public class InMemoryDataHelper
                 Name = "Jane",
                 Surname = "Brown",
                 Age = 65,
+                Height = 195,
+                Gender = Gender.Female,
+                BirthDate = new DateOnly(1955, 1, 1),
                 Phone = "012-345-6789",
                 Email = "",
                 CreatedByUserId = user4.Id,

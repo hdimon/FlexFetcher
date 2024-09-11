@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
@@ -19,7 +20,9 @@ public class InFilterExpressionHandler : FilterExpressionHandlerAbstract
         object? array;
         try
         {
-            array = JsonSerializer.Deserialize(valueString, typeof(IEnumerable<>).MakeGenericType(property.Type));
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonStringEnumConverter());
+            array = JsonSerializer.Deserialize(valueString, typeof(IEnumerable<>).MakeGenericType(property.Type), options);
         }
         catch (Exception)
         {
@@ -43,7 +46,28 @@ public class InFilterExpressionHandler : FilterExpressionHandlerAbstract
         // Convert each part to the specified type
         var convertedArray = parts.Select(part =>
         {
-            MethodInfo? parseMethod = elementType.GetMethod("Parse", new[] { typeof(string) });
+            var underlyingElementType = elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(Nullable<>)
+                ? Nullable.GetUnderlyingType(elementType)!
+                : elementType;
+
+            if (underlyingElementType == typeof(string))
+                return part;
+
+            if (underlyingElementType == typeof(double) || underlyingElementType == typeof(decimal) ||
+                underlyingElementType == typeof(float))
+                throw new InvalidOperationException(
+                    $"{underlyingElementType} type is not supported for IN filter with comma separated value.");
+
+            if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(Nullable<>) &&
+                string.IsNullOrEmpty(part))
+                return null;
+
+            if (underlyingElementType.IsEnum)
+            {
+                return Enum.Parse(underlyingElementType, part);
+            }
+
+            MethodInfo? parseMethod = underlyingElementType.GetMethod("Parse", new[] { typeof(string) });
             if (parseMethod != null)
             {
                 return parseMethod.Invoke(null, new object[] { part });
