@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
-public class NotEqualFilterExpressionHandler : FilterExpressionHandlerAbstract
+public class NotEqualFilterExpressionHandler : BaseFilterExpressionHandler
 {
     public override string Operator => DataFilterOperator.NotEqual;
 

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
-public class InFilterExpressionHandler : FilterExpressionHandlerAbstract
+public class InFilterExpressionHandler : BaseFilterExpressionHandler
 {
     public override string Operator => DataFilterOperator.In;
 

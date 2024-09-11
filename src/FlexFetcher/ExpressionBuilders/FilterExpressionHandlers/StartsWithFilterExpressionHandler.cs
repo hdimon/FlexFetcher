@@ -3,7 +3,7 @@ using FlexFetcher.Models.Queries;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
-public class StartsWithFilterExpressionHandler : FilterExpressionHandlerAbstract
+public class StartsWithFilterExpressionHandler : BaseFilterExpressionHandler
 {
     public override string Operator => DataFilterOperator.StartsWith;
 

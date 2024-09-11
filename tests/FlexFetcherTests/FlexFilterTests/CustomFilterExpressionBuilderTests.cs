@@ -80,7 +80,7 @@ public class CustomFilterExpressionBuilderTests
             handlers.Add(new ModuleFilterExpressionHandler());
         }
 
-        private class ModuleFilterExpressionHandler : FilterExpressionHandlerAbstract
+        private class ModuleFilterExpressionHandler : BaseFilterExpressionHandler
         {
             public override string Operator => "MODULE";
 
@@ -99,7 +99,7 @@ public class CustomFilterExpressionBuilderTests
             handlers.Add(new EvenNumberFilterExpressionHandler());
         }
 
-        private class EvenNumberFilterExpressionHandler : FilterExpressionHandlerAbstract
+        private class EvenNumberFilterExpressionHandler : BaseFilterExpressionHandler
         {
             public override string Operator => "EVEN";
 

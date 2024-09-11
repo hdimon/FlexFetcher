@@ -3,7 +3,7 @@ using FlexFetcher.Models.Queries;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
-public class LessThanOrEqualFilterExpressionHandler : FilterExpressionHandlerAbstract
+public class LessThanOrEqualFilterExpressionHandler : BaseFilterExpressionHandler
 {
     public override string Operator => DataFilterOperator.LessThanOrEqual;
 

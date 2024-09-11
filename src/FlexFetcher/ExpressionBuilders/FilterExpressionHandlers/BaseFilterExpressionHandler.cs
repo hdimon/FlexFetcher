@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
-public abstract class FilterExpressionHandlerAbstract : IFilterExpressionHandler
+public abstract class BaseFilterExpressionHandler : IFilterExpressionHandler
 {
     public abstract string Operator { get; }
 
