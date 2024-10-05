@@ -75,15 +75,6 @@ public class FilterDataEnumerableTests : BaseFilterData
     }
 
     [Test]
-    public void SimpleInCommaDelimitedStringFilter()
-    {
-        SimpleInCommaDelimitedStringFilterTest(filters => _people.FilterData(filters).ToList());
-
-        var flexFilter = new FlexFilter<PeopleEntity>();
-        SimpleInCommaDelimitedStringFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
-    }
-
-    [Test]
     public void SimpleFilterWithCustomFilter()
     {
         var customExpressionFilter = new PeopleFullNameCustomExpressionFilter();

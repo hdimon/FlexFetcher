@@ -68,9 +68,9 @@ public class InMemoryDataHelper
                 Salary = 50000,
                 Occupation = Occupation.Student,
                 WorkHours = new TimeSpan(8, 30, 0),
-                WorkStart = new TimeOnly(8, 30, 0),
+                WorkStart = new TimeOnly(8, 30, 10),
                 BirthDate = new DateOnly(2000, 1, 1),
-                LastLoginUtc = new DateTime(2024, 6, 10, 13, 20, 56),
+                LastLoginUtc = new DateTime(2024, 6, 10, 13, 20, 56, DateTimeKind.Utc),
                 LastLogin = new DateTimeOffset(new DateTime(2024, 6, 10, 10, 20, 56), TimeSpan.FromHours(3)),
                 Address = new AddressEntity
                 {

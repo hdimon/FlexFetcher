@@ -97,7 +97,7 @@ public abstract class BaseFilterData
 
     protected void SimpleInArrayFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
     {
-        var idsJson = System.Text.Json.JsonSerializer.Serialize(new List<int> { 1, 3, 5, 7 });
+        var ids = new List<int> { 1, 3, 5, 7 };
         var filter = new DataFilters
         {
             Filters = new List<DataFilter>
@@ -106,59 +106,26 @@ public abstract class BaseFilterData
                 {
                     Field = "Id",
                     Operator = DataFilterOperator.In,
-                    Value = idsJson
+                    Value = ids
                 }
             }
         };
 
-        var filterJson = JsonConvert.SerializeObject(filter);
-        var filter1 = JsonConvert.DeserializeObject<DataFilters>(filterJson)!;
+        var filterJson = JsonConvert.SerializeObject(filter, NewtonsoftHelper.GetSerializerSettings());
+        var filter1 = JsonConvert.DeserializeObject<DataFilters>(filterJson, NewtonsoftHelper.GetSerializerSettings())!;
 
         var result = fetcher(filter1);
 
         Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7 }));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(ids));
 
-        filterJson = System.Text.Json.JsonSerializer.Serialize(filter);
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(filterJson)!;
-
-        result = fetcher(filter2);
-
-        Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7 }));
-    }
-
-    protected void SimpleInCommaDelimitedStringFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
-    {
-        var idsStr = string.Join(",", new List<int> { 1, 3, 5, 7 });
-        var filter = new DataFilters
-        {
-            Filters = new List<DataFilter>
-            {
-                new()
-                {
-                    Field = "Id",
-                    Operator = DataFilterOperator.In,
-                    Value = idsStr
-                }
-            }
-        };
-
-        var filterJson = JsonConvert.SerializeObject(filter);
-        var filter1 = JsonConvert.DeserializeObject<DataFilters>(filterJson)!;
-
-        var result = fetcher(filter1);
-
-        Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7 }));
-
-        filterJson = System.Text.Json.JsonSerializer.Serialize(filter);
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(filterJson)!;
+        filterJson = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(filterJson, SystemTextJsonHelper.SerializerSettings)!;
 
         result = fetcher(filter2);
 
         Assert.That(result.Count, Is.EqualTo(4));
-        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7 }));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(ids));
     }
 
     protected void SimpleFilterWithCustomFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)

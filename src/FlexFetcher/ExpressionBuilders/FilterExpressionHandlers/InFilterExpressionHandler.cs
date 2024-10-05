@@ -1,8 +1,7 @@
-﻿using FlexFetcher.Models.Queries;
+﻿using System.Collections;
+using FlexFetcher.Models.Queries;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using FlexFetcher.Utils;
 
 namespace FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 
@@ -12,74 +11,27 @@ public class InFilterExpressionHandler : BaseFilterExpressionHandler
 
     public override Expression BuildExpression(Expression property, DataFilter filter)
     {
-        if (filter.Value == null || string.IsNullOrWhiteSpace(filter.Value.ToString()))
+        if (filter.Value == null)
             return Expression.Constant(false);
 
-        var valueString = filter.Value.ToString()!;
+        Array arrayCopy = CopyFilterValueList(property, (IList)filter.Value);
 
-        object? array;
-        try
-        {
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new JsonStringEnumConverter());
-            array = JsonSerializer.Deserialize(valueString, typeof(IEnumerable<>).MakeGenericType(property.Type), options);
-        }
-        catch (Exception)
-        {
-            array = ConvertToArray(valueString, property.Type);
-        }
+        ConstantExpression value = Expression.Constant(arrayCopy, typeof(IEnumerable<>).MakeGenericType(property.Type));
 
-        if (array == null)
-        {
-            return Expression.Constant(false);
-        }
-
-        ConstantExpression value = Expression.Constant(array, typeof(IEnumerable<>).MakeGenericType(property.Type));
-
-        return Expression.Call(typeof(Enumerable), "Contains", new[] { property.Type }, value, property);
+        return Expression.Call(typeof(Enumerable), "Contains", [property.Type], value, property);
     }
 
-    private static Array ConvertToArray(string valueString, Type elementType)
+    private Array CopyFilterValueList(Expression property, IList filterValueList)
     {
-        string[] parts = valueString.Split(',');
+        var propertyType = TypeHelper.GetGenericUnderlyingType(property.Type);
+        Array arrayCopy = Array.CreateInstance(property.Type, filterValueList.Count);
 
-        // Convert each part to the specified type
-        var convertedArray = parts.Select(part =>
+        for (int i = 0; i < filterValueList.Count; i++)
         {
-            var underlyingElementType = elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(Nullable<>)
-                ? Nullable.GetUnderlyingType(elementType)!
-                : elementType;
+            var itemValue = ConvertValueIfNeeded(filterValueList[i], propertyType);
+            arrayCopy.SetValue(itemValue, i);
+        }
 
-            if (underlyingElementType == typeof(string))
-                return part;
-
-            if (underlyingElementType == typeof(double) || underlyingElementType == typeof(decimal) ||
-                underlyingElementType == typeof(float))
-                throw new InvalidOperationException(
-                    $"{underlyingElementType} type is not supported for IN filter with comma separated value.");
-
-            if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(Nullable<>) &&
-                string.IsNullOrEmpty(part))
-                return null;
-
-            if (underlyingElementType.IsEnum)
-            {
-                return Enum.Parse(underlyingElementType, part);
-            }
-
-            MethodInfo? parseMethod = underlyingElementType.GetMethod("Parse", new[] { typeof(string) });
-            if (parseMethod != null)
-            {
-                return parseMethod.Invoke(null, new object[] { part });
-            }
-
-            throw new InvalidOperationException($"Type {elementType} does not have a static Parse method.");
-        }).ToArray();
-
-        // Create an array of the specified type and copy the converted values
-        Array resultArray = Array.CreateInstance(elementType, parts.Length);
-        Array.Copy(convertedArray, resultArray, parts.Length);
-
-        return resultArray;
+        return arrayCopy;
     }
 }

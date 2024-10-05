@@ -25,4 +25,12 @@ internal class TypeHelper
 
         return false;
     }
+
+    public static Type GetGenericUnderlyingType(Type type)
+    {
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            return type.GetGenericArguments()[0];
+
+        return type;
+    }
 }

@@ -23,23 +23,23 @@ public class PageDataTests
 
         var pager = new DataPager { PageSize = 0, Take = 0 };
         var result = flexPager.PagerIsValid(pager);
-        Assert.False(result);
+        Assert.That(result, Is.False);
 
         pager = new DataPager { PageSize = 10, Page = 0 };
         result = flexPager.PagerIsValid(pager);
-        Assert.False(result);
+        Assert.That(result, Is.False);
 
         pager = new DataPager { Take = 10, Skip = -1 };
         result = flexPager.PagerIsValid(pager);
-        Assert.False(result);
+        Assert.That(result, Is.False);
 
         pager = new DataPager { PageSize = 10, Page = 1 };
         result = flexPager.PagerIsValid(pager);
-        Assert.True(result);
+        Assert.That(result, Is.True);
 
         pager = new DataPager { Take = 10, Skip = 0 };
         result = flexPager.PagerIsValid(pager);
-        Assert.True(result);
+        Assert.That(result, Is.True);
     }
 
     [Test]

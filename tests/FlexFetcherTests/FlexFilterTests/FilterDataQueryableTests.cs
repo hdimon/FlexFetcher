@@ -84,15 +84,6 @@ public class FilterDataQueryableTests : BaseFilterData
     }
 
     [Test]
-    public void SimpleInCommaDelimitedStringFilter()
-    {
-        SimpleInCommaDelimitedStringFilterTest(filters => _ctx.People.FilterData(filters).ToList());
-
-        var flexFilter = new FlexFilter<PeopleEntity>();
-        SimpleInCommaDelimitedStringFilterTest(filters => flexFilter.FilterData(_ctx.People, filters).ToList());
-    }
-
-    [Test]
     public void SimpleFilterWithCustomFilter()
     {
         var customFilter = new PeopleFullNameCustomFilter();
