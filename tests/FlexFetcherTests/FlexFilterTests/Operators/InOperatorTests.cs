@@ -1,7 +1,10 @@
 ﻿using FlexFetcher.Models.Queries;
 using FlexFetcher;
+using FlexFetcher.Serialization.NewtonsoftJson;
+using FlexFetcher.Serialization.SystemTextJson;
 using FlexFetcherTests.Stubs.Database;
 using Newtonsoft.Json;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests.Operators;
 
@@ -333,8 +336,8 @@ public class InOperatorTests
         var result1 = flexFilter.FilterData(_ctx.People, filter1);
         Assert.That(result1.Count(), Is.EqualTo(expectedCount));
 
-        var json2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json2, SystemTextJsonHelper.SerializerSettings);
+        var json2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json2, SystemTextJsonHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(expectedCount));
     }
@@ -350,8 +353,8 @@ public class InOperatorTests
         var result1 = flexFilter.FilterData(_ctx.People, filter1);
         Assert.That(result1.Count(), Is.EqualTo(expectedCount));
 
-        var json2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json2, SystemTextJsonHelper.SerializerSettings);
+        var json2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json2, SystemTextJsonHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count, Is.EqualTo(expectedCount));
     }

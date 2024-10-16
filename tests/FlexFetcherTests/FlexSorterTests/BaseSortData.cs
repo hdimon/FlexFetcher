@@ -1,7 +1,7 @@
 ﻿using FlexFetcher.Exceptions;
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
-using FlexFetcherTests.Stubs.Database;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexSorterTests;
 
@@ -63,7 +63,7 @@ public abstract class BaseSortData
                 }
             }
         };
-
+        
         var result = sorter(sorters);
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 9, 10, 1, 2, 5, 6, 3, 4, 7, 8 }));
     }

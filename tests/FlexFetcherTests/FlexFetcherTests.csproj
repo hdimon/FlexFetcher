@@ -26,7 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\FlexFetcher.DependencyInjection.Microsoft\FlexFetcher.DependencyInjection.Microsoft.csproj" />
+    <ProjectReference Include="..\..\src\FlexFetcher.Serialization.NewtonsoftJson\FlexFetcher.Serialization.NewtonsoftJson.csproj" />
+    <ProjectReference Include="..\..\src\FlexFetcher.Serialization.SystemTextJson\FlexFetcher.Serialization.SystemTextJson.csproj" />
     <ProjectReference Include="..\..\src\FlexFetcher\FlexFetcher.csproj" />
+    <ProjectReference Include="..\TestData\TestData.csproj" />
   </ItemGroup>
 
   <ItemGroup>

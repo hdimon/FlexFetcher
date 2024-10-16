@@ -57,12 +57,18 @@ public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOption
         IsBuilt = true;
     }
 
-    public bool TryGetFieldNameByAlias(string alias, [MaybeNullWhen(false)] out string fieldName)
+    public bool TryGetFieldNameByAlias(string alias,
+#if NET5_0_OR_GREATER
+[MaybeNullWhen(false)]
+#endif
+        out string fieldName)
     {
         if (FieldNameByAlias.TryGetValue(alias, out fieldName))
             return true;
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         fieldName = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         return false;
     }
 

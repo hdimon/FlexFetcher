@@ -2,8 +2,8 @@
 using FlexFetcher;
 using FlexFetcher.ExpressionBuilders;
 using FlexFetcher.Models.FlexFetcherOptions;
-using FlexFetcherTests.Stubs.Database;
 using Microsoft.Extensions.DependencyInjection;
+using TestData.Database;
 
 namespace FlexFetcherTests.DependencyInjectionTests;
 

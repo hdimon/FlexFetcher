@@ -1,5 +1,6 @@
-﻿using FlexFetcherTests.Stubs.Database;
+﻿using FlexFetcher.Serialization.NewtonsoftJson;
 using Newtonsoft.Json;
+using TestData.Database;
 
 namespace FlexFetcherTests.SerializationTests;
 

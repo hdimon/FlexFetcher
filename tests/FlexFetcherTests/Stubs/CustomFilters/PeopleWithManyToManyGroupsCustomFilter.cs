@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using FlexFetcher;
-using FlexFetcherTests.Stubs.Database;
+using TestData.Database;
 
 namespace FlexFetcherTests.Stubs.CustomFilters;
 
@@ -15,8 +15,7 @@ public class PeopleWithManyToManyGroupsCustomFilter : BaseFlexCustomFieldFilter<
         return filterOperator switch
         {
             //"Neq" => p => p.PeopleGroups.All(p => p.Group.Name != value),
-            "AnyGroup" => p => p.PeopleGroups.Any(pg => pg.Group.Name == value),
-            //"all" => (PeopleEntity p) => p.PeopleGroups.All(),
+            "AnyGroup" => p => p.PeopleGroups.Any(pg => pg.Group!.Name == value),
             _ => throw new NotSupportedException($"Invalid filter operator: {filterOperator}")
         };
     }

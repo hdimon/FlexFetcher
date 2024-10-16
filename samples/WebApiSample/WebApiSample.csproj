@@ -11,4 +11,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FlexFetcher.DependencyInjection.Microsoft\FlexFetcher.DependencyInjection.Microsoft.csproj" />
+    <ProjectReference Include="..\..\src\FlexFetcher.Serialization.SystemTextJson\FlexFetcher.Serialization.SystemTextJson.csproj" />
+    <ProjectReference Include="..\..\src\FlexFetcher\FlexFetcher.csproj" />
+    <ProjectReference Include="..\..\tests\TestData\TestData.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,9 +1,9 @@
 ﻿using FlexFetcher;
+using FlexFetcher.DependencyInjection.Microsoft;
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
-using FlexFetcher.Utils;
-using FlexFetcherTests.Stubs.Database;
 using Microsoft.Extensions.DependencyInjection;
+using TestData.Database;
 
 namespace FlexFetcherTests.DependencyInjectionTests;
 

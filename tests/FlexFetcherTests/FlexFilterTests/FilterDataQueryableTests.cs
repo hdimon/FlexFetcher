@@ -5,6 +5,7 @@ using FlexFetcher.Utils;
 using FlexFetcherTests.Stubs.CustomFilters;
 using FlexFetcherTests.Stubs.Database;
 using Microsoft.EntityFrameworkCore;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
 

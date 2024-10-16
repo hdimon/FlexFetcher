@@ -46,9 +46,15 @@ public class FlexFetcher<TEntity, TModel> : FlexFetcher<TEntity> where TEntity :
 public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
 {
     public FlexFetcherOptions<TEntity> Options { get; }
+#if NETSTANDARD2_0
+    public override BaseFlexFilter Filter { get; }
+    public override BaseFlexSorter Sorter { get; }
+    public override BaseFlexPager Pager { get; }
+#else
     public override FlexFilter<TEntity> Filter { get; }
     public override FlexSorter<TEntity> Sorter { get; }
     public override FlexPager<TEntity> Pager { get; }
+#endif
 
     public FlexFetcher() : this(new FlexFetcherOptions<TEntity>())
     {
@@ -120,6 +126,25 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
 
     public IQueryable<TEntity> FetchData(IQueryable<TEntity> query, DataFilters? filters, DataSorters? sorters, DataPager? pager)
     {
+#if NETSTANDARD2_0
+        if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
+            return query;
+
+        if (!((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters))
+        {
+            query = ((FlexFilter<TEntity>)Filter).FilterData(query, filters!);
+        }
+
+        if (!((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters))
+        {
+            query = ((FlexSorter<TEntity>)Sorter).SortData(query, sorters!);
+        }
+
+        if (!((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
+        {
+            query = ((FlexPager<TEntity>)Pager).PageData(query, pager!);
+        }
+#else
         if (Filter.FilterIsEmpty(filters) && Sorter.SorterIsEmpty(sorters) && Pager.PagerIsEmpty(pager))
             return query;
 
@@ -137,6 +162,7 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
         {
             query = Pager.PageData(query, pager!);
         }
+#endif
 
         return query;
     }
@@ -144,6 +170,25 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
     public IEnumerable<TEntity> FetchData(IEnumerable<TEntity> query, DataFilters? filters, DataSorters? sorters,
         DataPager? pager)
     {
+#if NETSTANDARD2_0
+        if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
+            return query;
+
+        if (!((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters))
+        {
+            query = ((FlexFilter<TEntity>)Filter).FilterData(query, filters!);
+        }
+
+        if (!((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters))
+        {
+            query = ((FlexSorter<TEntity>)Sorter).SortData(query, sorters!);
+        }
+
+        if (!((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
+        {
+            query = ((FlexPager<TEntity>)Pager).PageData(query, pager!);
+        }
+#else
         if (Filter.FilterIsEmpty(filters) && Sorter.SorterIsEmpty(sorters) && Pager.PagerIsEmpty(pager))
             return query;
 
@@ -161,6 +206,7 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
         {
             query = Pager.PageData(query, pager!);
         }
+#endif
 
         return query;
     }

@@ -66,6 +66,7 @@ public abstract class BaseFilterExpressionHandler : IFilterExpressionHandler
         if (value is null || value.GetType() == valueType) 
             return value;
 
+#if NET6_0_OR_GREATER
         if (value is string s && valueType == typeof(DateOnly))
         {
             value = DateOnly.Parse(s);
@@ -74,7 +75,9 @@ public abstract class BaseFilterExpressionHandler : IFilterExpressionHandler
         {
             value = TimeOnly.Parse(value1);
         }
-        else if (value is string s1 && valueType == typeof(DateTimeOffset))
+        else
+#endif
+        if (value is string s1 && valueType == typeof(DateTimeOffset))
         {
             value = DateTimeOffset.Parse(s1);
         }

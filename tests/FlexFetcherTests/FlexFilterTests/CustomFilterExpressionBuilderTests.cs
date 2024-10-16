@@ -4,8 +4,8 @@ using FlexFetcher.ExpressionBuilders;
 using FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
-using FlexFetcherTests.Stubs;
-using FlexFetcherTests.Stubs.Database;
+using TestData;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
 
