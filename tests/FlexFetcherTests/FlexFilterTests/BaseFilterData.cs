@@ -2,10 +2,12 @@
 using FlexFetcher.Exceptions;
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
+using FlexFetcher.Serialization.NewtonsoftJson;
+using FlexFetcher.Serialization.SystemTextJson;
 using FlexFetcherTests.Stubs.CustomFilters;
-using FlexFetcherTests.Stubs.Database;
 using FlexFetcherTests.Stubs.FlexFilters;
 using Newtonsoft.Json;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
 
@@ -119,8 +121,8 @@ public abstract class BaseFilterData
         Assert.That(result.Count, Is.EqualTo(4));
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(ids));
 
-        filterJson = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(filterJson, SystemTextJsonHelper.SerializerSettings)!;
+        filterJson = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(filterJson, SystemTextJsonHelper.GetSerializerSettings())!;
 
         result = fetcher(filter2);
 

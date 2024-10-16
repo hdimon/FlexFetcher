@@ -1,5 +1,6 @@
-﻿using FlexFetcherTests.Stubs.Database;
-using System.Text.Json;
+﻿using System.Text.Json;
+using FlexFetcher.Serialization.SystemTextJson;
+using TestData.Database;
 
 namespace FlexFetcherTests.SerializationTests;
 
@@ -8,7 +9,7 @@ public class SystemTextJsonTests
     [Test]
     public void SerializeDatesTest()
     {
-        var settings = SystemTextJsonHelper.SerializerSettings;
+        var settings = SystemTextJsonHelper.GetSerializerSettings();
 
         var dt1LocalKind = new DateTime(2024, 6, 10, 10, 20, 56, DateTimeKind.Local);
         var dt2UtcKind = new DateTime(2024, 6, 10, 10, 20, 56, DateTimeKind.Utc);
@@ -100,7 +101,7 @@ public class SystemTextJsonTests
     [Test]
     public void GenericConverterTest()
     {
-        var settings = SystemTextJsonHelper.SerializerSettings;
+        var settings = SystemTextJsonHelper.GetSerializerSettings();
 
         object obj = new object();
         var objJson = JsonSerializer.Serialize(obj, settings);
@@ -129,7 +130,7 @@ public class SystemTextJsonTests
     [Test]
     public void SerializeArrayTest()
     {
-        var settings = SystemTextJsonHelper.SerializerSettings;
+        var settings = SystemTextJsonHelper.GetSerializerSettings();
 
         var intArray = new[] { 1, 2, 3, 4, 5 };
         var json1 = JsonSerializer.Serialize(intArray, settings);

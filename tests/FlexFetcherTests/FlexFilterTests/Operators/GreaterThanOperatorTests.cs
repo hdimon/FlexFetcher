@@ -1,7 +1,10 @@
 ﻿using FlexFetcher.Models.Queries;
 using FlexFetcher;
+using FlexFetcher.Serialization.NewtonsoftJson;
+using FlexFetcher.Serialization.SystemTextJson;
 using FlexFetcherTests.Stubs.Database;
 using Newtonsoft.Json;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests.Operators;
 
@@ -49,8 +52,8 @@ public class GreaterThanOperatorTests
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(3));
 
-        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.SerializerSettings);
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(3));
     }
@@ -80,8 +83,8 @@ public class GreaterThanOperatorTests
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
-        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.SerializerSettings);
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -111,8 +114,8 @@ public class GreaterThanOperatorTests
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
-        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.SerializerSettings);
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -142,8 +145,8 @@ public class GreaterThanOperatorTests
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
-        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.SerializerSettings);
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -214,8 +217,8 @@ public class GreaterThanOperatorTests
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
-        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.SerializerSettings);
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -245,8 +248,8 @@ public class GreaterThanOperatorTests
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
-        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.SerializerSettings);
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.SerializerSettings);
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }

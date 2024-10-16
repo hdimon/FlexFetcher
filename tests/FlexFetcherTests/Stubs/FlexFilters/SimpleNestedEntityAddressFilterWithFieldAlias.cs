@@ -1,5 +1,5 @@
 ﻿using FlexFetcher;
-using FlexFetcherTests.Stubs.Database;
+using TestData.Database;
 
 namespace FlexFetcherTests.Stubs.FlexFilters;
 

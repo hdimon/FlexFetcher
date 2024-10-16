@@ -2,9 +2,9 @@
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
-using FlexFetcherTests.Stubs;
 using FlexFetcherTests.Stubs.CustomFilters;
-using FlexFetcherTests.Stubs.Database;
+using TestData;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
 

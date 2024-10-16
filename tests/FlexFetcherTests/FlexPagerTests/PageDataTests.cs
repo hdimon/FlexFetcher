@@ -1,8 +1,8 @@
 ﻿using FlexFetcher;
-using FlexFetcherTests.Stubs.Database;
-using FlexFetcherTests.Stubs;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
+using TestData;
+using TestData.Database;
 
 namespace FlexFetcherTests.FlexPagerTests;
 

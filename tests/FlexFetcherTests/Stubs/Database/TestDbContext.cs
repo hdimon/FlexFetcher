@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TestData;
+using TestData.Database;
 
 namespace FlexFetcherTests.Stubs.Database;
 
@@ -61,11 +63,11 @@ public class TestDbContext : DbContext
 
         var genders = InMemoryDataHelper.GetGenders();
 
-        modelBuilder.Entity<GroupEntity>().HasData(groups);
+        modelBuilder.Entity<GroupEntity>().HasData(groups!);
         modelBuilder.Entity<PeopleEntity>().HasData(people);
         modelBuilder.Entity<PeopleGroupEntity>().HasData(peopleGroups);
         modelBuilder.Entity<AddressEntity>().HasData(addresses!);
-        modelBuilder.Entity<UserEntity>().HasData(users);
+        modelBuilder.Entity<UserEntity>().HasData(users!);
         modelBuilder.Entity<GenderEntity>().HasData(genders);
     }
 }
