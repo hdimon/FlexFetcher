@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: [ '6.x', '7.x', '8.x' ]
+        dotnet-version: [ '8.x' ]
 
     steps:
       - name: Checkout code
@@ -27,7 +27,7 @@ jobs:
         run: dotnet restore
 
       - name: Exclude WebApiSample.Framework48 from solution
-        run: dotnet sln remove src/WebApiSample.Framework48/WebApiSample.Framework48.csproj
+        run: dotnet sln remove samples/WebApiSample.Framework48/WebApiSample.Framework48.csproj
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
