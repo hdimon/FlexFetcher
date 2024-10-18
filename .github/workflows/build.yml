@@ -33,4 +33,4 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run unit tests
-        run: dotnet test tests --no-build --verbosity normal
+        run: dotnet test tests/FlexFetcherTests/FlexFetcherTests.csproj --no-build --verbosity normal
