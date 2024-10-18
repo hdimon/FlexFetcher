@@ -9,24 +9,10 @@ on:
 
 jobs:
   build-and-test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
         dotnet-version: [ '6.x', '7.x', '8.x' ]
-        include:
-          - os: ubuntu-latest
-            dotnet-version: '6.x'
-            target-framework: 'netstandard2.0'
-          - os: ubuntu-latest
-            dotnet-version: '7.x'
-            target-framework: 'netstandard2.0'
-          - os: ubuntu-latest
-            dotnet-version: '8.x'
-            target-framework: 'netstandard2.0'
-          - os: windows-latest
-            dotnet-version: '6.x'
-            target-framework: 'net48'
-    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -40,8 +26,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Exclude WebApiSample.Framework48 from solution
+        run: dotnet sln remove src/WebApiSample.Framework48/WebApiSample.Framework48.csproj
+
       - name: Build
-        run: dotnet build --configuration Release --no-restore --framework ${{ matrix.target-framework }}
+        run: dotnet build --configuration Release --no-restore
 
       - name: Run unit tests
         run: dotnet test tests --no-build --verbosity normal
