@@ -5,10 +5,22 @@
 	<LangVersion>12.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+	<PackageId>FlexFetcher.Serialization.NewtonsoftJson</PackageId>
+	<Title>FlexFetcher.Serialization.NewtonsoftJson</Title>
+	<Authors>Dmitrii Khlybov</Authors>
+	<Description>FlexFetcher extension for Newtonsoft.Json allowing to serialize/deserialize data correctly to be consumed by FlexFetcher.</Description>
+	<PackageTags>FlexFetcher Net Asp-Net-Core Filter Filtering Sort Sorting Page Paging Query Querying Newtonsoft</PackageTags>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/hdimon/FlexFetcher</PackageProjectUrl>
+	<Copyright>Copyright © Dmitrii Khlybov 2024</Copyright>
+	<RepositoryUrl>https://github.com/hdimon/FlexFetcher</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
 
 </Project>
