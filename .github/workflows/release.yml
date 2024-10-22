@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '8.x' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Exclude WebApiSample.Framework48 from solution
+        run: dotnet sln remove samples/WebApiSample.Framework48/WebApiSample.Framework48.csproj
+
+      - name: Exclude WebApiSample from solution
+        run: dotnet sln remove samples/WebApiSample/WebApiSample.csproj
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore -p:VersionPrefix=${{ github.ref }}
+
+      - name: Pack FlexFetcher
+        run: dotnet pack ./src/FlexFetcher/FlexFetcher.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+
+      - name: Pack FlexFetcher.DependencyInjection.Microsoft
+        run: dotnet pack ./src/FlexFetcher.DependencyInjection.Microsoft/FlexFetcher.DependencyInjection.Microsoft.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+
+      - name: Pack FlexFetcher.Serialization.NewtonsoftJson
+        run: dotnet pack ./src/FlexFetcher.Serialization.NewtonsoftJson/FlexFetcher.Serialization.NewtonsoftJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+
+      - name: Pack FlexFetcher.Serialization.SystemTextJson
+        run: dotnet pack ./src/FlexFetcher.Serialization.SystemTextJson/FlexFetcher.Serialization.SystemTextJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+
+      #- name: Publish to NuGet
+      #  run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set prerelease variable
+        id: set_prerelease
+        run: |
+          if [[ "${GITHUB_REF}" == *"-"* ]]; then
+            echo "PRERELEASE=true" >> $GITHUB_ENV
+          else
+            echo "PRERELEASE=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: ${{ env.PRERELEASE }}
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./nupkgs/*.nupkg
+          asset_name: $(basename ./artifacts/*.nupkg)
+          asset_content_type: application/zip
