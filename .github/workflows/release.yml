@@ -11,6 +11,9 @@ jobs:
     strategy:
       matrix:
         dotnet-version: [ '8.x' ]
+    outputs:
+      tag_name: ${{ steps.set_output_tag_name.outputs.tag_name }}
+      display_version: ${{ steps.set_output_display_version.outputs.display_version }}
 
     steps:
       - name: Checkout code
@@ -34,9 +37,17 @@ jobs:
         id: extract_tag
         run: echo "TAG_NAME=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
-      - name: Set output
-        id: set_output
-        run: echo "::set-output name=tag_name::${{ env.TAG_NAME }}"
+      - name: Set output tag name
+        id: set_output_tag_name
+        run: echo "tag_name=${{ env.TAG_NAME }}" >> $GITHUB_OUTPUT
+
+      - name: Extract display version
+        id: extract_display_version
+        run: echo "DISPLAY_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Set output display version
+        id: set_output_display_version
+        run: echo "display_version=${{ env.DISPLAY_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Build
         run: dotnet build --configuration Release --no-restore -p:VersionPrefix=${{ env.TAG_NAME }}
@@ -61,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set prerelease variable
         id: set_prerelease
@@ -75,14 +86,15 @@ jobs:
       - name: Set TAG_NAME
         run: echo "TAG_NAME=${{ needs.build.outputs.tag_name }}" >> $GITHUB_ENV
 
+      - name: Set DISPLAY_VERSION
+        run: echo "DISPLAY_VERSION=${{ needs.build.outputs.display_version }}" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          release_name: Release ${{ env.TAG_NAME }}
+          tag_name: ${{ env.DISPLAY_VERSION }}
+          name: ${{ env.DISPLAY_VERSION }}
           draft: true
           prerelease: ${{ env.PRERELEASE }}
 
