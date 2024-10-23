@@ -9,14 +9,11 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         dotnet-version: [ '8.x' ]
-    outputs:
-      tag_name: ${{ steps.set_output_tag_name.outputs.tag_name }}
-      display_version: ${{ steps.set_output_display_version.outputs.display_version }}
 
     steps:
       - name: Checkout code
@@ -40,17 +37,9 @@ jobs:
         id: extract_tag
         run: echo "TAG_NAME=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
-      - name: Set output tag name
-        id: set_output_tag_name
-        run: echo "tag_name=${{ env.TAG_NAME }}" >> $GITHUB_OUTPUT
-
       - name: Extract display version
         id: extract_display_version
         run: echo "DISPLAY_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
-      - name: Set output display version
-        id: set_output_display_version
-        run: echo "display_version=${{ env.DISPLAY_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Build
         run: dotnet build --configuration Release --no-restore -p:VersionPrefix=${{ env.TAG_NAME }}
@@ -70,13 +59,6 @@ jobs:
       #- name: Publish to NuGet
       #  run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
-  create-release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Set prerelease variable
         id: set_prerelease
         run: |
@@ -85,12 +67,6 @@ jobs:
           else
             echo "PRERELEASE=false" >> $GITHUB_ENV
           fi
-
-      - name: Set TAG_NAME
-        run: echo "TAG_NAME=${{ needs.build.outputs.tag_name }}" >> $GITHUB_ENV
-
-      - name: Set DISPLAY_VERSION
-        run: echo "DISPLAY_VERSION=${{ needs.build.outputs.display_version }}" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
@@ -106,5 +82,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./nupkgs/*.nupkg
-          asset_name: $(basename ./artifacts/*.nupkg)
+          asset_name: $(basename ./nupkgs/*.nupkg)
           asset_content_type: application/zip
