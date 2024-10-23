@@ -30,20 +30,28 @@ jobs:
       - name: Exclude WebApiSample from solution
         run: dotnet sln remove samples/WebApiSample/WebApiSample.csproj
 
+      - name: Extract tag name
+        id: extract_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Set output
+        id: set_output
+        run: echo "::set-output name=tag_name::${{ env.TAG_NAME }}"
+
       - name: Build
-        run: dotnet build --configuration Release --no-restore -p:VersionPrefix=${{ github.ref }}
+        run: dotnet build --configuration Release --no-restore -p:VersionPrefix=${{ env.TAG_NAME }}
 
       - name: Pack FlexFetcher
-        run: dotnet pack ./src/FlexFetcher/FlexFetcher.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+        run: dotnet pack ./src/FlexFetcher/FlexFetcher.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ env.TAG_NAME }}
 
       - name: Pack FlexFetcher.DependencyInjection.Microsoft
-        run: dotnet pack ./src/FlexFetcher.DependencyInjection.Microsoft/FlexFetcher.DependencyInjection.Microsoft.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+        run: dotnet pack ./src/FlexFetcher.DependencyInjection.Microsoft/FlexFetcher.DependencyInjection.Microsoft.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ env.TAG_NAME }}
 
       - name: Pack FlexFetcher.Serialization.NewtonsoftJson
-        run: dotnet pack ./src/FlexFetcher.Serialization.NewtonsoftJson/FlexFetcher.Serialization.NewtonsoftJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+        run: dotnet pack ./src/FlexFetcher.Serialization.NewtonsoftJson/FlexFetcher.Serialization.NewtonsoftJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ env.TAG_NAME }}
 
       - name: Pack FlexFetcher.Serialization.SystemTextJson
-        run: dotnet pack ./src/FlexFetcher.Serialization.SystemTextJson/FlexFetcher.Serialization.SystemTextJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ github.ref }}
+        run: dotnet pack ./src/FlexFetcher.Serialization.SystemTextJson/FlexFetcher.Serialization.SystemTextJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ env.TAG_NAME }}
 
       #- name: Publish to NuGet
       #  run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
@@ -64,14 +72,17 @@ jobs:
             echo "PRERELEASE=false" >> $GITHUB_ENV
           fi
 
+      - name: Set TAG_NAME
+        run: echo "TAG_NAME=${{ needs.build.outputs.tag_name }}" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: Release ${{ env.TAG_NAME }}
           draft: true
           prerelease: ${{ env.PRERELEASE }}
 
