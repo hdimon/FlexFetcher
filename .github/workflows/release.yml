@@ -76,11 +76,8 @@ jobs:
           name: ${{ env.DISPLAY_VERSION }}
           draft: true
           prerelease: ${{ env.PRERELEASE }}
-
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./nupkgs/*.nupkg
-          asset_name: $(basename ./nupkgs/*.nupkg)
-          asset_content_type: application/zip
+          files: |
+            ./nupkgs/FlexFetcher.${{ env.TAG_NAME }}.nupkg
+            ./nupkgs/FlexFetcher.DependencyInjection.Microsoft.${{ env.TAG_NAME }}.nupkg
+            ./nupkgs/FlexFetcher.Serialization.NewtonsoftJson.${{ env.TAG_NAME }}.nupkg
+            ./nupkgs/FlexFetcher.Serialization.SystemTextJson.${{ env.TAG_NAME }}.nupkg
