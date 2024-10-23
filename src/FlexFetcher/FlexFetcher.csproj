@@ -1,26 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
-	<LangVersion>12.0</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+		<LangVersion>12.0</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-	<PackageId>FlexFetcher</PackageId>
-	<Title>FlexFetcher</Title>
-	<Authors>Dmitrii Khlybov</Authors>
-	<Description>FlexFetcher is a .NET library for filtering, sorting, paging data.</Description>
-	<PackageTags>FlexFetcher Net Asp-Net-Core Filter Filtering Sort Sorting Page Paging Query Querying</PackageTags>
-	<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<PackageProjectUrl>https://github.com/hdimon/FlexFetcher</PackageProjectUrl>
-	<Copyright>Copyright © Dmitrii Khlybov 2024</Copyright>
-	<RepositoryUrl>https://github.com/hdimon/FlexFetcher</RepositoryUrl>
-	<RepositoryType>git</RepositoryType>
-	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-  </PropertyGroup>
+		<PackageId>FlexFetcher</PackageId>
+		<Title>FlexFetcher</Title>
+		<Authors>Dmitrii Khlybov</Authors>
+		<Description>FlexFetcher is a .NET library for filtering, sorting, paging data.</Description>
+		<PackageTags>FlexFetcher Net Asp-Net-Core Filter Filtering Sort Sorting Page Paging Query Querying</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/hdimon/FlexFetcher</PackageProjectUrl>
+		<Copyright>Copyright © Dmitrii Khlybov 2024</Copyright>
+		<RepositoryUrl>https://github.com/hdimon/FlexFetcher</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-	<PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Include="README.md">
+			<Pack>true</Pack>
+			<PackagePath>.</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>
