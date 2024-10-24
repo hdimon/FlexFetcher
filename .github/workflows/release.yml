@@ -56,8 +56,8 @@ jobs:
       - name: Pack FlexFetcher.Serialization.SystemTextJson
         run: dotnet pack ./src/FlexFetcher.Serialization.SystemTextJson/FlexFetcher.Serialization.SystemTextJson.csproj --no-build -o ./nupkgs -p:PackageVersion=${{ env.TAG_NAME }}
 
-      #- name: Publish to NuGet
-      #  run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      - name: Publish to NuGet
+        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
       - name: Set prerelease variable
         id: set_prerelease
