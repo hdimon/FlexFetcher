@@ -34,28 +34,28 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
         ExpressionBuilder = options.ExpressionBuilder;
     }
 
-    public IQueryable<TEntity> FilterData(IQueryable<TEntity> query, DataFilters? filters)
+    public IQueryable<TEntity> FilterData(IQueryable<TEntity> query, DataFilter? filter)
     {
-        if (FilterIsEmpty(filters))
+        if (FilterIsEmpty(filter))
             return query;
 
         BuildOptions();
 
-        var expression = BuildExpression(filters!);
+        var expression = BuildExpression(filter!);
 
         query = query.Where(expression);
 
         return query;
     }
 
-    public IEnumerable<TEntity> FilterData(IEnumerable<TEntity> query, DataFilters? filters)
+    public IEnumerable<TEntity> FilterData(IEnumerable<TEntity> query, DataFilter? filter)
     {
-        if (FilterIsEmpty(filters))
+        if (FilterIsEmpty(filter))
             return query;
 
         BuildOptions();
 
-        var expression = BuildExpression(filters!);
+        var expression = BuildExpression(filter!);
 
         query = query.Where(expression.Compile());
 
@@ -70,18 +70,18 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
         return expression;
     }
 
-    private Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters)
+    private Expression<Func<TEntity, bool>> BuildExpression(DataFilter filter)
     {
-        var expression = ExpressionBuilder.BuildExpression(filters, Options);
+        var expression = ExpressionBuilder.BuildExpression(filter, Options);
         return expression;
     }
 
-    public bool FilterIsEmpty(DataFilters? filters)
+    public bool FilterIsEmpty(DataFilter? filter)
     {
-        if (filters?.Filters == null)
+        if (filter?.Filters == null)
             return true;
 
-        return filters.Filters.Count == 0;
+        return filter.Filters.Count == 0;
     }
 
     private void BuildOptions()

@@ -74,6 +74,7 @@ jobs:
         with:
           tag_name: ${{ env.DISPLAY_VERSION }}
           name: ${{ env.DISPLAY_VERSION }}
+          generate_release_notes: true
           draft: true
           prerelease: ${{ env.PRERELEASE }}
           files: |

@@ -7,74 +7,74 @@ namespace FlexFetcher.Utils;
 
 public static class FilterExtensions
 {
-    public static IEnumerable<T> FilterData<T>(this IEnumerable<T> query, DataFilters? filters) where T : class
+    public static IEnumerable<T> FilterData<T>(this IEnumerable<T> query, DataFilter? filter) where T : class
     {
-        if (FilterIsEmpty(filters))
+        if (FilterIsEmpty(filter))
             return query;
 
-        var expression = BuildExpression<T>(filters!);
+        var expression = BuildExpression<T>(filter!);
 
         query = query.Where(expression.Compile());
 
         return query;
     }
 
-    public static IEnumerable<T> FilterData<T>(this IEnumerable<T> query, DataFilters? filters, FlexFilterOptions<T> options)
+    public static IEnumerable<T> FilterData<T>(this IEnumerable<T> query, DataFilter? filter, FlexFilterOptions<T> options)
         where T : class
     {
-        if (FilterIsEmpty(filters))
+        if (FilterIsEmpty(filter))
             return query;
 
-        var expression = BuildExpression(filters!, options);
+        var expression = BuildExpression(filter!, options);
 
         query = query.Where(expression.Compile());
 
         return query;
     }
 
-    public static IQueryable<T> FilterData<T>(this IQueryable<T> query, DataFilters? filters) where T : class
+    public static IQueryable<T> FilterData<T>(this IQueryable<T> query, DataFilter? filter) where T : class
     {
-        if (FilterIsEmpty(filters))
+        if (FilterIsEmpty(filter))
             return query;
 
-        var expression = BuildExpression<T>(filters!);
+        var expression = BuildExpression<T>(filter!);
 
         query = query.Where(expression);
 
         return query;
     }
 
-    public static IQueryable<T> FilterData<T>(this IQueryable<T> query, DataFilters? filters, FlexFilterOptions<T> options)
+    public static IQueryable<T> FilterData<T>(this IQueryable<T> query, DataFilter? filter, FlexFilterOptions<T> options)
         where T : class
     {
-        if (FilterIsEmpty(filters))
+        if (FilterIsEmpty(filter))
             return query;
 
-        var expression = BuildExpression(filters!, options);
+        var expression = BuildExpression(filter!, options);
 
         query = query.Where(expression);
 
         return query;
     }
 
-    private static bool FilterIsEmpty(DataFilters? filters)
+    private static bool FilterIsEmpty(DataFilter? filter)
     {
-        if (filters?.Filters == null)
+        if (filter?.Filters == null)
             return true;
 
-        return filters.Filters.Count == 0;
+        return filter.Filters.Count == 0;
     }
 
-    private static Expression<Func<TEntity, bool>> BuildExpression<TEntity>(DataFilters? filters) where TEntity : class
+    private static Expression<Func<TEntity, bool>> BuildExpression<TEntity>(DataFilter? filter) where TEntity : class
     {
         var builder = new FilterExpressionBuilder<TEntity>();
         var options = new FlexFilterOptions<TEntity>();
         options.Build();
-        var expression = builder.BuildExpression(filters!, options);
+        var expression = builder.BuildExpression(filter!, options);
         return expression;
     }
 
-    private static Expression<Func<TEntity, bool>> BuildExpression<TEntity>(DataFilters? filters,
+    private static Expression<Func<TEntity, bool>> BuildExpression<TEntity>(DataFilter? filter,
         FlexFilterOptions<TEntity> options)
         where TEntity : class
     {
@@ -83,7 +83,7 @@ public static class FilterExtensions
         if (!options.IsBuilt)
             options.Build();
 
-        var expression = builder.BuildExpression(filters!, options);
+        var expression = builder.BuildExpression(filter!, options);
         return expression;
     }
 }

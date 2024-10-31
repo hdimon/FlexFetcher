@@ -46,9 +46,9 @@ namespace WebApiSample.Framework48.Controllers
         }*/
         [HttpGet]
         [Route("api/FlexFetcher")]
-        public List<PeopleEntity> Get([FromUri] DataFilters filters, [FromUri] DataSorters sorters, [FromUri] DataPager pager)
+        public List<PeopleEntity> Get([FromUri] DataFilter filter, [FromUri] DataSorters sorters, [FromUri] DataPager pager)
         {
-            var filtered = _people.FilterData(filters);
+            var filtered = _people.FilterData(filter);
             var sorted = filtered.SortData(sorters);
             var paged = sorted.PageData(pager);
             return paged.ToList();
@@ -66,14 +66,14 @@ namespace WebApiSample.Framework48.Controllers
             peopleFetcherOptions.AddNestedFlexFetcher(addressFilter);
             FlexFetcher<PeopleEntity> peopleFilter = new FlexFetcher<PeopleEntity>(peopleFetcherOptions);
 
-            var result = peopleFilter.FetchData(_people, query.Filters, query.Sorters, query.Pager);
+            var result = peopleFilter.FetchData(_people, query.Filter, query.Sorters, query.Pager);
 
             return result.ToList();
         }
 
         [HttpGet]
         [Route("api/FlexFetcher/GetFilter")]
-        public List<PeopleEntity> GetFilter([FromUri] DataFilters filters)
+        public List<PeopleEntity> GetFilter([FromUri] DataFilter filter)
         {
             var addressFilterOptions = new FlexFilterOptions<AddressEntity>();
             addressFilterOptions.Field(entity => entity.City).Map("Town");
@@ -83,7 +83,7 @@ namespace WebApiSample.Framework48.Controllers
             peopleFilterOptions.AddNestedFlexFilter(addressFilter);
             FlexFilter<PeopleEntity> peopleFilter = new FlexFilter<PeopleEntity>(peopleFilterOptions);
 
-            var filtered = peopleFilter.FilterData(_people, filters);
+            var filtered = peopleFilter.FilterData(_people, filter);
             return filtered.ToList();
         }
 
@@ -99,7 +99,7 @@ namespace WebApiSample.Framework48.Controllers
             peopleFilterOptions.AddNestedFlexFilter(addressFilter);
             FlexFilter<PeopleEntity> peopleFilter = new FlexFilter<PeopleEntity>(peopleFilterOptions);
 
-            var filtered = peopleFilter.FilterData(_people, query.Filters);
+            var filtered = peopleFilter.FilterData(_people, query.Filter);
             return filtered.ToList();
         }
 

@@ -30,4 +30,8 @@
 			<PackagePath>.</PackagePath>
 		</None>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\FlexFetcher\FlexFetcher.csproj" />
+	</ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ namespace WebApiSample.Framework48.Utils
         public override IModelBinder GetBinder(HttpConfiguration configuration, Type modelType)
         {
             if (modelType == typeof(DataQuery) ||
-                modelType == typeof(DataFilters) ||
+                modelType == typeof(DataFilter) ||
                 modelType == typeof(DataSorters) ||
                 modelType == typeof(DataPager))
             {

@@ -21,9 +21,9 @@ public class FlexFetcherController : ControllerBase
     }
 
     [HttpGet]
-    public List<PeopleEntity> Get([FromQuery] DataFilters filters, [FromQuery] DataSorters sorters, [FromQuery] DataPager pager)
+    public List<PeopleEntity> Get([FromQuery] DataFilter filter, [FromQuery] DataSorters sorters, [FromQuery] DataPager pager)
     {
-        var filtered = _people.FilterData(filters);
+        var filtered = _people.FilterData(filter);
         var sorted = filtered.SortData(sorters);
         var paged = sorted.PageData(pager);
         return paged.ToList();
@@ -32,13 +32,13 @@ public class FlexFetcherController : ControllerBase
     [HttpPost]
     public List<PeopleEntity> Post([FromServices] FlexFetcher<PeopleEntity> flexFetcher, [FromBody] DataQuery query)
     {
-        var result = flexFetcher.FetchData(_people, query.Filters, query.Sorters, query.Pager);
+        var result = flexFetcher.FetchData(_people, query.Filter, query.Sorters, query.Pager);
 
         return result.ToList();
     }
 
     [HttpGet("Filter", Name = "GetFilter")]
-    public List<PeopleEntity> GetFilter([FromQuery] DataFilters filters)
+    public List<PeopleEntity> GetFilter([FromQuery] DataFilter filter)
     {
         var addressFilterOptions = new FlexFilterOptions<AddressEntity>();
         addressFilterOptions.Field(entity => entity.City).Map("Town");
@@ -48,7 +48,7 @@ public class FlexFetcherController : ControllerBase
         peopleFilterOptions.AddNestedFlexFilter(addressFilter);
         FlexFilter<PeopleEntity> peopleFilter = new FlexFilter<PeopleEntity>(peopleFilterOptions);
 
-        var filtered = peopleFilter.FilterData(_people, filters);
+        var filtered = peopleFilter.FilterData(_people, filter);
         return filtered.ToList();
     }
 
@@ -63,7 +63,7 @@ public class FlexFetcherController : ControllerBase
         peopleFilterOptions.AddNestedFlexFilter(addressFilter);
         FlexFilter<PeopleEntity> peopleFilter = new FlexFilter<PeopleEntity>(peopleFilterOptions);
 
-        var filtered = peopleFilter.FilterData(_people, query.Filters);
+        var filtered = peopleFilter.FilterData(_people, query.Filter);
         return filtered.ToList();
     }
 
