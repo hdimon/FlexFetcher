@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
+using FlexFetcher.Models.Queries;
 using FlexFetcher.Serialization.SystemTextJson;
+using FlexFetcher.Serialization.SystemTextJson.Converters;
 using TestData.Database;
 
 namespace FlexFetcherTests.SerializationTests;
@@ -290,5 +292,300 @@ public class SystemTextJsonTests
         Assert.That(json17, Is.EqualTo("[null,null,null]"));
         var arrayDeserialized17 = JsonSerializer.Deserialize<object>(json17, settings);
         Assert.That(arrayDeserialized17, Is.EqualTo(nullArray));
+    }
+
+    [Test]
+    public void SerializeFilterShortFormTest()
+    {
+        var settingsFullForm = SystemTextJsonHelper.GetSerializerSettings();
+        var settingsShortForm = SystemTextJsonHelper.GetSerializerSettings();
+        settingsShortForm.Converters.Add(new FlexFetcherDataFilterConverter());
+
+        var filter = new DataFilter
+        {
+            Logic = DataFilterLogic.And,
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Address",
+                    Operator = DataFilterOperator.NotEqual,
+                    Value = null
+                },
+                new()
+                {
+                    Field = "Address.Location",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "Chicago, IL"
+                }
+            }
+        };
+
+        // That's how json looks like with default serializer
+        var filterFullSerialized = JsonSerializer.Serialize(filter, settingsFullForm);
+        Assert.That(filterFullSerialized.Length, Is.EqualTo(242));
+        Assert.That(filterFullSerialized,
+            Is.EqualTo(
+                "{\"Logic\":\"And\",\"Filters\":[{\"Logic\":null,\"Filters\":null,\"Operator\":\"Neq\",\"Field\":\"Address\",\"Value\":null},{\"Logic\":null,\"Filters\":null,\"Operator\":\"Eq\",\"Field\":\"Address.Location\",\"Value\":\"Chicago, IL\"}],\"Operator\":null,\"Field\":null,\"Value\":null}"));
+
+        // That's how json looks like with custom "short form" serializer
+        var filterShortSerialized = JsonSerializer.Serialize(filter, settingsShortForm);
+        Assert.That(filterShortSerialized.Length, Is.EqualTo(105));
+        Assert.That(filterShortSerialized,
+            Is.EqualTo(
+                "{\"L\":\"And\",\"Fs\":[{\"O\":\"Neq\",\"F\":\"Address\",\"V\":null},{\"O\":\"Eq\",\"F\":\"Address.Location\",\"V\":\"Chicago, IL\"}]}"));
+
+        // That's how json looks like with full form but without null values, i.e. how external clients should send it
+        var filterFullJson =
+            "{\"Logic\":\"And\",\"Filters\":[{\"Operator\":\"Neq\",\"Field\":\"Address\",\"Value\":null},{\"Operator\":\"Eq\",\"Field\":\"Address.Location\",\"Value\":\"Chicago, IL\"}]}";
+        Assert.That(filterFullJson.Length, Is.EqualTo(144));
+
+        // Deserialize jsons and validate
+        var deserializedFilterFull = JsonSerializer.Deserialize<DataFilter>(filterFullSerialized, settingsFullForm);
+        var deserializedFilterShort = JsonSerializer.Deserialize<DataFilter>(filterShortSerialized, settingsShortForm);
+        // Serialize with default serializer and compare to make sure that filters are the same, i.e. full form is correct
+        var originalFilterSerializedDefault = JsonSerializer.Serialize(filter);
+        var filterFullSerializedDefault = JsonSerializer.Serialize(deserializedFilterFull);
+        Assert.That(filterFullSerializedDefault, Is.EqualTo(originalFilterSerializedDefault));
+
+        // Serialize with default serializer and compare to make sure that filters are the same, i.e. short form is correct
+        var filterShortSerializedDefault = JsonSerializer.Serialize(deserializedFilterShort);
+        Assert.That(filterShortSerializedDefault, Is.EqualTo(originalFilterSerializedDefault));
+    }
+
+    [Test]
+    public void SerializeSorterShortFormTest()
+    {
+        var settingsFullForm = SystemTextJsonHelper.GetSerializerSettings();
+        var settingsShortForm = SystemTextJsonHelper.GetSerializerSettings();
+        settingsShortForm.Converters.Add(new FlexFetcherDataSorterConverter());
+        settingsShortForm.Converters.Add(new FlexFetcherDataSortersConverter());
+
+        var sorter = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new()
+                {
+                    Field = "Name",
+                    Direction = DataSorterDirection.Asc
+                },
+                new()
+                {
+                    Field = "Age",
+                    Direction = DataSorterDirection.Desc
+                }
+            }
+        };
+
+        // That's how json looks like with default serializer
+        var sorterFullSerialized = JsonSerializer.Serialize(sorter, settingsFullForm);
+        Assert.That(sorterFullSerialized.Length, Is.EqualTo(83));
+        Assert.That(sorterFullSerialized,
+            Is.EqualTo("{\"Sorters\":[{\"Field\":\"Name\",\"Direction\":\"Asc\"},{\"Field\":\"Age\",\"Direction\":\"Desc\"}]}"));
+
+        // That's how json looks like with custom "short form" serializer
+        var sorterShortSerialized = JsonSerializer.Serialize(sorter, settingsShortForm);
+        Assert.That(sorterShortSerialized.Length, Is.EqualTo(53));
+        Assert.That(sorterShortSerialized, Is.EqualTo("{\"S\":[{\"F\":\"Name\",\"D\":\"Asc\"},{\"F\":\"Age\",\"D\":\"Desc\"}]}"));
+
+        // Deserialize jsons and validate
+        var deserializedSorterFull = JsonSerializer.Deserialize<DataSorters>(sorterFullSerialized, settingsFullForm);
+        var deserializedSorterShort = JsonSerializer.Deserialize<DataSorters>(sorterShortSerialized, settingsShortForm);
+        // Serialize with default serializer and compare to make sure that sorters are the same, i.e. full form is correct
+        var originalSorterSerializedDefault = JsonSerializer.Serialize(sorter);
+        var sorterFullSerializedDefault = JsonSerializer.Serialize(deserializedSorterFull);
+        Assert.That(sorterFullSerializedDefault, Is.EqualTo(originalSorterSerializedDefault));
+
+        // Serialize with default serializer and compare to make sure that sorters are the same, i.e. short form is correct
+        var filterShortSerializedDefault = JsonSerializer.Serialize(deserializedSorterShort);
+        Assert.That(filterShortSerializedDefault, Is.EqualTo(originalSorterSerializedDefault));
+    }
+
+    [Test]
+    public void SerializePagerShortFormTest()
+    {
+        var settingsFullForm = SystemTextJsonHelper.GetSerializerSettings();
+        var settingsShortForm = SystemTextJsonHelper.GetSerializerSettings();
+        settingsShortForm.Converters.Add(new FlexFetcherDataPagerConverter());
+
+        // Variant with Page and PageSize
+        var pager1 = new DataPager
+        {
+            Page = 1,
+            PageSize = 10
+        };
+
+        // That's how json looks like with default serializer
+        var pagerFullSerialized1 = JsonSerializer.Serialize(pager1, settingsFullForm);
+        Assert.That(pagerFullSerialized1.Length, Is.EqualTo(42));
+        Assert.That(pagerFullSerialized1, Is.EqualTo("{\"Page\":1,\"PageSize\":10,\"Skip\":0,\"Take\":0}"));
+
+        // That's how json looks like with custom "short form" serializer
+        var pagerShortSerialized1 = JsonSerializer.Serialize(pager1, settingsShortForm);
+        Assert.That(pagerShortSerialized1.Length, Is.EqualTo(15));
+        Assert.That(pagerShortSerialized1, Is.EqualTo("{\"P\":1,\"Ps\":10}"));
+
+        // That's how json looks like with full form but without null values, i.e. how external clients should send it
+        var pagerFullJson1 = "{\"Page\":1,\"PageSize\":10}";
+        Assert.That(pagerFullJson1.Length, Is.EqualTo(24));
+
+        // Deserialize jsons and validate
+        var deserializedPagerFull1 = JsonSerializer.Deserialize<DataPager>(pagerFullSerialized1, settingsFullForm);
+        var deserializedPagerShort1 = JsonSerializer.Deserialize<DataPager>(pagerShortSerialized1, settingsShortForm);
+        // Serialize with default serializer and compare to make sure that pager is the same, i.e. full form is correct
+        var originalPagerSerializedDefault1 = JsonSerializer.Serialize(pager1);
+        var pagerFullSerializedDefault1 = JsonSerializer.Serialize(deserializedPagerFull1);
+        Assert.That(pagerFullSerializedDefault1, Is.EqualTo(originalPagerSerializedDefault1));
+
+        // Serialize with default serializer and compare to make sure that pager is the same, i.e. short form is correct
+        var pagerShortSerializedDefault1 = JsonSerializer.Serialize(deserializedPagerShort1);
+        Assert.That(pagerShortSerializedDefault1, Is.EqualTo(originalPagerSerializedDefault1));
+
+        // Variant with Skip and Take
+        var pager2 = new DataPager
+        {
+            Skip = 20,
+            Take = 30
+        };
+
+        // That's how json looks like with default serializer
+        var pagerFullSerialized2 = JsonSerializer.Serialize(pager2, settingsFullForm);
+        Assert.That(pagerFullSerialized2.Length, Is.EqualTo(43));
+        Assert.That(pagerFullSerialized2, Is.EqualTo("{\"Page\":0,\"PageSize\":0,\"Skip\":20,\"Take\":30}"));
+
+        // That's how json looks like with custom "short form" serializer
+        var pagerShortSerialized2 = JsonSerializer.Serialize(pager2, settingsShortForm);
+        Assert.That(pagerShortSerialized2.Length, Is.EqualTo(15));
+        Assert.That(pagerShortSerialized2, Is.EqualTo("{\"S\":20,\"T\":30}"));
+
+        // That's how json looks like with full form but without null values, i.e. how external clients should send it
+        var pagerFullJson2 = "{\"Skip\":20,\"Take\":30}";
+        Assert.That(pagerFullJson2.Length, Is.EqualTo(21));
+
+        // Deserialize jsons and validate
+        var deserializedPagerFull2 = JsonSerializer.Deserialize<DataPager>(pagerFullSerialized2, settingsFullForm);
+        var deserializedPagerShort2 = JsonSerializer.Deserialize<DataPager>(pagerShortSerialized2, settingsShortForm);
+        // Serialize with default serializer and compare to make sure that pager is the same, i.e. full form is correct
+        var originalPagerSerializedDefault2 = JsonSerializer.Serialize(pager2);
+        var pagerFullSerializedDefault2 = JsonSerializer.Serialize(deserializedPagerFull2);
+        Assert.That(pagerFullSerializedDefault2, Is.EqualTo(originalPagerSerializedDefault2));
+
+        // Serialize with default serializer and compare to make sure that pager is the same, i.e. short form is correct
+        var pagerShortSerializedDefault2 = JsonSerializer.Serialize(deserializedPagerShort2);
+        Assert.That(pagerShortSerializedDefault2, Is.EqualTo(originalPagerSerializedDefault2));
+    }
+
+    [Test]
+    public void SerializeDataQueryShortFormTest()
+    {
+        var settingsFullForm = SystemTextJsonHelper.GetSerializerSettings();
+        var settingsShortForm = SystemTextJsonHelper.GetSerializerSettings();
+        settingsShortForm.Converters.Add(new FlexFetcherDataFilterConverter());
+        settingsShortForm.Converters.Add(new FlexFetcherDataSorterConverter());
+        settingsShortForm.Converters.Add(new FlexFetcherDataSortersConverter());
+        settingsShortForm.Converters.Add(new FlexFetcherDataPagerConverter());
+        settingsShortForm.Converters.Add(new FlexFetcherDataQueryConverter());
+
+        var filter = new DataFilter
+        {
+            Logic = DataFilterLogic.And,
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Address",
+                    Operator = DataFilterOperator.NotEqual,
+                    Value = null
+                },
+                new()
+                {
+                    Field = "Address.Location",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "Chicago, IL"
+                }
+            }
+        };
+
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new()
+                {
+                    Field = "Name",
+                    Direction = DataSorterDirection.Asc
+                },
+                new()
+                {
+                    Field = "Age",
+                    Direction = DataSorterDirection.Desc
+                }
+            }
+        };
+
+        var pager = new DataPager
+        {
+            Page = 1,
+            PageSize = 10
+        };
+
+        var dataQuery = new DataQuery
+        {
+            Filter = filter,
+            Sorters = sorters,
+            Pager = pager
+        };
+
+        // That's how json looks like with default serializer
+        var dataQueryFullSerialized = JsonSerializer.Serialize(dataQuery, settingsFullForm);
+        Assert.That(dataQueryFullSerialized.Length, Is.EqualTo(398));
+        Assert.That(dataQueryFullSerialized, Is.EqualTo("{\"Filter\":" +
+                                                        "{\"Logic\":\"And\",\"Filters\":" +
+                                                        "[{\"Logic\":null,\"Filters\":null,\"Operator\":\"Neq\",\"Field\":\"Address\",\"Value\":null}," +
+                                                        "{\"Logic\":null,\"Filters\":null,\"Operator\":\"Eq\",\"Field\":\"Address.Location\",\"Value\":\"Chicago, IL\"}]," +
+                                                        "\"Operator\":null,\"Field\":null,\"Value\":null}," +
+                                                        "\"Sorters\":{\"Sorters\":" +
+                                                        "[{\"Field\":\"Name\",\"Direction\":\"Asc\"}," +
+                                                        "{\"Field\":\"Age\",\"Direction\":\"Desc\"}]}," +
+                                                        "\"Pager\":{\"Page\":1,\"PageSize\":10,\"Skip\":0,\"Take\":0}}"));
+
+        // That's how json looks like with custom "short form" serializer
+        var dataQueryShortSerialized = JsonSerializer.Serialize(dataQuery, settingsShortForm);
+        Assert.That(dataQueryShortSerialized.Length, Is.EqualTo(189));
+        Assert.That(dataQueryShortSerialized, Is.EqualTo("{\"F\":" +
+                                                         "{\"L\":\"And\",\"Fs\":" +
+                                                         "[{\"O\":\"Neq\",\"F\":\"Address\",\"V\":null}," +
+                                                         "{\"O\":\"Eq\",\"F\":\"Address.Location\",\"V\":\"Chicago, IL\"}]" +
+                                                         "}," +
+                                                         "\"S\":{\"S\":" +
+                                                         "[{\"F\":\"Name\",\"D\":\"Asc\"}," +
+                                                         "{\"F\":\"Age\",\"D\":\"Desc\"}]}," +
+                                                         "\"P\":{\"P\":1,\"Ps\":10}}"));
+
+        // That's how json looks like with full form but without null values, i.e. how external clients should send it
+        var dataQueryFullJson =
+            "{\"Filter\":" +
+            "{\"Logic\":\"And\",\"Filters\":" +
+            "[{\"Operator\":\"Neq\",\"Field\":\"Address\",\"Value\":null}," +
+            "{\"Operator\":\"Eq\",\"Field\":\"Address.Location\",\"Value\":\"Chicago, IL\"}]" +
+            "}," +
+            "\"Sorters\":{\"Sorters\":" +
+            "[{\"Field\":\"Name\",\"Direction\":\"Asc\"}," +
+            "{\"Field\":\"Age\",\"Direction\":\"Desc\"}]}," +
+            "\"Pager\":{\"Page\":1,\"PageSize\":10}}";
+        Assert.That(dataQueryFullJson.Length, Is.EqualTo(282));
+
+        // Deserialize jsons and validate
+        var deserializedDataQueryFull = JsonSerializer.Deserialize<DataQuery>(dataQueryFullSerialized, settingsFullForm);
+        var deserializedDataQueryShort = JsonSerializer.Deserialize<DataQuery>(dataQueryShortSerialized, settingsShortForm);
+        // Serialize with default serializer and compare to make sure that dataQueries are the same, i.e. full form is correct
+        var originalDataQuerySerializedDefault = JsonSerializer.Serialize(dataQuery);
+        var dataQueryFullSerializedDefault = JsonSerializer.Serialize(deserializedDataQueryFull);
+        Assert.That(dataQueryFullSerializedDefault, Is.EqualTo(originalDataQuerySerializedDefault));
+
+        // Serialize with default serializer and compare to make sure that dataQueries are the same, i.e. short form is correct
+        var dataQueryShortSerializedDefault = JsonSerializer.Serialize(deserializedDataQueryShort);
+        Assert.That(dataQueryShortSerializedDefault, Is.EqualTo(originalDataQuerySerializedDefault));
     }
 }

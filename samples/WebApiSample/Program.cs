@@ -1,7 +1,7 @@
 using FlexFetcher;
 using FlexFetcher.DependencyInjection.Microsoft;
 using FlexFetcher.Models.FlexFetcherOptions;
-using FlexFetcher.Serialization.SystemTextJson;
+using FlexFetcher.Serialization.SystemTextJson.Converters;
 using TestData.Database;
 using WebApiSample.Utils;
 
@@ -15,7 +15,12 @@ builder.Services.AddControllers(options =>
 })
 .AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new SystemTextJsonHelper.GenericConverter());
+    options.JsonSerializerOptions.Converters.Add(new GenericConverter());
+    options.JsonSerializerOptions.Converters.Add(new FlexFetcherDataSorterConverter());
+    options.JsonSerializerOptions.Converters.Add(new FlexFetcherDataSortersConverter());
+    options.JsonSerializerOptions.Converters.Add(new FlexFetcherDataPagerConverter());
+    options.JsonSerializerOptions.Converters.Add(new FlexFetcherDataFilterConverter());
+    options.JsonSerializerOptions.Converters.Add(new FlexFetcherDataQueryConverter());
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

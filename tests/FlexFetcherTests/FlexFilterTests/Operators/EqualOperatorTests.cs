@@ -4,6 +4,7 @@ using FlexFetcher;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Serialization.NewtonsoftJson;
 using FlexFetcher.Serialization.SystemTextJson;
+using FlexFetcher.Serialization.SystemTextJson.Converters;
 using FlexFetcherTests.Stubs.Database;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -37,7 +38,7 @@ public class EqualOperatorTests
     [Test]
     public void StringTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -56,12 +57,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(5));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(5));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(5));
     }
@@ -69,7 +70,7 @@ public class EqualOperatorTests
     [Test]
     public void IntTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -88,12 +89,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -101,7 +102,7 @@ public class EqualOperatorTests
     [Test]
     public void DoubleTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -120,12 +121,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -133,7 +134,7 @@ public class EqualOperatorTests
     [Test]
     public void DoubleNullableTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.Or,
             Filters = new List<DataFilter>
@@ -159,12 +160,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(5));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(5));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(5));
     }
@@ -172,7 +173,7 @@ public class EqualOperatorTests
     [Test]
     public void DecimalTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -191,12 +192,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -204,7 +205,7 @@ public class EqualOperatorTests
     [Test]
     public void BoolTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -223,12 +224,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(2));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -236,7 +237,7 @@ public class EqualOperatorTests
     [Test]
     public void DateOnlyTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -254,12 +255,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2);
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2);
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -267,7 +268,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeUnspecifiedSqlLiteTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -285,12 +286,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -298,7 +299,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeUnspecifiedListTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -323,12 +324,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -336,7 +337,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeUtcSqlLiteTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -354,12 +355,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -367,7 +368,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeUtcListTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -392,12 +393,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -405,7 +406,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeLocalSqlLiteTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -423,12 +424,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -436,7 +437,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeLocalListTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -461,12 +462,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -474,7 +475,7 @@ public class EqualOperatorTests
     [Test]
     public void DateTimeOffsetTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -492,23 +493,23 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
 
         filter.Filters[0].Value = new DateTimeOffset(new DateTime(2024, 6, 10, 10, 20, 56), TimeSpan.FromHours(5));
         var json4 = JsonConvert.SerializeObject(filter);
-        var filter4 = JsonConvert.DeserializeObject<DataFilters>(json4, NewtonsoftHelper.GetSerializerSettings());
+        var filter4 = JsonConvert.DeserializeObject<DataFilter>(json4, NewtonsoftHelper.GetSerializerSettings());
         var result4 = flexFilter.FilterData(_ctx.People, filter4);
         Assert.That(result4.Count(), Is.EqualTo(1));
 
         var json5 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter5 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json5, SystemTextJsonHelper.GetSerializerSettings());
+        var filter5 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json5, SystemTextJsonHelper.GetSerializerSettings());
         var result5 = flexFilter.FilterData(_ctx.People, filter5);
         Assert.That(result5.Count(), Is.EqualTo(1));
     }
@@ -516,7 +517,7 @@ public class EqualOperatorTests
     [Test]
     public void TimeSpanTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -534,12 +535,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -547,7 +548,7 @@ public class EqualOperatorTests
     [Test]
     public void TimeOnlyTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -565,12 +566,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter, NewtonsoftHelper.GetSerializerSettings());
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -578,7 +579,7 @@ public class EqualOperatorTests
     [Test]
     public void GuidTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -596,12 +597,12 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -609,7 +610,7 @@ public class EqualOperatorTests
     [Test]
     public void EnumAsIntTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -627,24 +628,24 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(4));
 
         var jsonWithNumber = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(jsonWithNumber, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(jsonWithNumber, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(4));
 
         var jsonWithString = JsonConvert.SerializeObject(filter,
             new JsonSerializerSettings { Converters = { new Newtonsoft.Json.Converters.StringEnumConverter() } });
-        var filter3 = JsonConvert.DeserializeObject<DataFilters>(jsonWithString, NewtonsoftHelper.GetSerializerSettings());
+        var filter3 = JsonConvert.DeserializeObject<DataFilter>(jsonWithString, NewtonsoftHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(4));
 
         var jsonWithNumber2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter4 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(jsonWithNumber2, SystemTextJsonHelper.GetSerializerSettings());
+        var filter4 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(jsonWithNumber2, SystemTextJsonHelper.GetSerializerSettings());
         var result4 = flexFilter.FilterData(_ctx.People, filter4);
         Assert.That(result4.Count(), Is.EqualTo(4));
 
         var jsonWithString2 = System.Text.Json.JsonSerializer.Serialize(filter,
-            new JsonSerializerOptions { Converters = { new JsonStringEnumConverter(), new SystemTextJsonHelper.GenericConverter() } });
-        var filter5 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(jsonWithString2, SystemTextJsonHelper.GetSerializerSettings());
+            new JsonSerializerOptions { Converters = { new JsonStringEnumConverter(), new GenericConverter() } });
+        var filter5 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(jsonWithString2, SystemTextJsonHelper.GetSerializerSettings());
         var result5 = flexFilter.FilterData(_ctx.People, filter5);
         Assert.That(result5.Count(), Is.EqualTo(4));
 
@@ -656,7 +657,7 @@ public class EqualOperatorTests
     [Test]
     public void EnumAsStringTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -674,24 +675,24 @@ public class EqualOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var jsonWithNumber = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(jsonWithNumber, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(jsonWithNumber, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var jsonWithString = JsonConvert.SerializeObject(filter,
             new JsonSerializerSettings { Converters = { new Newtonsoft.Json.Converters.StringEnumConverter() } });
-        var filter3 = JsonConvert.DeserializeObject<DataFilters>(jsonWithString, NewtonsoftHelper.GetSerializerSettings());
+        var filter3 = JsonConvert.DeserializeObject<DataFilter>(jsonWithString, NewtonsoftHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
 
         var jsonWithNumber2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter4 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(jsonWithNumber2, SystemTextJsonHelper.GetSerializerSettings());
+        var filter4 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(jsonWithNumber2, SystemTextJsonHelper.GetSerializerSettings());
         var result4 = flexFilter.FilterData(_ctx.People, filter4);
         Assert.That(result4.Count(), Is.EqualTo(1));
 
         var jsonWithString2 = System.Text.Json.JsonSerializer.Serialize(filter,
-            new JsonSerializerOptions { Converters = { new JsonStringEnumConverter(), new SystemTextJsonHelper.GenericConverter() } });
-        var filter5 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(jsonWithString2, SystemTextJsonHelper.GetSerializerSettings());
+            new JsonSerializerOptions { Converters = { new JsonStringEnumConverter(), new GenericConverter() } });
+        var filter5 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(jsonWithString2, SystemTextJsonHelper.GetSerializerSettings());
         var result5 = flexFilter.FilterData(_ctx.People, filter5);
         Assert.That(result5.Count(), Is.EqualTo(1));
     }

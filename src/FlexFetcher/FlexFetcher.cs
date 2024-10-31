@@ -124,15 +124,15 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
         Pager = pager;
     }
 
-    public IQueryable<TEntity> FetchData(IQueryable<TEntity> query, DataFilters? filters, DataSorters? sorters, DataPager? pager)
+    public IQueryable<TEntity> FetchData(IQueryable<TEntity> query, DataFilter? filter, DataSorters? sorters, DataPager? pager)
     {
 #if NETSTANDARD2_0
-        if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
+        if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filter) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
             return query;
 
-        if (!((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters))
+        if (!((FlexFilter<TEntity>)Filter).FilterIsEmpty(filter))
         {
-            query = ((FlexFilter<TEntity>)Filter).FilterData(query, filters!);
+            query = ((FlexFilter<TEntity>)Filter).FilterData(query, filter!);
         }
 
         if (!((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters))
@@ -145,12 +145,12 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
             query = ((FlexPager<TEntity>)Pager).PageData(query, pager!);
         }
 #else
-        if (Filter.FilterIsEmpty(filters) && Sorter.SorterIsEmpty(sorters) && Pager.PagerIsEmpty(pager))
+        if (Filter.FilterIsEmpty(filter) && Sorter.SorterIsEmpty(sorters) && Pager.PagerIsEmpty(pager))
             return query;
 
-        if (!Filter.FilterIsEmpty(filters))
+        if (!Filter.FilterIsEmpty(filter))
         {
-            query = Filter.FilterData(query, filters!);
+            query = Filter.FilterData(query, filter!);
         }
 
         if (!Sorter.SorterIsEmpty(sorters))
@@ -167,16 +167,16 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
         return query;
     }
 
-    public IEnumerable<TEntity> FetchData(IEnumerable<TEntity> query, DataFilters? filters, DataSorters? sorters,
+    public IEnumerable<TEntity> FetchData(IEnumerable<TEntity> query, DataFilter? filter, DataSorters? sorters,
         DataPager? pager)
     {
 #if NETSTANDARD2_0
-        if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
+        if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filter) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
             return query;
 
-        if (!((FlexFilter<TEntity>)Filter).FilterIsEmpty(filters))
+        if (!((FlexFilter<TEntity>)Filter).FilterIsEmpty(filter))
         {
-            query = ((FlexFilter<TEntity>)Filter).FilterData(query, filters!);
+            query = ((FlexFilter<TEntity>)Filter).FilterData(query, filter!);
         }
 
         if (!((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters))
@@ -189,12 +189,12 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
             query = ((FlexPager<TEntity>)Pager).PageData(query, pager!);
         }
 #else
-        if (Filter.FilterIsEmpty(filters) && Sorter.SorterIsEmpty(sorters) && Pager.PagerIsEmpty(pager))
+        if (Filter.FilterIsEmpty(filter) && Sorter.SorterIsEmpty(sorters) && Pager.PagerIsEmpty(pager))
             return query;
 
-        if (!Filter.FilterIsEmpty(filters))
+        if (!Filter.FilterIsEmpty(filter))
         {
-            query = Filter.FilterData(query, filters!);
+            query = Filter.FilterData(query, filter!);
         }
 
         if (!Sorter.SorterIsEmpty(sorters))

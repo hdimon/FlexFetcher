@@ -30,7 +30,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void IntTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -48,12 +48,12 @@ public class GreaterThanOperatorTests
         Assert.That(result.Count(), Is.EqualTo(3));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(3));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(3));
     }
@@ -61,7 +61,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void DoubleTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -79,12 +79,12 @@ public class GreaterThanOperatorTests
         Assert.That(result.Count(), Is.EqualTo(2));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -92,7 +92,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void DecimalTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -110,12 +110,12 @@ public class GreaterThanOperatorTests
         Assert.That(result.Count(), Is.EqualTo(2));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -123,7 +123,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void DateTimeTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -141,12 +141,12 @@ public class GreaterThanOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -154,7 +154,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void DateTimeOffsetTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -195,7 +195,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void DateOnlyTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -213,12 +213,12 @@ public class GreaterThanOperatorTests
         Assert.That(result.Count(), Is.EqualTo(2));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(2));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(2));
     }
@@ -226,7 +226,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void TimeOnlyTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -244,12 +244,12 @@ public class GreaterThanOperatorTests
         Assert.That(result.Count(), Is.EqualTo(1));
 
         var json2 = JsonConvert.SerializeObject(filter);
-        var filter2 = JsonConvert.DeserializeObject<DataFilters>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(1));
 
         var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
         var result3 = flexFilter.FilterData(_ctx.People, filter3);
         Assert.That(result3.Count(), Is.EqualTo(1));
     }
@@ -257,7 +257,7 @@ public class GreaterThanOperatorTests
     [Test]
     public void TimeSpanTest()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {

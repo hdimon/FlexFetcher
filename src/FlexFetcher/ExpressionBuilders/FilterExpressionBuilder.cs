@@ -19,25 +19,25 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         FilterExpressionHandlers = handlers.ToImmutableList();
     }
 
-    public Expression<Func<TEntity, bool>> BuildExpression(DataFilters filters, FlexFilterOptions<TEntity> options)
+    public Expression<Func<TEntity, bool>> BuildExpression(DataFilter filter, FlexFilterOptions<TEntity> options)
     {
         var parameter = Expression.Parameter(typeof(TEntity));
-        var body = BuildExpressionBody(parameter, filters, options);
+        var body = BuildExpressionBody(parameter, filter, options);
         return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
     }
 
-    private Expression BuildExpressionBody(Expression parameter, DataFilters filters, FlexFilterOptions<TEntity> options)
+    private Expression BuildExpressionBody(Expression parameter, DataFilter filter, FlexFilterOptions<TEntity> options)
     {
-        if (filters.Filters == null || filters.Filters.Count == 0)
+        if (filter.Filters == null || filter.Filters.Count == 0)
         {
             return Expression.Constant(true);
         }
 
         var expressions = new List<Expression>();
 
-        foreach (var filter in filters.Filters)
+        foreach (var dataFilter in filter.Filters)
         {
-            var expression = BuildSingleExpression(parameter, filter, options);
+            var expression = BuildSingleExpression(parameter, dataFilter, options);
             expressions.Add(expression);
         }
 
@@ -45,7 +45,7 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         for (int i = 1; i < expressions.Count; i++)
         {
-            body = filters.Logic?.ToUpper() == "AND"
+            body = filter.Logic?.ToUpper() == "AND"
                 ? Expression.AndAlso(body, expressions[i])
                 : Expression.OrElse(body, expressions[i]);
         }

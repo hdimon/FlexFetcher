@@ -26,7 +26,7 @@ public class CustomFilterExpressionBuilderTests
         var options = new FlexFilterOptions<PeopleEntity>(customExpressionBuilder);
         var flexFilter = new FlexFilter<PeopleEntity>(options);
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -53,7 +53,7 @@ public class CustomFilterExpressionBuilderTests
         var options = new FlexFilterOptions<PeopleEntity>(customExpressionBuilder);
         var flexFilter = new FlexFilter<PeopleEntity>(options);
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>

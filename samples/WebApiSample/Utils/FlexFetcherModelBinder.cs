@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using FlexFetcher.Serialization.SystemTextJson;
+using FlexFetcher.Serialization.SystemTextJson.Converters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using JsonException = System.Text.Json.JsonException;
 
@@ -7,7 +8,16 @@ namespace WebApiSample.Utils;
 
 public class FlexFetcherModelBinder : IModelBinder
 {
-    private static readonly JsonSerializerOptions _serializerSettings = SystemTextJsonHelper.GetSerializerSettings();
+    private readonly JsonSerializerOptions _serializerSettings = SystemTextJsonHelper.GetSerializerSettings();
+
+    public FlexFetcherModelBinder()
+    {
+        _serializerSettings.Converters.Add(new FlexFetcherDataFilterConverter());
+        _serializerSettings.Converters.Add(new FlexFetcherDataSortersConverter());
+        _serializerSettings.Converters.Add(new FlexFetcherDataSorterConverter());
+        _serializerSettings.Converters.Add(new FlexFetcherDataPagerConverter());
+        _serializerSettings.Converters.Add(new FlexFetcherDataQueryConverter());
+    }
 
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {

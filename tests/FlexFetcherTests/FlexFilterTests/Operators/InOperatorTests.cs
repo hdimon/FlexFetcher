@@ -32,7 +32,7 @@ public class InOperatorTests
     {
         var idsArray = new int[] { 1, 3, 5, 7 };
 
-        var filterArray = new DataFilters
+        var filterArray = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -53,7 +53,7 @@ public class InOperatorTests
     {
         var namesArray = new string[] { "Jane", "Doe" };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -74,7 +74,7 @@ public class InOperatorTests
     {
         var heights = new List<double> { 170.5, 180.2, 190.3 };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -95,7 +95,7 @@ public class InOperatorTests
     {
         var weights = new List<double?> { 70.5, 80.2, null };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -116,7 +116,7 @@ public class InOperatorTests
     {
         var salaries = new List<decimal> { 50000.75m, 60000.2m, 70000.3m };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -138,7 +138,7 @@ public class InOperatorTests
         var dates = new List<DateOnly>
             { new DateOnly(1975, 1, 1), new DateOnly(1980, 5, 15), new DateOnly(1990, 10, 30) };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -162,7 +162,7 @@ public class InOperatorTests
             new DateTime(2024, 6, 10, 13, 20, 56), new DateTime(2023, 1, 1, 0, 0, 0), new DateTime(2022, 12, 31, 23, 59, 59)
         };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -188,7 +188,7 @@ public class InOperatorTests
             new DateTimeOffset(new DateTime(2022, 12, 31, 23, 59, 59), TimeSpan.FromHours(-5))
         };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -209,7 +209,7 @@ public class InOperatorTests
     {
         var timeSpans = new List<TimeSpan> { new TimeSpan(8, 30, 0), new TimeSpan(9, 0, 0), new TimeSpan(7, 45, 0) };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -230,7 +230,7 @@ public class InOperatorTests
     {
         var timeOnlys = new List<TimeOnly> { new TimeOnly(8, 30, 10), new TimeOnly(9, 0, 0), new TimeOnly(7, 45, 0) };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -257,7 +257,7 @@ public class InOperatorTests
             null
         };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -282,7 +282,7 @@ public class InOperatorTests
             Gender.Female
         };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -309,7 +309,7 @@ public class InOperatorTests
             null
         };
 
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -325,36 +325,36 @@ public class InOperatorTests
         AssertResults(9, filter);
     }
 
-    private void AssertResults(int expectedCount, DataFilters? filter)
+    private void AssertResults(int expectedCount, DataFilter? filter)
     {
         var flexFilter = new FlexFilter<PeopleEntity>();
         var resultJson = flexFilter.FilterData(_ctx.People, filter);
         Assert.That(resultJson.Count(), Is.EqualTo(expectedCount));
 
         var json1 = JsonConvert.SerializeObject(filter, NewtonsoftHelper.GetSerializerSettings());
-        var filter1 = JsonConvert.DeserializeObject<DataFilters>(json1, NewtonsoftHelper.GetSerializerSettings());
+        var filter1 = JsonConvert.DeserializeObject<DataFilter>(json1, NewtonsoftHelper.GetSerializerSettings());
         var result1 = flexFilter.FilterData(_ctx.People, filter1);
         Assert.That(result1.Count(), Is.EqualTo(expectedCount));
 
         var json2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json2, SystemTextJsonHelper.GetSerializerSettings());
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json2, SystemTextJsonHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count(), Is.EqualTo(expectedCount));
     }
 
-    private void AssertResultsWithExceptionCommaFilter(int expectedCount, DataFilters? filter)
+    private void AssertResultsWithExceptionCommaFilter(int expectedCount, DataFilter? filter)
     {
         var flexFilter = new FlexFilter<PeopleEntity>();
         var resultJson = flexFilter.FilterData(_ctx.People, filter);
         Assert.That(resultJson.Count(), Is.EqualTo(expectedCount));
 
         var json1 = JsonConvert.SerializeObject(filter, NewtonsoftHelper.GetSerializerSettings());
-        var filter1 = JsonConvert.DeserializeObject<DataFilters>(json1, NewtonsoftHelper.GetSerializerSettings());
+        var filter1 = JsonConvert.DeserializeObject<DataFilter>(json1, NewtonsoftHelper.GetSerializerSettings());
         var result1 = flexFilter.FilterData(_ctx.People, filter1);
         Assert.That(result1.Count(), Is.EqualTo(expectedCount));
 
         var json2 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(json2, SystemTextJsonHelper.GetSerializerSettings());
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json2, SystemTextJsonHelper.GetSerializerSettings());
         var result2 = flexFilter.FilterData(_ctx.People, filter2);
         Assert.That(result2.Count, Is.EqualTo(expectedCount));
     }

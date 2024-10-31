@@ -13,9 +13,9 @@ namespace FlexFetcherTests.FlexFilterTests;
 
 public abstract class BaseFilterData
 {
-    protected void SimpleFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -34,9 +34,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
     }
 
-    protected void SimpleContainsFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleContainsFilterTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -55,9 +55,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 2, 4, 6, 8, 10 }));
     }
 
-    protected void SimpleStartsWithFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleStartsWithFilterTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -76,9 +76,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 2, 4, 6, 8, 10 }));
     }
 
-    protected void SimpleEndsWithFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleEndsWithFilterTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -97,10 +97,10 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 2, 4, 6, 8, 10 }));
     }
 
-    protected void SimpleInArrayFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleInArrayFilterTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
         var ids = new List<int> { 1, 3, 5, 7 };
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -114,7 +114,7 @@ public abstract class BaseFilterData
         };
 
         var filterJson = JsonConvert.SerializeObject(filter, NewtonsoftHelper.GetSerializerSettings());
-        var filter1 = JsonConvert.DeserializeObject<DataFilters>(filterJson, NewtonsoftHelper.GetSerializerSettings())!;
+        var filter1 = JsonConvert.DeserializeObject<DataFilter>(filterJson, NewtonsoftHelper.GetSerializerSettings())!;
 
         var result = fetcher(filter1);
 
@@ -122,7 +122,7 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(ids));
 
         filterJson = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
-        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilters>(filterJson, SystemTextJsonHelper.GetSerializerSettings())!;
+        var filter2 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(filterJson, SystemTextJsonHelper.GetSerializerSettings())!;
 
         result = fetcher(filter2);
 
@@ -130,9 +130,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(ids));
     }
 
-    protected void SimpleFilterWithCustomFilterTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterWithCustomFilterTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -151,9 +151,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 3 }));
     }
 
-    protected void SimpleFilterWithNestedCustomFilterTest(Func<FlexFilter<PeopleEntity>, DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterWithNestedCustomFilterTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -185,9 +185,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 3 }));
     }
 
-    protected void SimpleFilterWithFieldAliasTest(Func<DataFilters, FlexFilterOptions<PeopleEntity>, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterWithFieldAliasTest(Func<DataFilter, FlexFilterOptions<PeopleEntity>, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -209,9 +209,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
     }
 
-    protected void SimpleNestedEntityFilterWithFieldAliasTest(Func<FlexFilter<PeopleEntity>, DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleNestedEntityFilterWithFieldAliasTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -245,9 +245,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1 }));
     }
 
-    protected void SimpleNestedEntityFilterWithFieldAliasByFlexFilterTest(Func<SimpleNestedEntityPeopleFilterWithFieldAlias, DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleNestedEntityFilterWithFieldAliasByFlexFilterTest(Func<SimpleNestedEntityPeopleFilterWithFieldAlias, DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -274,9 +274,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1 }));
     }
 
-    protected void SimpleFilterWithAndLogicTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterWithAndLogicTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And, //TODO: add validation
             Filters = new List<DataFilter>
@@ -302,9 +302,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 7, 9 }));
     }
 
-    protected void SimpleFilterWithOrLogicTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void SimpleFilterWithOrLogicTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.Or,
             Filters = new List<DataFilter>
@@ -330,9 +330,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 2, 3, 5, 7, 9 }));
     }
 
-    protected void FilterWithOrLogicAndNestedAndFiltersTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void FilterWithOrLogicAndNestedAndFiltersTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.Or,
             Filters = new List<DataFilter>
@@ -371,9 +371,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9, 10 }));
     }
 
-    protected void FilterWithAndLogicAndNestedOrFiltersTest(Func<DataFilters, List<PeopleEntity>> fetcher)
+    protected void FilterWithAndLogicAndNestedOrFiltersTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -412,9 +412,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 9 }));
     }
 
-    protected void FilterWithNestedEntitiesOfTheSameTypeTest(Func<FlexFilter<PeopleEntity>, DataFilters, List<PeopleEntity>> fetcher)
+    protected void FilterWithNestedEntitiesOfTheSameTypeTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -464,9 +464,9 @@ public abstract class BaseFilterData
         Assert.That(result2.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 3 }));
     }
 
-    protected void FilterWithNestedManyToManyEntitiesTest(Func<FlexFilter<PeopleEntity>, DataFilters, List<PeopleEntity>> fetcher)
+    protected void FilterWithNestedManyToManyEntitiesTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
@@ -489,9 +489,9 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 6 }));
     }
 
-    protected void SimpleFilterWithHiddenFieldTest(Func<DataFilters, List<PeopleEntity>> filter)
+    protected void SimpleFilterWithHiddenFieldTest(Func<DataFilter, List<PeopleEntity>> filter)
     {
-        var filters = new DataFilters
+        var filters = new DataFilter
         {
             Filters = new List<DataFilter>
             {
@@ -510,9 +510,9 @@ public abstract class BaseFilterData
         });
     }
 
-    protected void SimpleFilterWithNotFoundFieldTest(Func<DataFilters, List<PeopleEntity>> filter)
+    protected void SimpleFilterWithNotFoundFieldTest(Func<DataFilter, List<PeopleEntity>> filter)
     {
-        var filters = new DataFilters
+        var filters = new DataFilter
         {
             Filters = new List<DataFilter>
             {

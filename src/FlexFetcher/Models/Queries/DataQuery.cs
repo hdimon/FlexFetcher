@@ -2,7 +2,7 @@
 
 public record DataQuery
 {
-    public DataFilters? Filters { get; set; }
+    public DataFilter? Filter { get; set; }
     public DataSorters? Sorters { get; set; }
     public DataPager? Pager { get; set; }
 }

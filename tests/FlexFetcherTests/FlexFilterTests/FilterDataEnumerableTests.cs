@@ -140,7 +140,7 @@ public class FilterDataEnumerableTests : BaseFilterData
     [Test]
     public void SimpleNestedEntityFilter()
     {
-        var filter = new DataFilters
+        var filter = new DataFilter
         {
             Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>

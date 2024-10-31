@@ -13,7 +13,7 @@ public class FlexFetcherModelBinderProvider : IModelBinderProvider
         var modelType = context.Metadata.ModelType;
 
         if (bindingInfo.BindingSource == BindingSource.Query && (modelType == typeof(DataQuery) ||
-                                                                 modelType == typeof(DataFilters) ||
+                                                                 modelType == typeof(DataFilter) ||
                                                                  modelType == typeof(DataSorters) ||
                                                                  modelType == typeof(DataPager)))
         {
