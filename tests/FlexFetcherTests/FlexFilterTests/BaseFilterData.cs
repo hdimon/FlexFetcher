@@ -274,11 +274,39 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1 }));
     }
 
+    protected void SimpleFilterWithDefaultAndLogicTest(Func<DataFilter, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilter
+        {
+            //Logic = DataFilterLogic.And, // Default logic is And
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Name",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "John"
+                },
+                new()
+                {
+                    Field = "Age",
+                    Operator = DataFilterOperator.GreaterThanOrEqual,
+                    Value = 45
+                }
+            }
+        };
+
+        var result = fetcher(filter);
+
+        Assert.That(result.Count, Is.EqualTo(2));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 7, 9 }));
+    }
+
     protected void SimpleFilterWithAndLogicTest(Func<DataFilter, List<PeopleEntity>> fetcher)
     {
         var filter = new DataFilter
         {
-            Logic = DataFilterLogic.And, //TODO: add validation
+            Logic = DataFilterLogic.And,
             Filters = new List<DataFilter>
             {
                 new()

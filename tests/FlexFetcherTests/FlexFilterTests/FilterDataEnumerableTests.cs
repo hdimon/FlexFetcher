@@ -114,6 +114,12 @@ public class FilterDataEnumerableTests : BaseFilterData
     }
 
     [Test]
+    public void SimpleFilterWithDefaultAndLogic()
+    {
+        SimpleFilterWithDefaultAndLogicTest(filters => _people.FilterData(filters).ToList());
+    }
+
+    [Test]
     public void SimpleFilterWithAndLogic()
     {
         SimpleFilterWithAndLogicTest(filters => _people.FilterData(filters).ToList());

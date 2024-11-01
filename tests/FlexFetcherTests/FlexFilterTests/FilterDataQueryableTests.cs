@@ -136,6 +136,12 @@ public class FilterDataQueryableTests : BaseFilterData
     }
 
     [Test]
+    public void SimpleFilterWithDefaultAndLogic()
+    {
+        SimpleFilterWithDefaultAndLogicTest(filters => _ctx.People.FilterData(filters).ToList());
+    }
+
+    [Test]
     public void SimpleFilterWithAndLogic()
     {
         SimpleFilterWithAndLogicTest(filters => _ctx.People.FilterData(filters).ToList());
