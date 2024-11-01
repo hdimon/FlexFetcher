@@ -45,9 +45,9 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         for (int i = 1; i < expressions.Count; i++)
         {
-            body = filter.Logic?.ToUpper() == "AND"
-                ? Expression.AndAlso(body, expressions[i])
-                : Expression.OrElse(body, expressions[i]);
+            body = filter.Logic?.ToUpper() == DataFilterLogic.Or.ToUpper()
+                ? Expression.OrElse(body, expressions[i])
+                : Expression.AndAlso(body, expressions[i]);
         }
 
         return body;
