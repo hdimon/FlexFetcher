@@ -1,4 +1,5 @@
-﻿using FlexFetcher.Models.FlexFetcherOptions;
+﻿using System.Diagnostics.CodeAnalysis;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 
 namespace FlexFetcher;
@@ -43,6 +44,7 @@ public class FlexFetcher<TEntity, TModel> : FlexFetcher<TEntity> where TEntity :
     }
 }
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
 {
     public FlexFetcherOptions<TEntity> Options { get; }
@@ -126,6 +128,11 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
 
     public IQueryable<TEntity> FetchData(IQueryable<TEntity> query, DataFilter? filter, DataSorters? sorters, DataPager? pager)
     {
+        return FetchData(query, filter, sorters, pager, null);
+    }
+
+    public IQueryable<TEntity> FetchData(IQueryable<TEntity> query, DataFilter? filter, DataSorters? sorters, DataPager? pager, IFlexFetcherContext? context)
+    {
 #if NETSTANDARD2_0
         if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filter) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))
             return query;
@@ -167,8 +174,13 @@ public class FlexFetcher<TEntity> : BaseFlexFetcher where TEntity : class
         return query;
     }
 
+    public IEnumerable<TEntity> FetchData(IEnumerable<TEntity> query, DataFilter? filter, DataSorters? sorters, DataPager? pager)
+    {
+        return FetchData(query, filter, sorters, pager, null);
+    }
+
     public IEnumerable<TEntity> FetchData(IEnumerable<TEntity> query, DataFilter? filter, DataSorters? sorters,
-        DataPager? pager)
+        DataPager? pager, IFlexFetcherContext? context)
     {
 #if NETSTANDARD2_0
         if (((FlexFilter<TEntity>)Filter).FilterIsEmpty(filter) && ((FlexSorter<TEntity>)Sorter).SorterIsEmpty(sorters) && ((FlexPager<TEntity>)Pager).PagerIsEmpty(pager))

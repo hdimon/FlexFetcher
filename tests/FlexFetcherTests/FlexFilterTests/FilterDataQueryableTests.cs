@@ -2,9 +2,12 @@
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
+using FlexFetcherTests.Stubs.CustomFields;
 using FlexFetcherTests.Stubs.CustomFilters;
 using FlexFetcherTests.Stubs.Database;
+using FlexFetcherTests.Stubs.FlexFetcherContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
@@ -96,6 +99,20 @@ public class FilterDataQueryableTests : BaseFilterData
         SimpleFilterWithCustomFilterTest(filters => flexExpressionFilter.FilterData(_ctx.People, filters).ToList());
     }
 
+    [Test]
+    public void SimpleFilterWithCustomFilterWithContext()
+    {
+        var customExpressionFilter = new PeopleOriginCountryCustomField();
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.AddCustomField(customExpressionFilter);
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        var context = new CustomContext
+        {
+            Culture = new CultureInfo("de-DE")
+        };
+        SimpleFilterWithCustomFilterWithContextTest(filters => flexFilter.FilterData(_ctx.People, filters, context).ToList());
+    }
+
     private class SimplePeopleFilterWithCustomFilter : FlexFilter<PeopleEntity>
     {
         public SimplePeopleFilterWithCustomFilter(PeopleFullNameCustomFilter customFilter)
@@ -116,6 +133,13 @@ public class FilterDataQueryableTests : BaseFilterData
     public void SimpleFilterWithNestedCustomFilter()
     {
         SimpleFilterWithNestedCustomFilterTest((flexFilter, filters) => flexFilter.FilterData(_ctx.People, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleFilterWithNestedWithCustomFilterWithContext()
+    {
+        SimpleFilterWithNestedWithCustomFilterWithContextTest((flexFilter, filters, context) =>
+            flexFilter.FilterData(_ctx.People, filters, context).ToList());
     }
 
     [Test]

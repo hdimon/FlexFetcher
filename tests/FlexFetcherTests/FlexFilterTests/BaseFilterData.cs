@@ -4,9 +4,12 @@ using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Serialization.NewtonsoftJson;
 using FlexFetcher.Serialization.SystemTextJson;
+using FlexFetcherTests.Stubs.CustomFields;
 using FlexFetcherTests.Stubs.CustomFilters;
+using FlexFetcherTests.Stubs.FlexFetcherContexts;
 using FlexFetcherTests.Stubs.FlexFilters;
 using Newtonsoft.Json;
+using System.Globalization;
 using TestData.Database;
 
 namespace FlexFetcherTests.FlexFilterTests;
@@ -151,6 +154,27 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 3 }));
     }
 
+    protected void SimpleFilterWithCustomFilterWithContextTest(Func<DataFilter, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Country",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "Deutschland"
+                }
+            }
+        };
+
+        var result = fetcher(filter);
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 4 }));
+    }
+
     protected void SimpleFilterWithNestedCustomFilterTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
         var filter = new DataFilter
@@ -183,6 +207,49 @@ public abstract class BaseFilterData
 
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 3 }));
+    }
+
+    protected void SimpleFilterWithNestedWithCustomFilterWithContextTest(
+        Func<FlexFilter<PeopleEntity>, DataFilter, CustomContext, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilter
+        {
+            Logic = DataFilterLogic.And,
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Address",
+                    Operator = DataFilterOperator.NotEqual,
+                    Value = null
+                },
+                new()
+                {
+                    Field = "Address.Country",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "Deutschland"
+                }
+            }
+        };
+
+        var customFilter = new AddressCountryCustomField();
+        var addressFilterOptions = new FlexFilterOptions<AddressEntity>();
+        addressFilterOptions.AddCustomField(customFilter);
+        var addressFilter = new FlexFilter<AddressEntity>(addressFilterOptions);
+
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.AddNestedFlexFilter(addressFilter);
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+
+        var context = new CustomContext
+        {
+            Culture = new CultureInfo("de-DE")
+        };
+
+        var result = fetcher(flexFilter, filter, context);
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 4 }));
     }
 
     protected void SimpleFilterWithFieldAliasTest(Func<DataFilter, FlexFilterOptions<PeopleEntity>, List<PeopleEntity>> fetcher)

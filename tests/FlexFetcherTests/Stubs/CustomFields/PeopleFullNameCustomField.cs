@@ -8,7 +8,7 @@ public class PeopleFullNameCustomField : BaseFlexCustomField<PeopleEntity, strin
 {
     public override string Field => "FullName";
 
-    protected override Expression<Func<PeopleEntity, string>> BuildFieldExpression()
+    protected override Expression<Func<PeopleEntity, string>> BuildFieldExpression(IFlexFetcherContext? context = null)
     {
         return p => p.Surname + " " + p.Name;
     }

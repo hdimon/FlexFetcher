@@ -8,7 +8,7 @@ namespace FlexFetcher.ExpressionBuilders;
 
 public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> where TEntity : class
 {
-    public IQueryable<TEntity> BuildExpression(IQueryable<TEntity> query, DataSorters sorters, FlexSorterOptions<TEntity> options)
+    public IQueryable<TEntity> BuildExpression(IQueryable<TEntity> query, DataSorters sorters, FlexSorterOptions<TEntity> options, IFlexFetcherContext? context)
     {
         var sortersList = sorters.Sorters!;
 
@@ -18,7 +18,7 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         for (int i = 0; i < sortersList.Count; i++)
         {
             var sorter = sortersList[i];
-            var property = BuildPropertyExpression(parameter, sorter, options);
+            var property = BuildPropertyExpression(parameter, sorter, options, context);
             var lambda = Expression.Lambda(property, parameter);
             var methodName = sorter.Direction == DataSorterDirection.Asc ? "OrderBy" : "OrderByDescending";
             if (i > 0)
@@ -33,7 +33,7 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         return query.Provider.CreateQuery<TEntity>(expression);
     }
 
-    public Expression BuildPropertyExpression(Expression parameter, DataSorter sorter, FlexSorterOptions<TEntity> options)
+    public Expression BuildPropertyExpression(Expression parameter, DataSorter sorter, FlexSorterOptions<TEntity> options, IFlexFetcherContext? context)
     {
         Expression property = parameter;
         string field = sorter.Field!;
@@ -49,7 +49,7 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         if (split.Length == 1)
         {
-            if (TryBuildExpressionFromCustomEntityField(options, property, mappedFieldName, out var expressionResult))
+            if (TryBuildExpressionFromCustomEntityField(options, property, mappedFieldName, context, out var expressionResult))
             {
                 return expressionResult;
             }
@@ -65,13 +65,13 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         var reducedSorter = sorter with { Field = string.Join(".", split.Skip(1)) };
 
-        var exp = nestedSorter.BuildExpression(property, reducedSorter);
+        var exp = nestedSorter.BuildExpression(property, reducedSorter, context);
 
         return exp;
     }
 
     private static bool TryBuildExpressionFromCustomEntityField(FlexSorterOptions<TEntity> options, Expression property,
-        string fieldName, out Expression expressionResult)
+        string fieldName, IFlexFetcherContext? context, out Expression expressionResult)
     {
         foreach (var currentOptionsCustomField in options.CustomFields)
         {
@@ -83,7 +83,7 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
             {
                 var method = customFieldBuilderType.GetMethod("BuildExpression");
 
-                var exp = (Expression)method!.Invoke(currentOptionsCustomField, new object[] { property })!;
+                var exp = (Expression)method!.Invoke(currentOptionsCustomField, [property, context])!;
                 expressionResult = exp;
                 return true;
             }

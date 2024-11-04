@@ -6,5 +6,5 @@ namespace FlexFetcher;
 public abstract class BaseFlexFilter
 {
     public abstract Type EntityType { get; }
-    public abstract Expression BuildExpression(Expression property, DataFilter filter);
+    public abstract Expression BuildExpression(Expression property, DataFilter filter, IFlexFetcherContext? context = null);
 }

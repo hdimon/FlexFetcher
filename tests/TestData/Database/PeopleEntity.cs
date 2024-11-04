@@ -13,6 +13,8 @@ public class PeopleEntity
     public double Height { get; set; }
     public double? Weight { get; set; }
     public decimal? Salary { get; set; }
+    public string? OriginCountryEn { get; set; }
+    public string? OriginCountryDe { get; set; }
     public TimeSpan? WorkHours { get; set; }
 #if NET6_0_OR_GREATER
     public TimeOnly? WorkStart { get; set; }

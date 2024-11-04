@@ -9,7 +9,8 @@ public class PeopleFullNameCustomExpressionFilter : BaseFlexCustomFieldFilter<Pe
 {
     public override string Field => "FullName";
 
-    protected override Expression<Func<PeopleEntity, bool>> BuildFilterExpression(string filterOperator, object? filterValue)
+    protected override Expression<Func<PeopleEntity, bool>> BuildFilterExpression(string filterOperator, object? filterValue,
+        IFlexFetcherContext? context = null)
     {
         string value = (string)filterValue!;
         return filterOperator switch

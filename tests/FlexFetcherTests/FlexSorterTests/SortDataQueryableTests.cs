@@ -3,6 +3,8 @@ using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Utils;
 using FlexFetcherTests.Stubs.CustomFields;
 using FlexFetcherTests.Stubs.Database;
+using FlexFetcherTests.Stubs.FlexFetcherContexts;
+using System.Globalization;
 using TestData.Database;
 
 namespace FlexFetcherTests.FlexSorterTests;
@@ -69,6 +71,13 @@ public class SortDataQueryableTests : BaseSortData
 
         var flexSorter = new FlexSorter<PeopleEntity>();
         SimpleNestedCitySortTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
+    public void NestedSorterWithCustomSorterWithContext()
+    {
+        NestedSorterWithCustomSorterWithContextTest((flexSorter, sorters, context) =>
+            flexSorter.SortData(_ctx.People, sorters, context).ToList());
     }
 
     [Test]
@@ -142,6 +151,20 @@ public class SortDataQueryableTests : BaseSortData
     {
         var flexSorter = new SimplePeopleSorterWithCustomSorter();
         SimpleSorterWithCustomSorterTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithCustomSorterWithContext()
+    {
+        var customExpressionFilter = new PeopleOriginCountryCustomField();
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.AddCustomField(customExpressionFilter);
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        var context = new CustomContext
+        {
+            Culture = new CultureInfo("de-DE")
+        };
+        SimpleSorterWithCustomSorterWithContextTest(sorters => flexSorter.SortData(_ctx.People, sorters, context).ToList());
     }
 
     [Test]
