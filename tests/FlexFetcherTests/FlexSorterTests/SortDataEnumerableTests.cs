@@ -2,6 +2,8 @@
 using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Utils;
 using FlexFetcherTests.Stubs.CustomFields;
+using FlexFetcherTests.Stubs.FlexFetcherContexts;
+using System.Globalization;
 using TestData;
 using TestData.Database;
 
@@ -97,6 +99,20 @@ public class SortDataEnumerableTests : BaseSortData
     {
         var flexSorter = new SimplePeopleSorterWithCustomSorter();
         SimpleSorterWithCustomSorterTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithCustomSorterWithContext()
+    {
+        var customExpressionFilter = new PeopleOriginCountryCustomField();
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.AddCustomField(customExpressionFilter);
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        var context = new CustomContext
+        {
+            Culture = new CultureInfo("de-DE")
+        };
+        SimpleSorterWithCustomSorterWithContextTest(sorters => flexSorter.SortData(_people, sorters, context).ToList());
     }
 
     [Test]

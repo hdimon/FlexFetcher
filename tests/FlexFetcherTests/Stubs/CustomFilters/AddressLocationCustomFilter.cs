@@ -8,7 +8,7 @@ public class AddressLocationCustomFilter : BaseFlexCustomField<AddressEntity, st
 {
     public override string Field => "Location";
 
-    protected override Expression<Func<AddressEntity, string>> BuildFieldExpression()
+    protected override Expression<Func<AddressEntity, string>> BuildFieldExpression(IFlexFetcherContext? context = null)
     {
         return address => address.City + ", " + address.State;
     }

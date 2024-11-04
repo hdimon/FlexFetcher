@@ -8,7 +8,8 @@ public class PeopleWithManyToManyGroupsCustomFilter : BaseFlexCustomFieldFilter<
 {
     public override string Field => "PeopleGroups";
 
-    protected override Expression<Func<PeopleEntity, bool>> BuildFilterExpression(string filterOperator, object? filterValue)
+    protected override Expression<Func<PeopleEntity, bool>> BuildFilterExpression(string filterOperator, object? filterValue,
+        IFlexFetcherContext? context = null)
     {
         string value = (string)filterValue!;
 

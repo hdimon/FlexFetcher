@@ -70,7 +70,7 @@ public static class FilterExtensions
         var builder = new FilterExpressionBuilder<TEntity>();
         var options = new FlexFilterOptions<TEntity>();
         options.Build();
-        var expression = builder.BuildExpression(filter!, options);
+        var expression = builder.BuildExpression(filter!, options, null);
         return expression;
     }
 
@@ -83,7 +83,7 @@ public static class FilterExtensions
         if (!options.IsBuilt)
             options.Build();
 
-        var expression = builder.BuildExpression(filter!, options);
+        var expression = builder.BuildExpression(filter!, options, null);
         return expression;
     }
 }

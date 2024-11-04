@@ -19,14 +19,14 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         FilterExpressionHandlers = handlers.ToImmutableList();
     }
 
-    public Expression<Func<TEntity, bool>> BuildExpression(DataFilter filter, FlexFilterOptions<TEntity> options)
+    public Expression<Func<TEntity, bool>> BuildExpression(DataFilter filter, FlexFilterOptions<TEntity> options, IFlexFetcherContext? context)
     {
         var parameter = Expression.Parameter(typeof(TEntity));
-        var body = BuildExpressionBody(parameter, filter, options);
+        var body = BuildExpressionBody(parameter, filter, options, context);
         return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
     }
 
-    private Expression BuildExpressionBody(Expression parameter, DataFilter filter, FlexFilterOptions<TEntity> options)
+    private Expression BuildExpressionBody(Expression parameter, DataFilter filter, FlexFilterOptions<TEntity> options, IFlexFetcherContext? context)
     {
         if (filter.Filters == null || filter.Filters.Count == 0)
         {
@@ -37,7 +37,7 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         foreach (var dataFilter in filter.Filters)
         {
-            var expression = BuildSingleExpression(parameter, dataFilter, options);
+            var expression = BuildSingleExpression(parameter, dataFilter, options, context);
             expressions.Add(expression);
         }
 
@@ -53,14 +53,15 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         return body;
     }
 
-    public Expression BuildSingleExpression(Expression parameter, DataFilter filter, FlexFilterOptions<TEntity> options)
+    public Expression BuildSingleExpression(Expression parameter, DataFilter filter, FlexFilterOptions<TEntity> options,
+        IFlexFetcherContext? context)
     {
         if (filter.Filters is { Count: > 0 })
         {
-            return BuildExpressionBody(parameter, filter, options);
+            return BuildExpressionBody(parameter, filter, options, context);
         }
 
-        FilterExpressionResult expressionResult = BuildPropertyExpression(parameter, filter, options);
+        FilterExpressionResult expressionResult = BuildPropertyExpression(parameter, filter, options, context);
 
         if (expressionResult.IsFull)
         {
@@ -100,7 +101,7 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
     }
 
     private static FilterExpressionResult BuildPropertyExpression(Expression parameter, DataFilter filter,
-        FlexFilterOptions<TEntity> options)
+        FlexFilterOptions<TEntity> options, IFlexFetcherContext? context)
     {
         Expression property = parameter;
         string field = filter.Field!;
@@ -117,7 +118,7 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         if (split.Length == 1)
         {
             if (TryBuildExpressionFromCustomEntityFilter(options, property, mappedFieldName, filter.Operator!,
-                    filter.Value, out var expressionResult))
+                    filter.Value, context, out var expressionResult))
             {
                 return expressionResult;
             }
@@ -133,13 +134,14 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
                                new object[] { })!;
 
         var reducedFilter = filter with { Field = string.Join(".", split.Skip(1)) };
-        var exp = nestedFilter.BuildExpression(property, reducedFilter);
+        var exp = nestedFilter.BuildExpression(property, reducedFilter, context);
 
         return new FilterExpressionResult(exp, true);
     }
 
     private static bool TryBuildExpressionFromCustomEntityFilter(FlexFilterOptions<TEntity> options, Expression property,
-        string fieldName, string filterOperator, object? filterValue, out FilterExpressionResult expressionResult)
+        string fieldName, string filterOperator, object? filterValue, IFlexFetcherContext? context,
+        out FilterExpressionResult expressionResult)
     {
         foreach (var currentOptionsCustomFilter in options.CustomFields)
         {
@@ -158,7 +160,7 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
             {
                 var method = filterType.GetMethod("BuildExpression");
 
-                var exp = (Expression)method!.Invoke(currentOptionsCustomFilter, new object[] { property })!;
+                var exp = (Expression)method!.Invoke(currentOptionsCustomFilter, [property, context])!;
                 expressionResult = new FilterExpressionResult(exp, false);
                 return true;
             }

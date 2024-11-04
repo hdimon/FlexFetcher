@@ -34,45 +34,45 @@ public class FlexFilter<TEntity>: BaseFlexFilter where TEntity : class
         ExpressionBuilder = options.ExpressionBuilder;
     }
 
-    public IQueryable<TEntity> FilterData(IQueryable<TEntity> query, DataFilter? filter)
+    public IQueryable<TEntity> FilterData(IQueryable<TEntity> query, DataFilter? filter, IFlexFetcherContext? context = null)
     {
         if (FilterIsEmpty(filter))
             return query;
 
         BuildOptions();
 
-        var expression = BuildExpression(filter!);
+        var expression = BuildExpression(filter!, context);
 
         query = query.Where(expression);
 
         return query;
     }
 
-    public IEnumerable<TEntity> FilterData(IEnumerable<TEntity> query, DataFilter? filter)
+    public IEnumerable<TEntity> FilterData(IEnumerable<TEntity> query, DataFilter? filter, IFlexFetcherContext? context = null)
     {
         if (FilterIsEmpty(filter))
             return query;
 
         BuildOptions();
 
-        var expression = BuildExpression(filter!);
+        var expression = BuildExpression(filter!, context);
 
         query = query.Where(expression.Compile());
 
         return query;
     }
 
-    public override Expression BuildExpression(Expression property, DataFilter filter)
+    public override Expression BuildExpression(Expression property, DataFilter filter, IFlexFetcherContext? context = null)
     {
         BuildOptions();
 
-        var expression = ExpressionBuilder.BuildSingleExpression(property, filter, Options);
+        var expression = ExpressionBuilder.BuildSingleExpression(property, filter, Options, context);
         return expression;
     }
 
-    private Expression<Func<TEntity, bool>> BuildExpression(DataFilter filter)
+    private Expression<Func<TEntity, bool>> BuildExpression(DataFilter filter, IFlexFetcherContext? context)
     {
-        var expression = ExpressionBuilder.BuildExpression(filter, Options);
+        var expression = ExpressionBuilder.BuildExpression(filter, Options, context);
         return expression;
     }
 

@@ -34,35 +34,35 @@ public class FlexSorter<TEntity>: BaseFlexSorter where TEntity : class
         ExpressionBuilder = options.ExpressionBuilder;
     }
 
-    public IQueryable<TEntity> SortData(IQueryable<TEntity> query, DataSorters? sorters)
+    public IQueryable<TEntity> SortData(IQueryable<TEntity> query, DataSorters? sorters, IFlexFetcherContext? context = null)
     {
         if (SorterIsEmpty(sorters))
             return query;
 
         BuildOptions();
 
-        query = ExpressionBuilder.BuildExpression(query, sorters!, Options);
+        query = ExpressionBuilder.BuildExpression(query, sorters!, Options, context);
 
         return query;
     }
 
-    public IEnumerable<TEntity> SortData(IEnumerable<TEntity> query, DataSorters? sorters)
+    public IEnumerable<TEntity> SortData(IEnumerable<TEntity> query, DataSorters? sorters, IFlexFetcherContext? context = null)
     {
         if (SorterIsEmpty(sorters))
             return query;
 
         BuildOptions();
 
-        query = ExpressionBuilder.BuildExpression(query.AsQueryable(), sorters!, Options);
+        query = ExpressionBuilder.BuildExpression(query.AsQueryable(), sorters!, Options, context);
 
         return query;
     }
 
-    public override Expression BuildExpression(Expression property, DataSorter sorter)
+    public override Expression BuildExpression(Expression property, DataSorter sorter, IFlexFetcherContext? context = null)
     {
         BuildOptions();
 
-        return ExpressionBuilder.BuildPropertyExpression(property, sorter, Options);
+        return ExpressionBuilder.BuildPropertyExpression(property, sorter, Options, context);
     }
 
     public bool SorterIsEmpty(DataSorters? sorters)

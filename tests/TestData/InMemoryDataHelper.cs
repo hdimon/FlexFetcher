@@ -150,6 +150,7 @@ public class InMemoryDataHelper
                 Weight = null,
                 Gender = Gender.Male,
                 Salary = 50000.75m,
+                OriginCountryEn = "Germany",
 #if NET6_0_OR_GREATER
                 BirthDate = new DateOnly(1990, 1, 1),
 #endif
@@ -160,7 +161,8 @@ public class InMemoryDataHelper
                     Street = "789 Main St",
                     City = "Chicago",
                     State = "IL",
-                    Zip = "23456"
+                    Zip = "23456",
+                    CountryEn = "Germany",
                 },
                 Phone = "345-678-9012",
                 Email = "",
@@ -188,6 +190,7 @@ public class InMemoryDataHelper
                 Weight = 55.5,
                 Gender = Gender.Female,
                 Salary = 60000,
+                OriginCountryDe = "Deutschland",
 #if NET6_0_OR_GREATER
                 BirthDate = null,
 #endif
@@ -198,7 +201,8 @@ public class InMemoryDataHelper
                     Street = "012 Main St",
                     City = "Houston",
                     State = "TX",
-                    Zip = "78901"
+                    Zip = "78901",
+                    CountryDe = "Deutschland",
                 },
                 Phone = "456-789-0123",
                 Email = "",
