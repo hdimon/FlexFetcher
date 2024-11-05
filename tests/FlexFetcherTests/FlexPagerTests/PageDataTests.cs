@@ -1,6 +1,8 @@
 ﻿using FlexFetcher;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
+using FlexFetcherTests.Stubs.Database;
+using Microsoft.EntityFrameworkCore;
 using TestData;
 using TestData.Database;
 
@@ -9,11 +11,23 @@ namespace FlexFetcherTests.FlexPagerTests;
 public class PageDataTests
 {
     private List<PeopleEntity> _people = null!;
+    private TestDbContext _ctx = null!;
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         _people = InMemoryDataHelper.GetPeople();
+
+        _ctx = new TestDbContext();
+        _ctx.Database.EnsureDeleted();
+        _ctx.Database.EnsureCreated();
+    }
+
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        _ctx.Database.EnsureDeleted();
+        _ctx.Dispose();
     }
 
     [Test]
@@ -118,5 +132,24 @@ public class PageDataTests
         pager = new DataPager { Skip = 12, Take = 3 };
         result = flexPager.PageData(_people, pager).ToList();
         Assert.That(result.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void PageDataReturnDataQueryResult()
+    {
+        var flexPager = new FlexPager<PeopleEntity>();
+        var pager = new DataPager { PageSize = 3, Page = 1 };
+        DataQueryResult<PeopleEntity> queryResult;
+
+        using (_ctx.Database.BeginTransaction(System.Data.IsolationLevel.Serializable))
+        {
+            var totalCount = _ctx.People.Count();
+            var result = flexPager.PageData(_ctx.People, pager).ToList();
+            queryResult = new DataQueryResult<PeopleEntity>(result, totalCount);
+        }
+
+        Assert.That(queryResult.TotalCount, Is.EqualTo(10));
+        Assert.That(queryResult.Items.Count, Is.EqualTo(3));
+        Assert.That(queryResult.Items.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 2, 3 }));
     }
 }
