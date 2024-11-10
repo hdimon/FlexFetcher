@@ -5,6 +5,8 @@ namespace FlexFetcher.Serialization.SystemTextJson.Converters;
 
 public class GenericConverter : JsonConverter<object>
 {
+    private const string DateTimeOffsetPattern = @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$";
+
     public override bool CanConvert(Type typeToConvert)
     {
         return typeToConvert == typeof(object);
@@ -58,9 +60,8 @@ public class GenericConverter : JsonConverter<object>
     {
         string stringValue = reader.GetString()!;
 
-        if (System.Text.RegularExpressions.Regex.IsMatch(stringValue,
-                @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$")
-            && DateTimeOffset.TryParse(stringValue, out var dto))
+        if (System.Text.RegularExpressions.Regex.IsMatch(stringValue, DateTimeOffsetPattern) &&
+            DateTimeOffset.TryParse(stringValue, out var dto))
             return dto;
 
         return stringValue;
@@ -91,11 +92,11 @@ public class GenericConverter : JsonConverter<object>
         {
             JsonValueKind.Number => firstElement.TryGetInt64(out _) ? typeof(int) : typeof(double),
             // If string matches Iso date format then try to parse it as DateTimeOffset
-            JsonValueKind.String => System.Text.RegularExpressions.Regex.IsMatch(firstElement.GetString()!,
-                                        @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$")
-                                    && DateTimeOffset.TryParse(firstElement.GetString(), out _)
-                ? typeof(DateTimeOffset)
-                : typeof(string),
+            JsonValueKind.String =>
+                System.Text.RegularExpressions.Regex.IsMatch(firstElement.GetString()!, DateTimeOffsetPattern) &&
+                DateTimeOffset.TryParse(firstElement.GetString(), out _)
+                    ? typeof(DateTimeOffset)
+                    : typeof(string),
             JsonValueKind.True => typeof(bool),
             JsonValueKind.False => typeof(bool),
             JsonValueKind.Null => typeof(object),
