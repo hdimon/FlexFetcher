@@ -1,8 +1,10 @@
 # Filter GET:
-https://localhost:7246/FlexFetcher/Filter?Filters={"Logic":"And","Filters":[{"Operator":"Neq","Field":"Address","Value":null,"Logic":null,"Filters":null},{"Operator":"Eq","Field":"Address.Town","Value":"New York","Logic":null,"Filters":null}]}
+**Full form:** https://localhost:7246/FlexFetcher/Filter?Filters={"Logic":"And","Filters":[{"Operator":"Neq","Field":"Address","Value":null,"Logic":null,"Filters":null},{"Operator":"Eq","Field":"Address.Town","Value":"New York","Logic":null,"Filters":null}]}
+
+**Short form:** https://localhost:7246/FlexFetcher/Filter?Filter={"L":"And","Fs":[{"O":"Neq","F":"Address","V":null,"L":null,"Fs":null},{"O":"Eq","F":"Address.Town","V":"New York","L":null,"Fs":null}]}
 
 # Filter POST:
-https://localhost:7246/FlexFetcher/Filter
+**Full form:** https://localhost:7246/FlexFetcher/Filter
 
 Body (json type):
 ```json
@@ -19,6 +21,29 @@ Body (json type):
         "Operator": "eq",
         "Field": "Address.Town",
         "Value": "New York"
+      }
+    ]
+  }
+}
+```
+
+**Short form:** https://localhost:7246/FlexFetcher/Filter
+
+Body (json type):
+```json
+{
+  "F": {
+    "L": "and",
+    "Fs": [
+      {
+        "O": "neq",
+        "F": "Address",
+        "V": null
+      },
+      {
+        "O": "eq",
+        "F": "Address.Town",
+        "V": "New York"
       }
     ]
   }
@@ -26,10 +51,12 @@ Body (json type):
 ```
 
 # Sorter GET:
-https://localhost:7246/FlexFetcher/Sorter?Sorters={"Sorters":[{"Field":"Surname","Direction":"Asc"},{"Field":"Id","Direction":"Asc"}]}
+**Full form:** https://localhost:7246/FlexFetcher/Sorter?Sorters={"Sorters":[{"Field":"Surname","Direction":"Asc"},{"Field":"Id","Direction":"Asc"}]}
+
+**Short form:** https://localhost:7246/FlexFetcher/Sorter?Sorters={"S":[{"F":"Surname","D":"Asc"},{"F":"Id","D":"Asc"}]}
 
 # Sorter POST:
-https://localhost:7246/FlexFetcher/Sorter
+**Full form:** https://localhost:7246/FlexFetcher/Sorter
 
 Body (json type):
 ```json
@@ -49,11 +76,33 @@ Body (json type):
 }
 ```
 
+**Short form:** https://localhost:7246/FlexFetcher/Sorter
+
+Body (json type):
+```json
+{
+  "S": {
+    "S": [
+      {
+        "F": "Surname",
+        "D": "Asc"
+      },
+      {
+        "F": "Id",
+        "D": "Asc"
+      }
+    ]
+  }
+}
+```
+
 # Pager GET:
-https://localhost:7246/FlexFetcher/Pager?Pager={"Page":1,"PageSize":2}
+**Full form:** https://localhost:7246/FlexFetcher/Pager?Pager={"Page":1,"PageSize":2}
+
+**Short form:** https://localhost:7246/FlexFetcher/Pager?Pager={"P":1,"Ps":2}
 
 # Pager POST:
-https://localhost:7246/FlexFetcher/Pager
+**Full form:** https://localhost:7246/FlexFetcher/Pager
 
 Body (json type):
 ```json
@@ -65,11 +114,25 @@ Body (json type):
 }
 ```
 
+**Short form:** https://localhost:7246/FlexFetcher/Pager
+
+Body (json type):
+```json
+{
+  "P": {
+    "P": 1,
+    "Ps": 2
+  }
+}
+```
+
 # Filter, Sorter, Pager GET:
-https://localhost:7246/FlexFetcher?Filters={"Logic":"And","Filters":[{"Operator":"Neq","Field":"Address","Value":null,"Logic":null,"Filters":null},{"Operator":"Eq","Field":"Address.City","Value":"New York","Logic":null,"Filters":null}]}&Sorters={"Sorters":[{"Field":"Surname","Direction":"Asc"},{"Field":"Id","Direction":"Asc"}]}&Pager={"Page":1,"PageSize":2}
+**Full form:** https://localhost:7246/FlexFetcher?Filters={"Logic":"And","Filters":[{"Operator":"Neq","Field":"Address","Value":null,"Logic":null,"Filters":null},{"Operator":"Eq","Field":"Address.City","Value":"New York","Logic":null,"Filters":null}]}&Sorters={"Sorters":[{"Field":"Surname","Direction":"Asc"},{"Field":"Id","Direction":"Asc"}]}&Pager={"Page":1,"PageSize":2}
+
+**Short form:** https://localhost:7246/FlexFetcher?Filter={"L":"And","Fs":[{"O":"Neq","F":"Address","V":null,"L":null,"Fs":null},{"O":"Eq","F":"Address.City","V":"New York","L":null,"Fs":null}]}&Sorters={"S":[{"F":"Surname","D":"Asc"},{"F":"Id","D":"Asc"}]}&Pager={"P":1,"Ps":2}
 
 # Filter, Sorter, Pager POST:
-https://localhost:7246/FlexFetcher
+**Full form:** https://localhost:7246/FlexFetcher
 
 Body (json type):
 ```json
@@ -104,6 +167,45 @@ Body (json type):
   "Pager": {
     "Page": 1,
     "PageSize": 2
+  }
+}
+```
+
+**Short form:** https://localhost:7246/FlexFetcher
+
+Body (json type):
+```json
+{
+  "F": {
+    "L": "and",
+    "Fs": [
+      {
+        "O": "neq",
+        "F": "Address",
+        "V": null
+      },
+      {
+        "O": "eq",
+        "F": "Address.Town",
+        "V": "New York"
+      }
+    ]
+  },
+  "S": {
+    "S": [
+      {
+        "F": "Surname",
+        "D": "Asc"
+      },
+      {
+        "F": "Id",
+        "D": "Asc"
+      }
+    ]
+  },
+  "P": {
+    "P": 1,
+    "Ps": 2
   }
 }
 ```
