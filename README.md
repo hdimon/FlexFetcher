@@ -154,10 +154,15 @@ var sorter = new DataSorters
 {
     Sorters = new List<DataSorter>
     {
-        new DataSorter
+        new DataSorter // First sort by Surname in ascending order
         {
             Field = "Surname",
             Direction = DataSorterDirection.Asc
+        },
+        new DataSorter // Then sort by Name in descending order
+        {
+            Field = "Name",
+            Direction = DataSorterDirection.Desc
         }
     }
 };
@@ -571,7 +576,7 @@ var flexSorter = new FlexSorter<PeopleEntity>(options);
 // Dependency injection of FlexFetcher
 Services.AddSingletonFlexOptions<FlexFetcherOptions<PeopleEntity>>(options =>
 {
-	options.AddCustomField(new PeopleFullNameCustomField()).Map("Title"); // Map is optional
+    options.AddCustomField(new PeopleFullNameCustomField()).Map("Title"); // Map is optional
 });
 Services.AddSingleton<FlexFetcher<PeopleEntity>>();
 ```
@@ -618,7 +623,7 @@ It can contain any data which is needed for custom fields and custom filters.
 
 Let's say we need to pick different entity fields depending on culture:
 ```csharp
-public class CustomContext : IFlexFetcherContext
+public class CustomContext : IFlexFetcherContext // Create your own context class
 {
     public CultureInfo Culture { get; set; } = null!;
 }
