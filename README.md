@@ -84,6 +84,7 @@ FlexFetcher is build for next platforms:
 - .NET 6.0
 - .NET 7.0
 - .NET 8.0
+- .NET 9.0
 - .NET Standard 2.0
 
 It means that you can use it in both .NET Core (see ```samples/WebApiSample```) and .NET Framework (see ```samples/WebApiSample.Framework48```) projects.
