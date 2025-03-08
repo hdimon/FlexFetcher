@@ -10,7 +10,7 @@ public class FieldBuilder<TEntity, TField, TMapModel> : BaseFieldBuilder
     private readonly HashSet<string> _staticAliases = new();
     private readonly List<Expression<Func<TMapModel, object?>>> _expressions = new();
     private readonly HashSet<string> _aliases = new();
-    
+
     public override string[] Aliases => _aliases.ToArray();
 
     public FieldBuilder(Expression<Func<TEntity, TField>> fieldExpression) : base(((MemberExpression)fieldExpression.Body).Member.Name)

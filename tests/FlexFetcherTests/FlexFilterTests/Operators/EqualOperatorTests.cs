@@ -86,7 +86,7 @@ public class EqualOperatorTests
         };
 
         var options = new FlexFilterOptions<PeopleEntity>();
-        options.Field(x => x.PeopleName).CastTo<string>();
+        options.Field(x => x.PeopleName).CastTo(typeof(string));
         var flexFilter = new FlexFilter<PeopleEntity>(options);
         var result = flexFilter.FilterData(_ctx.People, filter);
         Assert.That(result.Count(), Is.EqualTo(5));
