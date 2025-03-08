@@ -21,6 +21,7 @@ FlexFetcher is inspired by [Telerik Kendo UI](https://www.telerik.com/kendo-ui) 
 - [Custom filter fields](#custom-filter-fields)
 - [FlexFetcher Context](#flexfetcher-context)
 - [Field hiding](#field-hiding)
+- [Value objects and casting](#value-objects-and-casting)
 - [Serialization and deserialization](#serialization-and-deserialization)
   - [Newtonsoft.Json](#newtonsoftjson)
   - [System.Text.Json](#systemtextjson)
@@ -711,6 +712,109 @@ class SimplePeopleSorterWithCustomSorter : FlexSorter<PeopleEntity>
 ```
 
 > Custom fields are not hidden automatically when HideOriginalFields() is used so they should be hidden manually if needed.
+
+## Value objects and casting
+If you work in accordance with DDD principles, you might have value objects in your entities.
+
+Let's say we have a value object PeopleName in PeopleEntity:
+```csharp
+public class PeopleEntity
+{
+    public int Id { get; set; }
+    public PeopleName? PeopleName { get; set; }
+    // Other fields are omitted for brevity
+}
+
+// ValueObjectBase is omitted here for brevity but you can find it in source code and https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects
+public class PeopleName : ValueObjectBase 
+{
+    public const int MinLength = 4;
+    public const int MaxLength = 200;
+
+    public string Value { get; }
+
+    public PeopleName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("People name cannot be empty or whitespace.");
+
+        if (value.Length is < MinLength or > MaxLength)
+            throw new ArgumentException($"People name length must be between {MinLength} and {MaxLength}.");
+
+        Value = value;
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+}
+```
+Now we can try to find all people whose name contains "an". That's what we have looked through before:
+```csharp
+var filter = new DataFilter
+{
+    Filters = new List<DataFilter>
+    {
+        new()
+        {
+            Field = "PeopleName",
+            Operator = DataFilterOperator.Contains,
+            Value = "an"
+        }
+    }
+};
+
+var options = new FlexFilterOptions<PeopleEntity>();
+var flexFilter = new FlexFilter<PeopleEntity>(options);
+var result = flexFilter.FilterData(_ctx.People, filter);
+```
+Unfortunately, it won't work because PeopleName is a value object and it can't be compared with a string directly.
+We will get an exception like this:
+```
+System.InvalidOperationException : No method 'Contains' on type 'TestData.Database.ValueObjects.PeopleName' is compatible with the supplied arguments.
+```
+To fix this we need to do two things:
+- Add implicit operator from PeopleName to string
+```csharp
+public static implicit operator string(PeopleName name) => name.Value;
+```
+so now PeopleName class looks like this:
+```csharp
+public class PeopleName : ValueObjectBase 
+{
+    public const int MinLength = 4;
+    public const int MaxLength = 200;
+
+    public string Value { get; }
+
+    public PeopleName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("People name cannot be empty or whitespace.");
+
+        if (value.Length is < MinLength or > MaxLength)
+            throw new ArgumentException($"People name length must be between {MinLength} and {MaxLength}.");
+
+        Value = value;
+    }
+
+    public static implicit operator string(PeopleName name) => name.Value; // Add this line
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+}
+```
+- Call ```CastTo<string>()``` (or ```CastTo(typeof(string))```) method in FlexFilterOptions:
+```csharp
+var options = new FlexFilterOptions<PeopleEntity>();
+options.Field(x => x.PeopleName).CastTo<string>();
+var flexFilter = new FlexFilter<PeopleEntity>(options);
+var result = flexFilter.FilterData(_ctx.People, filter);
+```
+That's it. Now it should work.
 
 ## Serialization and deserialization
 FlexFetcher is designed to be used in machine-to-machine communication, so it's important to be able to serialize and deserialize queries.

@@ -95,6 +95,29 @@ public abstract class BaseSortData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EqualTo(new List<int> { 10, 9, 2, 1, 6, 5, 4, 3, 8, 7 }));
     }
 
+    protected void TwoFieldsSurnameAndValueObjectNameSortTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "Surname",
+                    Direction = DataSorterDirection.Asc
+                },
+                new DataSorter
+                {
+                    Field = "PeopleName",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        var result = sorter(sorters);
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EqualTo(new List<int> { 10, 9, 2, 1, 6, 5, 4, 3, 8, 7 }));
+    }
+
     protected void SimpleNestedCitySortTest(Func<DataSorters, List<PeopleEntity>> sorter)
     {
         var sorters = new DataSorters

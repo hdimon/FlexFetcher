@@ -10,7 +10,7 @@ public class FieldBuilder<TEntity, TField, TMapModel> : BaseFieldBuilder
     private readonly HashSet<string> _staticAliases = new();
     private readonly List<Expression<Func<TMapModel, object?>>> _expressions = new();
     private readonly HashSet<string> _aliases = new();
-
+    
     public override string[] Aliases => _aliases.ToArray();
 
     public FieldBuilder(Expression<Func<TEntity, TField>> fieldExpression) : base(((MemberExpression)fieldExpression.Body).Member.Name)
@@ -27,6 +27,18 @@ public class FieldBuilder<TEntity, TField, TMapModel> : BaseFieldBuilder
     public FieldBuilder<TEntity, TField, TMapModel> Map(Expression<Func<TMapModel, object?>> fieldExpression)
     {
         _expressions.Add(fieldExpression);
+        return this;
+    }
+
+    public FieldBuilder<TEntity, TField, TMapModel> CastTo(Type type)
+    {
+        CastToType = type;
+        return this;
+    }
+
+    public FieldBuilder<TEntity, TField, TMapModel> CastTo<TTargetType>()
+    {
+        CastToType = typeof(TTargetType);
         return this;
     }
 

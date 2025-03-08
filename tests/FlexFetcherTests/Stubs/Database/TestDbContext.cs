@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TestData;
 using TestData.Database;
+using TestData.Database.ValueObjects;
 
 namespace FlexFetcherTests.Stubs.Database;
 
@@ -18,6 +19,8 @@ public class TestDbContext : DbContext
     {
         modelBuilder.Entity<PeopleEntity>().HasKey(p => p.Id);
         modelBuilder.Entity<PeopleEntity>().Property(p => p.Occupation).HasConversion<string>();
+        modelBuilder.Entity<PeopleEntity>().Property(p => p.PeopleName).HasConversion(v => v!.Value, v => new PeopleName(v));
+
         modelBuilder.Entity<AddressEntity>().HasKey(a => a.Id);
         modelBuilder.Entity<UserEntity>().HasKey(a => a.Id);
         modelBuilder.Entity<GroupEntity>().HasKey(g => g.Id);

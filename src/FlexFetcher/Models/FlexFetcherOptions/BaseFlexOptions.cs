@@ -87,6 +87,12 @@ public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOption
         return HiddenFields.Contains(fieldName);
     }
 
+    public Type? GetFieldCastToType(string fieldName)
+    {
+        var fieldBuilder = FieldBuilders.FirstOrDefault(x => x.FieldName == fieldName);
+        return fieldBuilder?.CastToType;
+    }
+
     internal void AddFieldBuilderInternal(BaseFieldBuilder fieldBuilder)
     {
         FieldBuilders.Add(fieldBuilder);

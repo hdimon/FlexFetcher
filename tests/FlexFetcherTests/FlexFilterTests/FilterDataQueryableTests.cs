@@ -151,6 +151,15 @@ public class FilterDataQueryableTests : BaseFilterData
         SimpleFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_ctx.People, filters).ToList());
     }
 
+    [Test]
+    public void SimpleValueObjectFilterWithFieldAlias()
+    {
+        SimpleValueObjectFilterWithFieldAliasTest((filters, options) => _ctx.People.FilterData(filters, options).ToList());
+
+        var flexFilter = new PeopleFilter();
+        SimpleValueObjectFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_ctx.People, filters).ToList());
+    }
+
     private class PeopleFilter : FlexFilter<PeopleEntity>
     {
         public PeopleFilter()

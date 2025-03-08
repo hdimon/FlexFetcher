@@ -123,11 +123,11 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
                 return expressionResult;
             }
 
-            property = CreatePropertyExpression(property, mappedFieldName);
+            property = CreatePropertyExpression(property, mappedFieldName, options);
             return new FilterExpressionResult(property, false);
         }
 
-        property = CreatePropertyExpression(property, mappedFieldName);
+        property = CreatePropertyExpression(property, mappedFieldName, options);
 
         var nestedFilter = options.NestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type) ??
                            (BaseFlexFilter)Activator.CreateInstance(typeof(FlexFilter<>).MakeGenericType(property.Type),
@@ -173,11 +173,17 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         return false;
     }
 
-    private static MemberExpression CreatePropertyExpression(Expression parameter, string fieldName)
+    private static Expression CreatePropertyExpression(Expression parameter, string fieldName, FlexFilterOptions<TEntity> options)
     {
         try
         {
-            return Expression.Property(parameter, fieldName);
+            var property = Expression.Property(parameter, fieldName);
+
+            var castToType = options.GetFieldCastToType(fieldName);
+            if (castToType != null)
+                return Expression.Convert(property, castToType);
+
+            return property;
         }
         catch (ArgumentException)
         {

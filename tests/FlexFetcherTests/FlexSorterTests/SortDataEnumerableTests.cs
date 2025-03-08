@@ -56,6 +56,20 @@ public class SortDataEnumerableTests : BaseSortData
     }
 
     [Test]
+    public void TwoFieldsSurnameAndValueObjectNameSort()
+    {
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            TwoFieldsSurnameAndValueObjectNameSortTest(sorters => _people.SortData(sorters).ToList());
+        });
+
+        var flexSorterOptions = new FlexSorterOptions<PeopleEntity>();
+        flexSorterOptions.Field(x => x.PeopleName).CastTo<string>();
+        var flexSorter = new FlexSorter<PeopleEntity>(flexSorterOptions);
+        TwoFieldsSurnameAndValueObjectNameSortTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
     public void SimpleNestedCitySort()
     {
         var nullCities = _people.Where(p => p.Address == null).ToList();
