@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using TestData.Database;
+using TestData.Database.ValueObjects;
 
 namespace TestData;
 
@@ -62,6 +63,7 @@ public class InMemoryDataHelper
                 Id = 1,
                 ExternalId = new Guid("f3f3f3f3-f3f3-f3f3-f3f3-f3f3f3f3f3f3"),
                 Name = "John",
+                PeopleName = new PeopleName("John"),
                 Surname = "Doe",
                 Age = 20,
                 Height = 150.5,
@@ -104,6 +106,7 @@ public class InMemoryDataHelper
                 Id = 2,
                 ExternalId = new Guid("f4f4f4f4-f4f4-f4f4-f4f4-f4f4f4f4f4f4"),
                 Name = "Jane",
+                PeopleName = new PeopleName("Jane"),
                 Surname = "Doe",
                 Age = 25,
                 Height = 156,
@@ -144,6 +147,7 @@ public class InMemoryDataHelper
             {
                 Id = 3,
                 Name = "John",
+                PeopleName = new PeopleName("John"),
                 Surname = "Smith",
                 Age = 30,
                 Height = 160.5,
@@ -184,6 +188,7 @@ public class InMemoryDataHelper
             {
                 Id = 4,
                 Name = "Jane",
+                PeopleName = new PeopleName("Jane"),
                 Surname = "Smith",
                 Age = 35,
                 Height = 165,
@@ -222,6 +227,7 @@ public class InMemoryDataHelper
             {
                 Id = 5,
                 Name = "John",
+                PeopleName = new PeopleName("John"),
                 Surname = "Jones",
                 Age = 40,
                 Height = 170.5,
@@ -267,6 +273,7 @@ public class InMemoryDataHelper
             {
                 Id = 6,
                 Name = "Jane",
+                PeopleName = new PeopleName("Jane"),
                 Surname = "Jones",
                 Age = 45,
                 Height = 175,
@@ -312,6 +319,7 @@ public class InMemoryDataHelper
             {
                 Id = 7,
                 Name = "John",
+                PeopleName = new PeopleName("John"),
                 Surname = "Williams",
                 Age = 50,
                 Height = 180.5,
@@ -342,6 +350,7 @@ public class InMemoryDataHelper
             {
                 Id = 8,
                 Name = "Jane",
+                PeopleName = new PeopleName("Jane"),
                 Surname = "Williams",
                 Age = 55,
                 Height = 185,
@@ -368,6 +377,7 @@ public class InMemoryDataHelper
             {
                 Id = 9,
                 Name = "John",
+                PeopleName = new PeopleName("John"),
                 Surname = "Brown",
                 Age = 60,
                 Height = 190.5,
@@ -394,6 +404,7 @@ public class InMemoryDataHelper
             {
                 Id = 10,
                 Name = "Jane",
+                PeopleName = new PeopleName("Jane"),
                 Surname = "Brown",
                 Age = 65,
                 Height = 195,

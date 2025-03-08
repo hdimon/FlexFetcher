@@ -4,6 +4,7 @@ public abstract class BaseFieldBuilder
 {
     public string FieldName { get; protected init; }
     public bool IsHidden { get; protected set; }
+    public Type? CastToType { get; protected set; }
 
     public abstract string[] Aliases { get; }
     public abstract void Build();

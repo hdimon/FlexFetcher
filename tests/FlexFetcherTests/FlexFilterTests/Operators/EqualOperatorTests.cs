@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using FlexFetcher;
+using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Serialization.NewtonsoftJson;
 using FlexFetcher.Serialization.SystemTextJson;
@@ -53,6 +54,40 @@ public class EqualOperatorTests
         };
 
         var flexFilter = new FlexFilter<PeopleEntity>();
+        var result = flexFilter.FilterData(_ctx.People, filter);
+        Assert.That(result.Count(), Is.EqualTo(5));
+
+        var json2 = JsonConvert.SerializeObject(filter);
+        var filter2 = JsonConvert.DeserializeObject<DataFilter>(json2, NewtonsoftHelper.GetSerializerSettings());
+        var result2 = flexFilter.FilterData(_ctx.People, filter2);
+        Assert.That(result2.Count(), Is.EqualTo(5));
+
+        var json3 = System.Text.Json.JsonSerializer.Serialize(filter, SystemTextJsonHelper.GetSerializerSettings());
+        var filter3 = System.Text.Json.JsonSerializer.Deserialize<DataFilter>(json3, SystemTextJsonHelper.GetSerializerSettings());
+        var result3 = flexFilter.FilterData(_ctx.People, filter3);
+        Assert.That(result3.Count(), Is.EqualTo(5));
+    }
+
+    [Test]
+    public void ValueObjectStringTest()
+    {
+        var filter = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new DataFilter
+                {
+                    Field = "PeopleName",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "John"
+                }
+            }
+
+        };
+
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.PeopleName).CastTo(typeof(string));
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
         var result = flexFilter.FilterData(_ctx.People, filter);
         Assert.That(result.Count(), Is.EqualTo(5));
 

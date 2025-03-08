@@ -30,6 +30,18 @@ public class FieldBuilder<TEntity, TField, TMapModel> : BaseFieldBuilder
         return this;
     }
 
+    public FieldBuilder<TEntity, TField, TMapModel> CastTo(Type type)
+    {
+        CastToType = type;
+        return this;
+    }
+
+    public FieldBuilder<TEntity, TField, TMapModel> CastTo<TTargetType>()
+    {
+        CastToType = typeof(TTargetType);
+        return this;
+    }
+
     public override void Build()
     {
         _aliases.Clear();

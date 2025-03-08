@@ -276,6 +276,30 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
     }
 
+    protected void SimpleValueObjectFilterWithFieldAliasTest(Func<DataFilter, FlexFilterOptions<PeopleEntity>, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "FirstName",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "John"
+                }
+            }
+        };
+
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.PeopleName).CastTo<string>().Map("FirstName");
+
+        var result = fetcher(filter, options);
+
+        Assert.That(result.Count, Is.EqualTo(5));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
+    }
+
     protected void SimpleNestedEntityFilterWithFieldAliasTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
         var filter = new DataFilter

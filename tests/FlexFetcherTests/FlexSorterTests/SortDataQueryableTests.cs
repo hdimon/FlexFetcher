@@ -65,6 +65,15 @@ public class SortDataQueryableTests : BaseSortData
     }
 
     [Test]
+    public void TwoFieldsSurnameAndValueObjectNameSort()
+    {
+        TwoFieldsSurnameAndValueObjectNameSortTest(sorters => _ctx.People.SortData(sorters).ToList());
+
+        var flexSorter = new FlexSorter<PeopleEntity>();
+        TwoFieldsSurnameAndValueObjectNameSortTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
     public void SimpleNestedCitySort()
     {
         SimpleNestedCitySortTest(sorters => _ctx.People.SortData(sorters).ToList());

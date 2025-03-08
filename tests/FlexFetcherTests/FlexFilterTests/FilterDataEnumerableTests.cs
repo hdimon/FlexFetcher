@@ -129,6 +129,15 @@ public class FilterDataEnumerableTests : BaseFilterData
         SimpleFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_people, filters).ToList());
     }
 
+    [Test]
+    public void SimpleValueObjectFilterWithFieldAlias()
+    {
+        SimpleValueObjectFilterWithFieldAliasTest((filters, options) => _people.FilterData(filters, options).ToList());
+
+        var flexFilter = new SimplePeopleFilterWithFieldAlias();
+        SimpleValueObjectFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_people, filters).ToList());
+    }
+
     private class SimplePeopleFilterWithFieldAlias : FlexFilter<PeopleEntity>
     {
         public SimplePeopleFilterWithFieldAlias()

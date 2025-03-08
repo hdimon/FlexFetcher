@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TestData.Database.ValueObjects;
 
 namespace TestData.Database;
 
@@ -8,6 +9,7 @@ public class PeopleEntity
     public int Id { get; set; }
     public Guid? ExternalId { get; set; }
     public string? Name { get; set; }
+    public PeopleName? PeopleName { get; set; }
     public string? Surname { get; set; }
     public int Age { get; set; }
     public double Height { get; set; }

@@ -54,10 +54,10 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
                 return expressionResult;
             }
 
-            return CreatePropertyExpression(parameter, mappedFieldName);
+            return CreatePropertyExpression(parameter, mappedFieldName, options);
         }
 
-        property = CreatePropertyExpression(property, mappedFieldName);
+        property = CreatePropertyExpression(property, mappedFieldName, options);
 
         var nestedSorter = options.NestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type) ??
                            (BaseFlexSorter)Activator.CreateInstance(typeof(FlexSorter<>).MakeGenericType(property.Type),
@@ -96,11 +96,17 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
         return false;
     }
 
-    private static MemberExpression CreatePropertyExpression(Expression parameter, string fieldName)
+    private static Expression CreatePropertyExpression(Expression parameter, string fieldName, FlexSorterOptions<TEntity> options)
     {
         try
         {
-            return Expression.Property(parameter, fieldName);
+            var property = Expression.Property(parameter, fieldName);
+
+            var castToType = options.GetFieldCastToType(fieldName);
+            if (castToType != null)
+                return Expression.Convert(property, castToType);
+
+            return property;
         }
         catch (ArgumentException)
         {
