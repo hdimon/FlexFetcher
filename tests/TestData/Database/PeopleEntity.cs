@@ -30,6 +30,7 @@ public class PeopleEntity
     public string? Email { get; set; }
     public Occupation? Occupation { get; set; }
     public int CreatedByUserId { get; set; }
+    public PeopleCreatedByUserId PeopleCreatedByUserId { get; set; } = null!;
     public UserEntity? CreatedByUser { get; set; }
     public int? UpdatedByUserId { get; set; }
     public UserEntity? UpdatedByUser { get; set; }

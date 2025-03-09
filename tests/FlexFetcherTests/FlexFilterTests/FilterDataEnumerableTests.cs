@@ -8,6 +8,7 @@ using FlexFetcherTests.Stubs.CustomFilters;
 using FlexFetcherTests.Stubs.FlexFetcherContexts;
 using TestData;
 using TestData.Database;
+using TestData.Database.ValueObjects;
 
 namespace FlexFetcherTests.FlexFilterTests;
 
@@ -249,10 +250,39 @@ public class FilterDataEnumerableTests : BaseFilterData
     }
 
     [Test]
+    public void SimpleFilterWithHiddenFieldAndTheSameMapping()
+    {
+        var options = new FlexFilterOptions<PeopleEntity, PeopleModelWithTheSameField>();
+        options.HideOriginalFields();
+        options.Field(x => x.CreatedByUserId).Map(model => model.CreatedByUserId)
+               .Map(nameof(PeopleModelWithTheSameField.CreatedByUserId));
+        var flexFilter = new FlexFilter<PeopleEntity, PeopleModelWithTheSameField>(options);
+        SimpleFilterWithHiddenFieldAndTheSameMappingTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleValueObjectFilterWithHiddenFieldAndTheSameMapping()
+    {
+        var options = new FlexFilterOptions<PeopleEntity, PeopleModelWithTheSameField>();
+        options.HideOriginalFields();
+        options.Field(x => x.PeopleCreatedByUserId).CastTo<int>().Map(model => model.CreatedByUserId)
+               .Map(model => model.PeopleCreatedByUserId).Map(nameof(PeopleModelWithTheSameField.CreatedByUserId))
+               .Map(nameof(PeopleModelWithTheSameField.PeopleCreatedByUserId));
+        var flexFilter = new FlexFilter<PeopleEntity, PeopleModelWithTheSameField>(options);
+        SimpleValueObjectFilterWithHiddenFieldAndTheSameMappingTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+    }
+
+    [Test]
     public void SimpleFilterWithNotFoundField()
     {
         var options = new FlexFilterOptions<PeopleEntity>();
         var flexFilter = new FlexFilter<PeopleEntity>(options);
         SimpleFilterWithNotFoundFieldTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+    }
+
+    private class PeopleModelWithTheSameField
+    {
+        public int CreatedByUserId { get; set; }
+        public PeopleCreatedByUserId PeopleCreatedByUserId { get; set; } = null!;
     }
 }

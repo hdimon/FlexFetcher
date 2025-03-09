@@ -20,6 +20,8 @@ public class TestDbContext : DbContext
         modelBuilder.Entity<PeopleEntity>().HasKey(p => p.Id);
         modelBuilder.Entity<PeopleEntity>().Property(p => p.Occupation).HasConversion<string>();
         modelBuilder.Entity<PeopleEntity>().Property(p => p.PeopleName).HasConversion(v => v!.Value, v => new PeopleName(v));
+        modelBuilder.Entity<PeopleEntity>().Property(p => p.PeopleCreatedByUserId)
+                    .HasConversion(v => v.Value, v => new PeopleCreatedByUserId(v));
 
         modelBuilder.Entity<AddressEntity>().HasKey(a => a.Id);
         modelBuilder.Entity<UserEntity>().HasKey(a => a.Id);

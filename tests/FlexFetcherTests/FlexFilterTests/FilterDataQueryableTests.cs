@@ -160,11 +160,62 @@ public class FilterDataQueryableTests : BaseFilterData
         SimpleValueObjectFilterWithFieldAliasTest((filters, _) => flexFilter.FilterData(_ctx.People, filters).ToList());
     }
 
+    [Test]
+    public void SimpleValueObjectFilterWithTheSameFieldAlias()
+    {
+        SimpleValueObjectFilterWithTheSameFieldAliasTest((filters, options) => _ctx.People.FilterData(filters, options).ToList());
+
+        var flexFilter = new PeopleFilterWithTheSameAlias();
+        SimpleValueObjectFilterWithTheSameFieldAliasTest((filters, _) => flexFilter.FilterData(_ctx.People, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleValueObjectFilterWithTheSameModelFieldAlias()
+    {
+        var filter = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "PeopleName",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "John"
+                }
+            }
+        };
+
+        var options = new FlexFilterOptions<PeopleEntity, PeopleEntityWithTheSameFieldAlias>();
+        options.Field(x => x.PeopleName).CastTo<string>().Map(model => model.PeopleName);
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+
+        var result = flexFilter.FilterData(_ctx.People, filter).ToList();
+
+        Assert.That(result.Count, Is.EqualTo(5));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
+
+        
+        SimpleValueObjectFilterWithTheSameFieldAliasTest((filters, _) => flexFilter.FilterData(_ctx.People, filters).ToList());
+    }
+
+    private class PeopleEntityWithTheSameFieldAlias
+    {
+        public string PeopleName { get; set; } = null!;
+    }
+
     private class PeopleFilter : FlexFilter<PeopleEntity>
     {
         public PeopleFilter()
         {
             Options.Field(x => x.Name).Map("FirstName");
+        }
+    }
+
+    private class PeopleFilterWithTheSameAlias : FlexFilter<PeopleEntity>
+    {
+        public PeopleFilterWithTheSameAlias()
+        {
+            Options.Field(x => x.PeopleName).CastTo<string>().Map("PeopleName");
         }
     }
 
@@ -239,6 +290,24 @@ public class FilterDataQueryableTests : BaseFilterData
             peopleFilterModel.FilterData(_ctx.People.Include(p => p.Address), filters).ToList());
     }
 
+    [Test]
+    public void SimpleNestedEntityFilterWithTheSameFieldAlias()
+    {
+        SimpleNestedEntityFilterWithTheSameFieldAliasTest((flexFilter, filters) =>
+            flexFilter.FilterData(_ctx.People.Include(p => p.Address), filters).ToList());
+
+        // With model
+        var addressOptionsModel = new FlexFilterOptions<AddressEntity, IdenticalAddressModel>();
+        addressOptionsModel.Field(x => x.City).Map(model => model.City).Map("City");
+        var addressFilterModel = new FlexFilter<AddressEntity>(addressOptionsModel);
+        var peopleOptionsModel = new FlexFilterOptions<PeopleEntity, IdenticalPeopleModel>();
+        peopleOptionsModel.AddNestedFlexFilter(addressFilterModel);
+        peopleOptionsModel.Field(x => x.Address).Map(model => model.Address).Map("Address");
+        var peopleFilterModel = new FlexFilter<PeopleEntity>(peopleOptionsModel);
+        SimpleNestedEntityFilterWithTheSameFieldAliasTest((_, filters) =>
+            peopleFilterModel.FilterData(_ctx.People.Include(p => p.Address), filters).ToList());
+    }
+
     private class PeopleModel
     {
         public AddressModel Residence { get; set; } = null!;
@@ -247,6 +316,16 @@ public class FilterDataQueryableTests : BaseFilterData
     private class AddressModel
     {
         public string Town { get; set; } = null!;
+    }
+
+    private class IdenticalPeopleModel
+    {
+        public IdenticalAddressModel Address { get; set; } = null!;
+    }
+
+    private class IdenticalAddressModel
+    {
+        public string City { get; set; } = null!;
     }
 
     [Test]

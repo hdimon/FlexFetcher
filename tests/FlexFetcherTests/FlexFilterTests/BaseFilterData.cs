@@ -300,6 +300,30 @@ public abstract class BaseFilterData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
     }
 
+    protected void SimpleValueObjectFilterWithTheSameFieldAliasTest(Func<DataFilter, FlexFilterOptions<PeopleEntity>, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "PeopleName",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "John"
+                }
+            }
+        };
+
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.PeopleName).CastTo<string>().Map("PeopleName");
+
+        var result = fetcher(filter, options);
+
+        Assert.That(result.Count, Is.EqualTo(5));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 3, 5, 7, 9 }));
+    }
+
     protected void SimpleNestedEntityFilterWithFieldAliasTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
     {
         var filter = new DataFilter
@@ -328,6 +352,42 @@ public abstract class BaseFilterData
         var peopleOption = new FlexFilterOptions<PeopleEntity>();
         peopleOption.AddNestedFlexFilter(addressFilter);
         peopleOption.Field(x => x.Address).Map("Residence");
+        var peopleFilter = new FlexFilter<PeopleEntity>(peopleOption);
+
+        var result = fetcher(peopleFilter, filter);
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1 }));
+    }
+
+    protected void SimpleNestedEntityFilterWithTheSameFieldAliasTest(Func<FlexFilter<PeopleEntity>, DataFilter, List<PeopleEntity>> fetcher)
+    {
+        var filter = new DataFilter
+        {
+            Logic = DataFilterLogic.And,
+            Filters = new List<DataFilter>
+            {
+                new()
+                {
+                    Field = "Address",
+                    Operator = DataFilterOperator.NotEqual,
+                    Value = null
+                },
+                new()
+                {
+                    Field = "Address.City",
+                    Operator = DataFilterOperator.Equal,
+                    Value = "New York"
+                }
+            }
+        };
+
+        var addressOption = new FlexFilterOptions<AddressEntity>();
+        addressOption.Field(x => x.City).Map("City");
+        var addressFilter = new FlexFilter<AddressEntity>(addressOption);
+        var peopleOption = new FlexFilterOptions<PeopleEntity>();
+        peopleOption.AddNestedFlexFilter(addressFilter);
+        peopleOption.Field(x => x.Address).Map("Address");
         var peopleFilter = new FlexFilter<PeopleEntity>(peopleOption);
 
         var result = fetcher(peopleFilter, filter);
@@ -627,6 +687,48 @@ public abstract class BaseFilterData
         {
             var _ = filter(filters);
         });
+    }
+
+    protected void SimpleFilterWithHiddenFieldAndTheSameMappingTest(Func<DataFilter, List<PeopleEntity>> filter)
+    {
+        var filters = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new DataFilter
+                {
+                    Field = "CreatedByUserId",
+                    Operator = DataFilterOperator.Equal,
+                    Value = 1
+                }
+            }
+        };
+
+        var result = filter(filters);
+
+        Assert.That(result.Count, Is.EqualTo(3));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 2, 3 }));
+    }
+
+    protected void SimpleValueObjectFilterWithHiddenFieldAndTheSameMappingTest(Func<DataFilter, List<PeopleEntity>> filter)
+    {
+        var filters = new DataFilter
+        {
+            Filters = new List<DataFilter>
+            {
+                new DataFilter
+                {
+                    Field = "PeopleCreatedByUserId",
+                    Operator = DataFilterOperator.Equal,
+                    Value = 1
+                }
+            }
+        };
+
+        var result = filter(filters);
+
+        Assert.That(result.Count, Is.EqualTo(3));
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EquivalentTo(new List<int> { 1, 2, 3 }));
     }
 
     protected void SimpleFilterWithNotFoundFieldTest(Func<DataFilter, List<PeopleEntity>> filter)
