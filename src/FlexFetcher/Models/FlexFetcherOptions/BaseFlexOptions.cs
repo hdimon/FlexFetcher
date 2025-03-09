@@ -75,15 +75,25 @@ public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOption
     /// <summary>
     /// Hides all original fields of Entity from sorting/filtering,
     /// i.e. if fields are hidden then they can be accessed only by their aliases.
-    /// Field aliases are not affected by this method.
+    /// Field aliases are not affected by this method even if they are equal to original fields
+    /// (it's possible to create alias "Name" for field "Name" even if it's the same).
     /// </summary>
     public void HideOriginalFields()
     {
         OriginalFieldsHidden = true;
     }
 
+    /// <summary>
+    /// It's valid situation when field has alias equal to its name.
+    /// In this case, even if field is hidden, it can be accessed by its alias, so this method returns false.
+    /// </summary>
+    /// <param name="fieldName"></param>
+    /// <returns></returns>
     public bool IsHiddenField(string fieldName)
     {
+        if (TryGetFieldNameByAlias(fieldName, out _))
+            return false;
+
         return HiddenFields.Contains(fieldName);
     }
 

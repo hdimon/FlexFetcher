@@ -90,6 +90,7 @@ public class InMemoryDataHelper
                 Phone = "123-456-7890",
                 Email = "",
                 CreatedByUserId = user1.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user1.Id),
                 CreatedByUser = user1,
                 PeopleGroups = new List<PeopleGroupEntity>
                 {
@@ -130,6 +131,7 @@ public class InMemoryDataHelper
                 Phone = "234-567-8901",
                 Email = "jane.doe@example.com",
                 CreatedByUserId = user1.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user1.Id),
                 CreatedByUser = user1,
                 UpdatedByUserId = user1.Id,
                 UpdatedByUser = user1,
@@ -171,6 +173,7 @@ public class InMemoryDataHelper
                 Phone = "345-678-9012",
                 Email = "",
                 CreatedByUserId = user1.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user1.Id),
                 CreatedByUser = user1,
                 UpdatedByUserId = user2.Id,
                 UpdatedByUser = user2,
@@ -212,6 +215,7 @@ public class InMemoryDataHelper
                 Phone = "456-789-0123",
                 Email = "",
                 CreatedByUserId = user2.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user2.Id),
                 CreatedByUser = user2,
                 PeopleGroups = new List<PeopleGroupEntity>
                 {
@@ -250,6 +254,7 @@ public class InMemoryDataHelper
                 Phone = "567-890-1234",
                 Email = "",
                 CreatedByUserId = user2.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user2.Id),
                 CreatedByUser = user2,
                 UpdatedByUserId = user1.Id,
                 UpdatedByUser = user1,
@@ -296,6 +301,7 @@ public class InMemoryDataHelper
                 Phone = "678-901-2345",
                 Email = "",
                 CreatedByUserId = user2.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user2.Id),
                 CreatedByUser = user2,
                 UpdatedByUserId = user3.Id,
                 UpdatedByUser = user3,
@@ -342,6 +348,7 @@ public class InMemoryDataHelper
                 Phone = "789-012-3456",
                 Email = "",
                 CreatedByUserId = user2.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user2.Id),
                 CreatedByUser = user2,
                 UpdatedByUserId = user3.Id,
                 UpdatedByUser = user3
@@ -369,6 +376,7 @@ public class InMemoryDataHelper
                 Phone = "890-123-4567",
                 Email = "",
                 CreatedByUserId = user3.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user3.Id),
                 CreatedByUser = user3,
                 UpdatedByUserId = user4.Id,
                 UpdatedByUser = user4
@@ -396,6 +404,7 @@ public class InMemoryDataHelper
                 Phone = "901-234-5678",
                 Email = "",
                 CreatedByUserId = user3.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user3.Id),
                 CreatedByUser = user3,
                 UpdatedByUserId = user2.Id,
                 UpdatedByUser = user2
@@ -415,6 +424,7 @@ public class InMemoryDataHelper
                 Phone = "012-345-6789",
                 Email = "",
                 CreatedByUserId = user4.Id,
+                PeopleCreatedByUserId = new PeopleCreatedByUserId(user4.Id),
                 CreatedByUser = user4
             }
         };
