@@ -86,7 +86,7 @@ public class SortDataEnumerableTests : BaseSortData
     {
         SimpleSorterWithFieldAliasTest((sorters, options) => _people.SortData(sorters, options).ToList());
 
-        var options = new FlexSorterOptions<PeopleEntity>(); 
+        var options = new FlexSorterOptions<PeopleEntity>();
         options.Field(x => x.Surname).Map("SecondName");
         var flexSorter = new FlexSorter<PeopleEntity>(options);
         SimpleSorterWithFieldAliasTest((sorters, _) => flexSorter.SortData(_people, sorters).ToList());
@@ -174,5 +174,65 @@ public class SortDataEnumerableTests : BaseSortData
         var options = new FlexSorterOptions<PeopleEntity>();
         var flexSorter = new FlexSorter<PeopleEntity>(options);
         SimpleSorterWithNotFoundFieldTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleLowercaseFieldSort()
+    {
+        SimpleLowercaseFieldSortTest(sorters => _people.SortData(sorters).ToList());
+
+        var flexSorter = new FlexSorter<PeopleEntity>();
+        SimpleLowercaseFieldSortTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithHiddenFieldCaseBypass()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.Field(x => x.CreatedByUserId).Hide();
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleSorterWithHiddenFieldCaseBypassTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithFieldAliasCaseInsensitive()
+    {
+        SimpleSorterWithFieldAliasCaseInsensitiveTest((sorters, options) =>
+            _people.SortData(sorters, options).ToList());
+
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.Field(x => x.Surname).Map("SecondName");
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleSorterWithFieldAliasCaseInsensitiveTest((sorters, _) => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleNestedEntityLowercaseFieldSort()
+    {
+        var nullCities = _people.Where(p => p.Address == null).ToList();
+        nullCities.ForEach(p => p.Address = new AddressEntity { City = "A" });
+
+        SimpleNestedEntityLowercaseFieldSortTest(sorters => _people.SortData(sorters).ToList());
+
+        var flexSorter = new FlexSorter<PeopleEntity>();
+        SimpleNestedEntityLowercaseFieldSortTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleCaseSensitiveFieldSort()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.CaseSensitiveFieldNames = true;
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleCaseSensitiveFieldSortTest(sorters => flexSorter.SortData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void CaseSensitiveFieldCorrectCaseSort()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.CaseSensitiveFieldNames = true;
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        CaseSensitiveFieldCorrectCaseSortTest(sorters => flexSorter.SortData(_people, sorters).ToList());
     }
 }

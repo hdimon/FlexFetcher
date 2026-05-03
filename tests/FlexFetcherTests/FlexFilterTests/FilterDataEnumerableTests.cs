@@ -97,7 +97,8 @@ public class FilterDataEnumerableTests : BaseFilterData
         {
             Culture = new CultureInfo("de-DE")
         };
-        SimpleFilterWithCustomFilterWithContextTest(filters => flexFilter.FilterData(_people, filters, context).ToList());
+        SimpleFilterWithCustomFilterWithContextTest(filters =>
+            flexFilter.FilterData(_people, filters, context).ToList());
     }
 
     private class SimplePeopleFilterWithCustomExpressionFilter : FlexFilter<PeopleEntity>
@@ -111,7 +112,8 @@ public class FilterDataEnumerableTests : BaseFilterData
     [Test]
     public void SimpleFilterWithNestedCustomFilter()
     {
-        SimpleFilterWithNestedCustomFilterTest((flexFilter, filters) => flexFilter.FilterData(_people, filters).ToList());
+        SimpleFilterWithNestedCustomFilterTest((flexFilter, filters) =>
+            flexFilter.FilterData(_people, filters).ToList());
     }
 
     [Test]
@@ -209,7 +211,8 @@ public class FilterDataEnumerableTests : BaseFilterData
     [Test]
     public void SimpleNestedEntityFilterWithFieldAlias()
     {
-        SimpleNestedEntityFilterWithFieldAliasTest((flexFilter, filters) => flexFilter.FilterData(_people, filters).ToList());
+        SimpleNestedEntityFilterWithFieldAliasTest((flexFilter, filters) =>
+            flexFilter.FilterData(_people, filters).ToList());
     }
 
     [Test]
@@ -222,13 +225,15 @@ public class FilterDataEnumerableTests : BaseFilterData
     [Test]
     public void FilterWithNestedEntitiesOfTheSameType()
     {
-        FilterWithNestedEntitiesOfTheSameTypeTest((flexFilter, filters) => flexFilter.FilterData(_people, filters).ToList());
+        FilterWithNestedEntitiesOfTheSameTypeTest((flexFilter, filters) =>
+            flexFilter.FilterData(_people, filters).ToList());
     }
 
     [Test]
     public void FilterWithNestedManyToManyEntities()
     {
-        FilterWithNestedManyToManyEntitiesTest((flexFilter, filters) => flexFilter.FilterData(_people, filters).ToList());
+        FilterWithNestedManyToManyEntitiesTest((flexFilter, filters) =>
+            flexFilter.FilterData(_people, filters).ToList());
     }
 
     [Test]
@@ -255,7 +260,7 @@ public class FilterDataEnumerableTests : BaseFilterData
         var options = new FlexFilterOptions<PeopleEntity, PeopleModelWithTheSameField>();
         options.HideOriginalFields();
         options.Field(x => x.CreatedByUserId).Map(model => model.CreatedByUserId)
-               .Map(nameof(PeopleModelWithTheSameField.CreatedByUserId));
+            .Map(nameof(PeopleModelWithTheSameField.CreatedByUserId));
         var flexFilter = new FlexFilter<PeopleEntity, PeopleModelWithTheSameField>(options);
         SimpleFilterWithHiddenFieldAndTheSameMappingTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
     }
@@ -266,10 +271,11 @@ public class FilterDataEnumerableTests : BaseFilterData
         var options = new FlexFilterOptions<PeopleEntity, PeopleModelWithTheSameField>();
         options.HideOriginalFields();
         options.Field(x => x.PeopleCreatedByUserId).CastTo<int>().Map(model => model.CreatedByUserId)
-               .Map(model => model.PeopleCreatedByUserId).Map(nameof(PeopleModelWithTheSameField.CreatedByUserId))
-               .Map(nameof(PeopleModelWithTheSameField.PeopleCreatedByUserId));
+            .Map(model => model.PeopleCreatedByUserId).Map(nameof(PeopleModelWithTheSameField.CreatedByUserId))
+            .Map(nameof(PeopleModelWithTheSameField.PeopleCreatedByUserId));
         var flexFilter = new FlexFilter<PeopleEntity, PeopleModelWithTheSameField>(options);
-        SimpleValueObjectFilterWithHiddenFieldAndTheSameMappingTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+        SimpleValueObjectFilterWithHiddenFieldAndTheSameMappingTest(sorters =>
+            flexFilter.FilterData(_people, sorters).ToList());
     }
 
     [Test]
@@ -278,6 +284,63 @@ public class FilterDataEnumerableTests : BaseFilterData
         var options = new FlexFilterOptions<PeopleEntity>();
         var flexFilter = new FlexFilter<PeopleEntity>(options);
         SimpleFilterWithNotFoundFieldTest(sorters => flexFilter.FilterData(_people, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleLowercaseFieldFilter()
+    {
+        SimpleLowercaseFieldFilterTest(filters => _people.FilterData(filters).ToList());
+
+        var flexFilter = new FlexFilter<PeopleEntity>();
+        SimpleLowercaseFieldFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleFilterWithHiddenFieldCaseBypass()
+    {
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.CreatedByUserId).Hide();
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        SimpleFilterWithHiddenFieldCaseBypassTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleFilterWithFieldAliasCaseInsensitive()
+    {
+        SimpleFilterWithFieldAliasCaseInsensitiveTest((filters, options) =>
+            _people.FilterData(filters, options).ToList());
+
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.Field(x => x.Surname).Map("SecondName");
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        SimpleFilterWithFieldAliasCaseInsensitiveTest((filters, _) => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleNestedEntityLowercaseFieldFilter()
+    {
+        SimpleNestedEntityLowercaseFieldFilterTest(filters => _people.FilterData(filters).ToList());
+
+        var flexFilter = new FlexFilter<PeopleEntity>();
+        SimpleNestedEntityLowercaseFieldFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void SimpleCaseSensitiveFieldFilter()
+    {
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.CaseSensitiveFieldNames = true;
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        SimpleCaseSensitiveFieldFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
+    }
+
+    [Test]
+    public void CaseSensitiveFieldCorrectCaseFilter()
+    {
+        var options = new FlexFilterOptions<PeopleEntity>();
+        options.CaseSensitiveFieldNames = true;
+        var flexFilter = new FlexFilter<PeopleEntity>(options);
+        CaseSensitiveFieldCorrectCaseFilterTest(filters => flexFilter.FilterData(_people, filters).ToList());
     }
 
     private class PeopleModelWithTheSameField

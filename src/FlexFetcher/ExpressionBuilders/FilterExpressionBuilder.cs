@@ -1,6 +1,7 @@
 ﻿using FlexFetcher.Models.Queries;
 using System.Linq.Expressions;
 using System.Collections.Immutable;
+using System.Reflection;
 using FlexFetcher.ExpressionBuilders.FilterExpressionHandlers;
 using FlexFetcher.Utils;
 using FlexFetcher.Models.FlexFetcherOptions;
@@ -129,9 +130,17 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         property = CreatePropertyExpression(property, mappedFieldName, options);
 
-        var nestedFilter = options.NestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type) ??
-                           (BaseFlexFilter)Activator.CreateInstance(typeof(FlexFilter<>).MakeGenericType(property.Type),
-                               new object[] { })!;
+        var nestedFilter = options.NestedFlexFilters.FirstOrDefault(f => f.EntityType == property.Type);
+        if (nestedFilter == null)
+        {
+            var nestedOptionsType = typeof(FlexFilterOptions<>).MakeGenericType(property.Type);
+            var nestedOptions = (IFlexOptions)Activator.CreateInstance(nestedOptionsType)!;
+            nestedOptionsType.GetProperty(nameof(options.CaseSensitiveFieldNames))!.SetValue(nestedOptions,
+                options.CaseSensitiveFieldNames);
+            nestedFilter =
+                (BaseFlexFilter)Activator.CreateInstance(typeof(FlexFilter<>).MakeGenericType(property.Type),
+                    nestedOptions)!;
+        }
 
         var reducedFilter = filter with { Field = string.Join(".", split.Skip(1)) };
         var exp = nestedFilter.BuildExpression(property, reducedFilter, context);
@@ -145,7 +154,8 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
     {
         foreach (var currentOptionsCustomFilter in options.CustomFields)
         {
-            if (currentOptionsCustomFilter.Field != fieldName) continue;
+            if (!string.Equals(currentOptionsCustomFilter.Field, fieldName, options.FieldNameComparison))
+                continue;
 
             if (currentOptionsCustomFilter is BaseFlexCustomFieldFilter<TEntity> baseFlexCustomFilter)
             {
@@ -177,6 +187,13 @@ public class FilterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
     {
         try
         {
+            if (options.CaseSensitiveFieldNames)
+            {
+                var pi = parameter.Type.GetProperty(fieldName, BindingFlags.Instance | BindingFlags.Public);
+                if (pi == null)
+                    throw new FieldNotFoundException(fieldName);
+            }
+
             var property = Expression.Property(parameter, fieldName);
 
             var castToType = options.GetFieldCastToType(fieldName);

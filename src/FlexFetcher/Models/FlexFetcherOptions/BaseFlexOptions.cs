@@ -9,8 +9,8 @@ namespace FlexFetcher.Models.FlexFetcherOptions;
 public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOptions
     where TEntity : class where TExpressionBuilder : IExpressionBuilder<TEntity>, new()
 {
-    protected Dictionary<string, string> FieldNameByAlias { get; } = new();
-    protected HashSet<string> HiddenFields { get; } = new();
+    protected Dictionary<string, string> FieldNameByAlias { get; private set; } = null!;
+    protected HashSet<string> HiddenFields { get; private set; } = null!;
 
     public TExpressionBuilder ExpressionBuilder { get; }
     public List<BaseFieldBuilder> FieldBuilders { get; } = new();
@@ -20,6 +20,18 @@ public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOption
 
     public bool IsBuilt { get; protected set; }
     public bool OriginalFieldsHidden { get; protected set; }
+
+    /// <summary>
+    /// When true, field name matching is case-sensitive.
+    /// When false (default), field name matching is case-insensitive.
+    /// </summary>
+    public bool CaseSensitiveFieldNames { get; set; }
+
+    public StringComparison FieldNameComparison =>
+        CaseSensitiveFieldNames ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+    private StringComparer FieldNameComparer =>
+        CaseSensitiveFieldNames ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
     protected BaseFlexOptions() : this(new TExpressionBuilder())
     {
@@ -50,6 +62,9 @@ public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOption
     {
         if (IsBuilt)
             return;
+
+        FieldNameByAlias = new Dictionary<string, string>(FieldNameComparer);
+        HiddenFields = new HashSet<string>(FieldNameComparer);
 
         BuildAliases();
         BuildHiddenFields();
@@ -99,7 +114,8 @@ public abstract class BaseFlexOptions<TEntity, TExpressionBuilder> : IFlexOption
 
     public Type? GetFieldCastToType(string fieldName)
     {
-        var fieldBuilder = FieldBuilders.FirstOrDefault(x => x.FieldName == fieldName);
+        var fieldBuilder =
+            FieldBuilders.FirstOrDefault(x => string.Equals(x.FieldName, fieldName, FieldNameComparison));
         return fieldBuilder?.CastToType;
     }
 

@@ -57,14 +57,10 @@ public class FieldBuilder<TEntity, TField, TMapModel> : BaseFieldBuilder
     private static string GetMemberName(Expression expression)
     {
         if (expression is MemberExpression memberExpression)
-        {
             return memberExpression.Member.Name;
-        }
 
         if (expression is UnaryExpression { Operand: MemberExpression operand })
-        {
             return operand.Member.Name;
-        }
 
         throw new InvalidOperationException("Invalid expression type.");
     }

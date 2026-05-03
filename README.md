@@ -17,6 +17,7 @@ FlexFetcher is inspired by [Telerik Kendo UI](https://www.telerik.com/kendo-ui) 
 - [FlexFilter operators](#flexfilter-operators)
 - [Extending FlexFilter operators](#extending-flexfilter-operators)
 - [Field mapping](#field-mapping)
+- [Field name case sensitivity](#field-name-case-sensitivity)
 - [Custom fields](#custom-fields)
 - [Custom filter fields](#custom-filter-fields)
 - [FlexFetcher Context](#flexfetcher-context)
@@ -551,6 +552,22 @@ In general it gives possibility to map view models to entities and have differen
 > options.AddCustomField(customField).Map("Title");
 > var flexSorter = new FlexSorter<PeopleEntity>(options);
 > ```
+
+## Field name case sensitivity
+By default, field name matching is case-insensitive. This means that `"name"`, `"Name"` and `"NAME"` all resolve to the same entity property. The same applies to field aliases, hidden fields, nested fields and custom fields.
+
+This is convenient for web APIs where JavaScript clients typically send field names in camelCase while C# entities use PascalCase.
+
+If you need strict case-sensitive matching, you can enable it via options:
+```csharp
+var options = new FlexFilterOptions<PeopleEntity>();
+options.CaseSensitiveFieldNames = true;
+var flexFilter = new FlexFilter<PeopleEntity>(options);
+```
+
+> When `CaseSensitiveFieldNames` is set to `true`, field names must match entity property names exactly. For example, `"name"` will throw `FieldNotFoundException`, while `"Name"` will work.
+
+> The same option is available for `FlexSorterOptions`, `FlexFetcherOptions` and other option classes.
 
 ## Custom fields
 In previous examples we used only properties of entities, but it's possible to use custom fields with custom expressions.
