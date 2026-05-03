@@ -3,6 +3,7 @@ using FlexFetcher.Models.FlexFetcherOptions;
 using FlexFetcher.Models.Queries;
 using FlexFetcher.Utils;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace FlexFetcher.ExpressionBuilders;
 
@@ -59,9 +60,17 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
 
         property = CreatePropertyExpression(property, mappedFieldName, options);
 
-        var nestedSorter = options.NestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type) ??
-                           (BaseFlexSorter)Activator.CreateInstance(typeof(FlexSorter<>).MakeGenericType(property.Type),
-                               new object[] { })!;
+        var nestedSorter = options.NestedFlexSorters.FirstOrDefault(x => x.EntityType == property.Type);
+        if (nestedSorter == null)
+        {
+            var nestedOptionsType = typeof(FlexSorterOptions<>).MakeGenericType(property.Type);
+            var nestedOptions = (IFlexOptions)Activator.CreateInstance(nestedOptionsType)!;
+            nestedOptionsType.GetProperty(nameof(options.CaseSensitiveFieldNames))!
+                .SetValue(nestedOptions, options.CaseSensitiveFieldNames);
+            nestedSorter =
+                (BaseFlexSorter)Activator.CreateInstance(typeof(FlexSorter<>).MakeGenericType(property.Type),
+                    nestedOptions)!;
+        }
 
         var reducedSorter = sorter with { Field = string.Join(".", split.Skip(1)) };
 
@@ -75,7 +84,8 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
     {
         foreach (var currentOptionsCustomField in options.CustomFields)
         {
-            if (currentOptionsCustomField.Field != fieldName) continue;
+            if (!string.Equals(currentOptionsCustomField.Field, fieldName, options.FieldNameComparison))
+                continue;
 
             Type customFieldBuilderType = currentOptionsCustomField.GetType();
 
@@ -100,6 +110,13 @@ public class SorterExpressionBuilder<TEntity> : IExpressionBuilder<TEntity> wher
     {
         try
         {
+            if (options.CaseSensitiveFieldNames)
+            {
+                var pi = parameter.Type.GetProperty(fieldName, BindingFlags.Instance | BindingFlags.Public);
+                if (pi == null)
+                    throw new FieldNotFoundException(fieldName);
+            }
+
             var property = Expression.Property(parameter, fieldName);
 
             var castToType = options.GetFieldCastToType(fieldName);

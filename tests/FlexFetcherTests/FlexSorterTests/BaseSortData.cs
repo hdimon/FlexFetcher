@@ -67,7 +67,7 @@ public abstract class BaseSortData
                 }
             }
         };
-        
+
         var result = sorter(sorters);
         Assert.That(result.Select(p => p.Id).ToList(), Is.EqualTo(new List<int> { 9, 10, 1, 2, 5, 6, 3, 4, 7, 8 }));
     }
@@ -136,7 +136,8 @@ public abstract class BaseSortData
         Assert.That(result.Select(p => p.Id).ToList(), Is.EqualTo(new List<int> { 10, 3, 9, 4, 2, 1, 5, 6, 7, 8 }));
     }
 
-    protected void NestedSorterWithCustomSorterWithContextTest(Func<FlexSorter<PeopleEntity>, DataSorters, CustomContext, List<PeopleEntity>> sorter)
+    protected void NestedSorterWithCustomSorterWithContextTest(
+        Func<FlexSorter<PeopleEntity>, DataSorters, CustomContext, List<PeopleEntity>> sorter)
     {
         var sorters = new DataSorters
         {
@@ -168,7 +169,8 @@ public abstract class BaseSortData
         Assert.That(result[9].Id, Is.EqualTo(4));
     }
 
-    protected void SimpleSorterWithFieldAliasTest(Func<DataSorters, FlexSorterOptions<PeopleEntity>, List<PeopleEntity>> sorter)
+    protected void SimpleSorterWithFieldAliasTest(
+        Func<DataSorters, FlexSorterOptions<PeopleEntity>, List<PeopleEntity>> sorter)
     {
         var sorters = new DataSorters
         {
@@ -301,5 +303,127 @@ public abstract class BaseSortData
         {
             var _ = sorter(sorters);
         });
+    }
+
+    protected void SimpleLowercaseFieldSortTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "surname",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        var result = sorter(sorters);
+        Assert.That(result.Select(p => p.Surname).ToList(),
+            Is.EqualTo(new List<string>
+                { "Brown", "Brown", "Doe", "Doe", "Jones", "Jones", "Smith", "Smith", "Williams", "Williams" }));
+    }
+
+    protected void SimpleSorterWithHiddenFieldCaseBypassTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "createdbyuserid",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        Assert.Throws<FieldNotFoundException>(() =>
+        {
+            var _ = sorter(sorters);
+        });
+    }
+
+    protected void SimpleSorterWithFieldAliasCaseInsensitiveTest(
+        Func<DataSorters, FlexSorterOptions<PeopleEntity>, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "secondname",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.Field(x => x.Surname).Map("SecondName");
+
+        var result = sorter(sorters, options);
+        Assert.That(result.Select(p => p.Surname).ToList(),
+            Is.EqualTo(new List<string>
+                { "Brown", "Brown", "Doe", "Doe", "Jones", "Jones", "Smith", "Smith", "Williams", "Williams" }));
+    }
+
+    protected void SimpleNestedEntityLowercaseFieldSortTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "address.city",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        var result = sorter(sorters);
+        Assert.That(result.Select(p => p.Id).ToList(), Is.EqualTo(new List<int> { 10, 3, 9, 4, 2, 1, 5, 6, 7, 8 }));
+    }
+
+    protected void SimpleCaseSensitiveFieldSortTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "surname",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        Assert.Throws<FieldNotFoundException>(() =>
+        {
+            var _ = sorter(sorters);
+        });
+    }
+
+    protected void CaseSensitiveFieldCorrectCaseSortTest(Func<DataSorters, List<PeopleEntity>> sorter)
+    {
+        var sorters = new DataSorters
+        {
+            Sorters = new List<DataSorter>
+            {
+                new DataSorter
+                {
+                    Field = "Surname",
+                    Direction = DataSorterDirection.Asc
+                }
+            }
+        };
+
+        var result = sorter(sorters);
+        Assert.That(result.Select(p => p.Surname).ToList(),
+            Is.EqualTo(new List<string>
+                { "Brown", "Brown", "Doe", "Doe", "Jones", "Jones", "Smith", "Smith", "Williams", "Williams" }));
     }
 }

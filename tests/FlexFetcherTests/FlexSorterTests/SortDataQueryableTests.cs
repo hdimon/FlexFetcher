@@ -116,7 +116,7 @@ public class SortDataQueryableTests : BaseSortData
         peopleOptions.Field(x => x.Address).Map(entity => entity.Address).Map("Residence");
         var peopleSorter = new FlexSorter<PeopleEntity>(peopleOptions);
         SimpleNestedEntitySorterWithFieldAliasTest((sorters) => peopleSorter.SortData(_ctx.People, sorters).ToList());
-        
+
         // With model
         var addressOptionsModel = new FlexSorterOptions<AddressEntity, AddressModel>();
         addressOptionsModel.Field(x => x.City).Map(model => model.Town).Map("Town");
@@ -125,7 +125,8 @@ public class SortDataQueryableTests : BaseSortData
         peopleOptionsModel.AddNestedFlexSorter(addressSorterModel);
         peopleOptionsModel.Field(x => x.Address).Map(model => model.Residence).Map("Residence");
         var peopleSorterModel = new FlexSorter<PeopleEntity>(peopleOptionsModel);
-        SimpleNestedEntitySorterWithFieldAliasTest((sorters) => peopleSorterModel.SortData(_ctx.People, sorters).ToList());
+        SimpleNestedEntitySorterWithFieldAliasTest((sorters) =>
+            peopleSorterModel.SortData(_ctx.People, sorters).ToList());
     }
 
     private class PeopleModel
@@ -173,7 +174,8 @@ public class SortDataQueryableTests : BaseSortData
         {
             Culture = new CultureInfo("de-DE")
         };
-        SimpleSorterWithCustomSorterWithContextTest(sorters => flexSorter.SortData(_ctx.People, sorters, context).ToList());
+        SimpleSorterWithCustomSorterWithContextTest(sorters =>
+            flexSorter.SortData(_ctx.People, sorters, context).ToList());
     }
 
     [Test]
@@ -195,5 +197,54 @@ public class SortDataQueryableTests : BaseSortData
         {
             Options.AddCustomField(new PeopleFullNameCustomField()).Map("Title");
         }
+    }
+
+    [Test]
+    public void SimpleLowercaseFieldSort()
+    {
+        SimpleLowercaseFieldSortTest(sorters => _ctx.People.SortData(sorters).ToList());
+
+        var flexSorter = new FlexSorter<PeopleEntity>();
+        SimpleLowercaseFieldSortTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleSorterWithFieldAliasCaseInsensitive()
+    {
+        SimpleSorterWithFieldAliasCaseInsensitiveTest((sorters, options) =>
+            _ctx.People.SortData(sorters, options).ToList());
+
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.Field(x => x.Surname).Map("SecondName");
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleSorterWithFieldAliasCaseInsensitiveTest((sorters, _) =>
+            flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleNestedEntityLowercaseFieldSort()
+    {
+        SimpleNestedEntityLowercaseFieldSortTest(sorters => _ctx.People.SortData(sorters).ToList());
+
+        var flexSorter = new FlexSorter<PeopleEntity>();
+        SimpleNestedEntityLowercaseFieldSortTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
+    public void SimpleCaseSensitiveFieldSort()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.CaseSensitiveFieldNames = true;
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        SimpleCaseSensitiveFieldSortTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
+    }
+
+    [Test]
+    public void CaseSensitiveFieldCorrectCaseSort()
+    {
+        var options = new FlexSorterOptions<PeopleEntity>();
+        options.CaseSensitiveFieldNames = true;
+        var flexSorter = new FlexSorter<PeopleEntity>(options);
+        CaseSensitiveFieldCorrectCaseSortTest(sorters => flexSorter.SortData(_ctx.People, sorters).ToList());
     }
 }
